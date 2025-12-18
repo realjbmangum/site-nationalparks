@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import WeatherWidget from '../../components/WeatherWidget.astro';
 import { getAllParks, getParkBySlug, type ParkLocation } from '../../lib/supabase';
 import siteConfig from '../../data/site-config.json';
 
@@ -238,6 +239,11 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
               Get Directions
             </a>
           </div>
+
+          <!-- Weather Widget -->
+          {park.latitude && park.longitude && (
+            <WeatherWidget latitude={park.latitude} longitude={park.longitude} parkName={park.name} />
+          )}
 
           <!-- Amenities Card -->
           {park.features && (

@@ -33,12 +33,24 @@ const parksGeoJSON = {
 >
   <div class="h-screen flex flex-col">
     <!-- Header Bar -->
-    <div class="bg-white border-b px-4 py-3 flex items-center justify-between z-10">
+    <div class="bg-white border-b px-4 py-3 flex items-center justify-between z-10 flex-wrap gap-3">
       <div>
         <h1 class="text-xl font-display font-bold text-gray-900">National Parks Map</h1>
         <p class="text-sm text-gray-600">Showing {parks.length} parks</p>
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Map Style Toggle -->
+        <div class="flex rounded-lg border overflow-hidden">
+          <button id="style-outdoors" class="map-style-btn active px-3 py-1.5 text-sm font-medium">
+            Outdoors
+          </button>
+          <button id="style-satellite" class="map-style-btn px-3 py-1.5 text-sm font-medium border-l">
+            Satellite
+          </button>
+          <button id="style-terrain" class="map-style-btn px-3 py-1.5 text-sm font-medium border-l">
+            3D Terrain
+          </button>
+        </div>
         <!-- Filter Dropdown -->
         <select id="difficulty-filter" class="text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
           <option value="">All Difficulties</option>
@@ -59,7 +71,43 @@ const parksGeoJSON = {
     </div>
 
     <!-- Map Container -->
-    <div id="map" class="flex-grow"></div>
+    <div id="map" class="flex-grow relative">
+      <!-- Helper Tooltip -->
+      <div id="map-helper" class="absolute bottom-20 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white px-4 py-2 rounded-lg text-sm z-10 flex items-center gap-2 shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span><strong>Tip:</strong> Right-click + drag to rotate and tilt the map in 3D</span>
+        <button id="dismiss-helper" class="ml-2 hover:text-gray-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Legend -->
+      <div class="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-3 z-10">
+        <h4 class="text-xs font-semibold text-gray-700 mb-2">Difficulty</h4>
+        <div class="space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span class="text-xs text-gray-600">Family Friendly</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="text-xs text-gray-600">Moderate</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+            <span class="text-xs text-gray-600">Challenging</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="text-xs text-gray-600">Expert</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Mapbox CSS -->
@@ -74,161 +122,62 @@ const parksGeoJSON = {
   document.head.appendChild(script);
 
   let map;
-  let markers = [];
+  let currentStyle = 'outdoors';
+  const styles = {
+    outdoors: 'mapbox://styles/mapbox/outdoors-v12',
+    satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
+    terrain: 'mapbox://styles/mapbox/outdoors-v12', // We'll add 3D terrain to this
+  };
 
   function initMap() {
     mapboxgl.accessToken = mapboxToken;
 
     map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/outdoors-v12',
+      style: styles.outdoors,
       center: [-98.5795, 39.8283], // Center of US
       zoom: 3.5,
+      pitch: 0,
+      bearing: 0,
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    // Add controls
+    map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    map.addControl(new mapboxgl.ScaleControl({ maxWidth: 150 }), 'bottom-right');
 
     map.on('load', () => {
-      // Add parks source
-      map.addSource('parks', {
-        type: 'geojson',
-        data: parksGeoJSON,
-        cluster: true,
-        clusterMaxZoom: 6,
-        clusterRadius: 50,
-      });
+      addParksLayer();
+    });
 
-      // Cluster circles
-      map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'parks',
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': '#1E4D2B',
-          'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 25, 40],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff',
-        },
-      });
-
-      // Cluster count labels
-      map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'parks',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 14,
-        },
-        paint: {
-          'text-color': '#ffffff',
-        },
-      });
-
-      // Individual park markers
-      map.addLayer({
-        id: 'unclustered-point',
-        type: 'circle',
-        source: 'parks',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-color': [
-            'match',
-            ['get', 'difficulty'],
-            'family', '#2563EB',
-            'moderate', '#D97706',
-            'challenging', '#EA580C',
-            'expert', '#DC2626',
-            '#1E4D2B', // default
-          ],
-          'circle-radius': 10,
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff',
-        },
-      });
-
-      // Click on cluster to zoom
-      map.on('click', 'clusters', (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-        const clusterId = features[0].properties.cluster_id;
-        map.getSource('parks').getClusterExpansionZoom(clusterId, (err, zoom) => {
-          if (err) return;
-          map.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom: zoom,
-          });
-        });
-      });
-
-      // Click on park marker to show popup
-      map.on('click', 'unclustered-point', (e) => {
-        const props = e.features[0].properties;
-        const coords = e.features[0].geometry.coordinates.slice();
-
-        const difficultyColors = {
-          family: 'bg-blue-500',
-          moderate: 'bg-amber-500',
-          challenging: 'bg-orange-500',
-          expert: 'bg-red-500',
-        };
-
-        const difficultyLabels = {
-          family: 'Family Friendly',
-          moderate: 'Moderate',
-          challenging: 'Challenging',
-          expert: 'Expert',
-        };
-
-        const visitors = props.annual_visitors >= 1000000
-          ? `${(props.annual_visitors / 1000000).toFixed(1)}M`
-          : `${Math.round(props.annual_visitors / 1000)}K`;
-
-        const html = `
-          <div class="p-1 max-w-[250px]">
-            ${props.photo_url ? `<img src="${props.photo_url}" alt="${props.name}" class="w-full h-32 object-cover rounded-lg mb-2" />` : ''}
-            <h3 class="font-bold text-gray-900">${props.name}</h3>
-            <p class="text-sm text-gray-600 mb-2">${props.state}</p>
-            <div class="flex items-center gap-2 mb-2">
-              <span class="text-xs px-2 py-1 rounded-full text-white ${difficultyColors[props.difficulty] || 'bg-green-700'}">
-                ${difficultyLabels[props.difficulty] || 'Moderate'}
-              </span>
-              <span class="text-xs text-gray-500">${visitors} visitors/yr</span>
-            </div>
-            <a href="/parks/${props.slug}" class="text-sm text-primary hover:underline font-medium">View Park Details →</a>
-          </div>
-        `;
-
-        new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
-          .setLngLat(coords)
-          .setHTML(html)
-          .addTo(map);
-      });
-
-      // Cursor changes
-      map.on('mouseenter', 'clusters', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'clusters', () => {
-        map.getCanvas().style.cursor = '';
-      });
-      map.on('mouseenter', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = '';
+    // Map style buttons
+    document.querySelectorAll('.map-style-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const style = e.target.id.replace('style-', '');
+        switchStyle(style);
       });
     });
+
+    // Dismiss helper
+    document.getElementById('dismiss-helper')?.addEventListener('click', () => {
+      document.getElementById('map-helper').style.display = 'none';
+      localStorage.setItem('mapHelperDismissed', 'true');
+    });
+
+    // Hide helper if already dismissed
+    if (localStorage.getItem('mapHelperDismissed')) {
+      document.getElementById('map-helper').style.display = 'none';
+    }
 
     // Difficulty filter
     document.getElementById('difficulty-filter').addEventListener('change', (e) => {
       const difficulty = e.target.value;
-      if (difficulty) {
-        map.setFilter('unclustered-point', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'difficulty'], difficulty]]);
-      } else {
-        map.setFilter('unclustered-point', ['!', ['has', 'point_count']]);
+      if (map.getLayer('unclustered-point')) {
+        if (difficulty) {
+          map.setFilter('unclustered-point', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'difficulty'], difficulty]]);
+        } else {
+          map.setFilter('unclustered-point', ['!', ['has', 'point_count']]);
+        }
       }
     });
 
@@ -240,12 +189,12 @@ const parksGeoJSON = {
             map.flyTo({
               center: [position.coords.longitude, position.coords.latitude],
               zoom: 6,
+              pitch: 45,
             });
 
-            // Add user marker
             new mapboxgl.Marker({ color: '#F4A300' })
               .setLngLat([position.coords.longitude, position.coords.latitude])
-              .setPopup(new mapboxgl.Popup().setHTML('<p class="font-medium">You are here</p>'))
+              .setPopup(new mapboxgl.Popup().setHTML('<p class="font-medium p-2">You are here</p>'))
               .addTo(map);
           },
           (error) => {
@@ -256,6 +205,178 @@ const parksGeoJSON = {
         alert('Geolocation is not supported by your browser.');
       }
     });
+  }
+
+  function switchStyle(style) {
+    currentStyle = style;
+
+    // Update button states
+    document.querySelectorAll('.map-style-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.getElementById(`style-${style}`).classList.add('active');
+
+    // Switch map style
+    map.setStyle(styles[style]);
+
+    // Re-add layers after style change
+    map.once('style.load', () => {
+      addParksLayer();
+
+      // Add 3D terrain for terrain view
+      if (style === 'terrain') {
+        map.addSource('mapbox-dem', {
+          type: 'raster-dem',
+          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          tileSize: 512,
+          maxzoom: 14,
+        });
+        map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
+
+        // Add sky layer for better 3D effect
+        map.addLayer({
+          id: 'sky',
+          type: 'sky',
+          paint: {
+            'sky-type': 'atmosphere',
+            'sky-atmosphere-sun': [0.0, 90.0],
+            'sky-atmosphere-sun-intensity': 15,
+          },
+        });
+
+        // Tilt the map for 3D view
+        map.easeTo({ pitch: 60, bearing: -20, duration: 1000 });
+      } else {
+        // Reset pitch for 2D views
+        map.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+      }
+    });
+  }
+
+  function addParksLayer() {
+    // Add parks source
+    map.addSource('parks', {
+      type: 'geojson',
+      data: parksGeoJSON,
+      cluster: true,
+      clusterMaxZoom: 6,
+      clusterRadius: 50,
+    });
+
+    // Cluster circles
+    map.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'parks',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#1E4D2B',
+        'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 25, 40],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff',
+      },
+    });
+
+    // Cluster count labels
+    map.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'parks',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': ['get', 'point_count_abbreviated'],
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 14,
+      },
+      paint: {
+        'text-color': '#ffffff',
+      },
+    });
+
+    // Individual park markers
+    map.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'parks',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': [
+          'match',
+          ['get', 'difficulty'],
+          'family', '#2563EB',
+          'moderate', '#D97706',
+          'challenging', '#EA580C',
+          'expert', '#DC2626',
+          '#1E4D2B',
+        ],
+        'circle-radius': 10,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff',
+      },
+    });
+
+    // Click on cluster to zoom
+    map.on('click', 'clusters', (e) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource('parks').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+        map.easeTo({
+          center: features[0].geometry.coordinates,
+          zoom: zoom,
+        });
+      });
+    });
+
+    // Click on park marker to show popup
+    map.on('click', 'unclustered-point', (e) => {
+      const props = e.features[0].properties;
+      const coords = e.features[0].geometry.coordinates.slice();
+
+      const difficultyColors = {
+        family: 'bg-blue-500',
+        moderate: 'bg-amber-500',
+        challenging: 'bg-orange-500',
+        expert: 'bg-red-500',
+      };
+
+      const difficultyLabels = {
+        family: 'Family Friendly',
+        moderate: 'Moderate',
+        challenging: 'Challenging',
+        expert: 'Expert',
+      };
+
+      const visitors = props.annual_visitors >= 1000000
+        ? `${(props.annual_visitors / 1000000).toFixed(1)}M`
+        : `${Math.round(props.annual_visitors / 1000)}K`;
+
+      const html = `
+        <div class="p-1 max-w-[250px]">
+          ${props.photo_url ? `<img src="${props.photo_url}" alt="${props.name}" class="w-full h-32 object-cover rounded-lg mb-2" />` : ''}
+          <h3 class="font-bold text-gray-900">${props.name}</h3>
+          <p class="text-sm text-gray-600 mb-2">${props.state}</p>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs px-2 py-1 rounded-full text-white ${difficultyColors[props.difficulty] || 'bg-green-700'}">
+              ${difficultyLabels[props.difficulty] || 'Moderate'}
+            </span>
+            <span class="text-xs text-gray-500">${visitors} visitors/yr</span>
+          </div>
+          <a href="/parks/${props.slug}" class="text-sm text-primary hover:underline font-medium">View Park Details →</a>
+        </div>
+      `;
+
+      new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
+        .setLngLat(coords)
+        .setHTML(html)
+        .addTo(map);
+    });
+
+    // Cursor changes
+    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+    map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'unclustered-point', () => map.getCanvas().style.cursor = '');
   }
 </script>
 
@@ -268,5 +389,17 @@ const parksGeoJSON = {
   .mapboxgl-popup-close-button {
     font-size: 18px;
     padding: 4px 8px;
+  }
+  .map-style-btn {
+    background: white;
+    color: #374151;
+    transition: all 0.2s;
+  }
+  .map-style-btn:hover {
+    background: #f3f4f6;
+  }
+  .map-style-btn.active {
+    background: #1E4D2B;
+    color: white;
   }
 </style>

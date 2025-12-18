@@ -70,7 +70,9 @@ const parks = allParks.length > 0 ? allParks : placeholderParks;
               <option value="">All Amenities</option>
               <option value="camping">Camping</option>
               <option value="lodging">In-Park Lodging</option>
-              <option value="rv">RV Facilities</option>
+              <option value="rv_facilities">RV Facilities</option>
+              <option value="wheelchair_accessible">Wheelchair Accessible</option>
+              <option value="dog_friendly">Dog Friendly</option>
             </select>
           </div>
           <div>
@@ -92,7 +94,7 @@ const parks = allParks.length > 0 ? allParks : placeholderParks;
       <!-- Parks Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="parks-grid">
         {parks.map((park) => (
-          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty}>
+          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty} data-visitors={park.annual_visitors} data-amenities={park.features ? Object.entries(park.features).filter(([k, v]) => v).map(([k]) => k).join(',') : ''}>
             <a href={`/parks/${park.slug}`} class="block">
               <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
                 <img
@@ -125,3 +127,73 @@ const parks = allParks.length > 0 ? allParks : placeholderParks;
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // Parks filtering and sorting
+  const parksGrid = document.getElementById('parks-grid');
+  const parkCards = Array.from(parksGrid?.querySelectorAll('.card') || []);
+  const resultsCount = document.querySelector('.text-gray-600.mb-6 .font-semibold');
+
+  const regionFilter = document.getElementById('filter-region') as HTMLSelectElement;
+  const difficultyFilter = document.getElementById('filter-difficulty') as HTMLSelectElement;
+  const amenitiesFilter = document.getElementById('filter-amenities') as HTMLSelectElement;
+  const sortBy = document.getElementById('sort-by') as HTMLSelectElement;
+
+  function filterAndSort() {
+    const region = regionFilter?.value || '';
+    const difficulty = difficultyFilter?.value || '';
+    const amenities = amenitiesFilter?.value || '';
+    const sort = sortBy?.value || 'name';
+
+    let visibleCards = parkCards.filter(card => {
+      const cardRegion = card.getAttribute('data-region') || '';
+      const cardDifficulty = card.getAttribute('data-difficulty') || '';
+      const cardAmenities = card.getAttribute('data-amenities') || '';
+
+      if (region && cardRegion !== region) return false;
+      if (difficulty && cardDifficulty !== difficulty) return false;
+      if (amenities && !cardAmenities.includes(amenities)) return false;
+      return true;
+    });
+
+    // Sort
+    visibleCards.sort((a, b) => {
+      if (sort === 'name') {
+        const nameA = a.querySelector('h3')?.textContent || '';
+        const nameB = b.querySelector('h3')?.textContent || '';
+        return nameA.localeCompare(nameB);
+      }
+      if (sort === 'visitors') {
+        const visitorsA = parseInt(a.getAttribute('data-visitors') || '0');
+        const visitorsB = parseInt(b.getAttribute('data-visitors') || '0');
+        return visitorsB - visitorsA;
+      }
+      if (sort === 'state') {
+        const stateA = a.querySelector('.text-gray-600.text-sm')?.textContent || '';
+        const stateB = b.querySelector('.text-gray-600.text-sm')?.textContent || '';
+        return stateA.localeCompare(stateB);
+      }
+      return 0;
+    });
+
+    // Update visibility and order
+    parkCards.forEach(card => {
+      (card as HTMLElement).style.display = 'none';
+    });
+
+    visibleCards.forEach(card => {
+      (card as HTMLElement).style.display = '';
+      parksGrid?.appendChild(card);
+    });
+
+    // Update count
+    if (resultsCount) {
+      resultsCount.textContent = String(visibleCards.length);
+    }
+  }
+
+  regionFilter?.addEventListener('change', filterAndSort);
+  difficultyFilter?.addEventListener('change', filterAndSort);
+  amenitiesFilter?.addEventListener('change', filterAndSort);
+  sortBy?.addEventListener('change', filterAndSort);
+</script>

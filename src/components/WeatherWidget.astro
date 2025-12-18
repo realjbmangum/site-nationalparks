@@ -1,0 +1,177 @@
+---
+interface Props {
+  latitude: number;
+  longitude: number;
+  parkName: string;
+}
+
+const { latitude, longitude, parkName } = Astro.props;
+---
+
+<div class="weather-widget bg-white rounded-xl shadow-md p-6" data-lat={latitude} data-lng={longitude}>
+  <h3 class="font-display font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+    </svg>
+    Current Weather
+  </h3>
+
+  <!-- Loading State -->
+  <div class="weather-loading flex items-center justify-center py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+
+  <!-- Weather Content (hidden until loaded) -->
+  <div class="weather-content hidden">
+    <!-- Current Weather -->
+    <div class="flex items-center gap-4 mb-6">
+      <div class="weather-icon text-5xl"></div>
+      <div>
+        <div class="text-4xl font-bold text-gray-900"><span class="current-temp">--</span>&deg;F</div>
+        <div class="text-gray-600 weather-condition">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Weather Details -->
+    <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+        <span class="text-gray-600">Wind:</span>
+        <span class="font-medium wind-speed">-- mph</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span class="text-gray-600">Humidity:</span>
+        <span class="font-medium humidity">--%</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+        <span class="text-gray-600">High:</span>
+        <span class="font-medium high-temp">--&deg;F</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+        <span class="text-gray-600">Low:</span>
+        <span class="font-medium low-temp">--&deg;F</span>
+      </div>
+    </div>
+
+    <!-- 5-Day Forecast -->
+    <h4 class="text-sm font-semibold text-gray-700 mb-3">5-Day Forecast</h4>
+    <div class="forecast-container grid grid-cols-5 gap-2 text-center text-sm">
+      <!-- Forecast days will be inserted here -->
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="weather-error hidden text-center py-4">
+    <p class="text-gray-500">Weather data unavailable</p>
+  </div>
+
+  <!-- Attribution -->
+  <p class="text-xs text-gray-400 mt-4 text-right">
+    Data from <a href="https://open-meteo.com" target="_blank" rel="noopener" class="hover:underline">Open-Meteo</a>
+  </p>
+</div>
+
+<script>
+  const weatherCodes: Record<number, { icon: string; condition: string }> = {
+    0: { icon: '☀️', condition: 'Clear sky' },
+    1: { icon: '🌤️', condition: 'Mainly clear' },
+    2: { icon: '⛅', condition: 'Partly cloudy' },
+    3: { icon: '☁️', condition: 'Overcast' },
+    45: { icon: '🌫️', condition: 'Foggy' },
+    48: { icon: '🌫️', condition: 'Depositing rime fog' },
+    51: { icon: '🌦️', condition: 'Light drizzle' },
+    53: { icon: '🌦️', condition: 'Moderate drizzle' },
+    55: { icon: '🌧️', condition: 'Dense drizzle' },
+    61: { icon: '🌧️', condition: 'Slight rain' },
+    63: { icon: '🌧️', condition: 'Moderate rain' },
+    65: { icon: '🌧️', condition: 'Heavy rain' },
+    71: { icon: '🌨️', condition: 'Slight snow' },
+    73: { icon: '🌨️', condition: 'Moderate snow' },
+    75: { icon: '❄️', condition: 'Heavy snow' },
+    77: { icon: '🌨️', condition: 'Snow grains' },
+    80: { icon: '🌦️', condition: 'Slight showers' },
+    81: { icon: '🌧️', condition: 'Moderate showers' },
+    82: { icon: '⛈️', condition: 'Violent showers' },
+    85: { icon: '🌨️', condition: 'Slight snow showers' },
+    86: { icon: '🌨️', condition: 'Heavy snow showers' },
+    95: { icon: '⛈️', condition: 'Thunderstorm' },
+    96: { icon: '⛈️', condition: 'Thunderstorm with hail' },
+    99: { icon: '⛈️', condition: 'Thunderstorm with heavy hail' },
+  };
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  document.querySelectorAll('.weather-widget').forEach(async (widget) => {
+    const lat = widget.getAttribute('data-lat');
+    const lng = widget.getAttribute('data-lng');
+
+    const loadingEl = widget.querySelector('.weather-loading');
+    const contentEl = widget.querySelector('.weather-content');
+    const errorEl = widget.querySelector('.weather-error');
+
+    try {
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=5`
+      );
+
+      if (!response.ok) throw new Error('Weather fetch failed');
+
+      const data = await response.json();
+
+      // Current weather
+      const current = data.current;
+      const weatherInfo = weatherCodes[current.weather_code] || { icon: '🌡️', condition: 'Unknown' };
+
+      widget.querySelector('.weather-icon')!.textContent = weatherInfo.icon;
+      widget.querySelector('.current-temp')!.textContent = Math.round(current.temperature_2m).toString();
+      widget.querySelector('.weather-condition')!.textContent = weatherInfo.condition;
+      widget.querySelector('.wind-speed')!.textContent = `${Math.round(current.wind_speed_10m)} mph`;
+      widget.querySelector('.humidity')!.textContent = `${current.relative_humidity_2m}%`;
+
+      // Today's high/low
+      const daily = data.daily;
+      widget.querySelector('.high-temp')!.textContent = `${Math.round(daily.temperature_2m_max[0])}\u00B0F`;
+      widget.querySelector('.low-temp')!.textContent = `${Math.round(daily.temperature_2m_min[0])}\u00B0F`;
+
+      // 5-day forecast
+      const forecastContainer = widget.querySelector('.forecast-container')!;
+      forecastContainer.innerHTML = '';
+
+      for (let i = 0; i < 5; i++) {
+        const date = new Date(daily.time[i]);
+        const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
+        const forecastWeather = weatherCodes[daily.weather_code[i]] || { icon: '🌡️' };
+
+        const dayEl = document.createElement('div');
+        dayEl.className = 'bg-gray-50 rounded-lg p-2';
+        dayEl.innerHTML = `
+          <div class="text-gray-600 text-xs mb-1">${dayName}</div>
+          <div class="text-2xl mb-1">${forecastWeather.icon}</div>
+          <div class="font-medium">${Math.round(daily.temperature_2m_max[i])}&deg;</div>
+          <div class="text-gray-400">${Math.round(daily.temperature_2m_min[i])}&deg;</div>
+        `;
+        forecastContainer.appendChild(dayEl);
+      }
+
+      // Show content, hide loading
+      loadingEl?.classList.add('hidden');
+      contentEl?.classList.remove('hidden');
+
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+      loadingEl?.classList.add('hidden');
+      errorEl?.classList.remove('hidden');
+    }
+  });
+</script>
