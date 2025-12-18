@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ParkCard from '../components/ParkCard.astro';
+import siteConfig from '../data/site-config.json';
+import { getFeaturedParks } from '../lib/supabase';
+
+// Fetch featured parks (most visited)
+const featuredParks = await getFeaturedParks(6);
+
+// Regions for browse section
+const regions = [
+  { name: 'West', slug: 'west', image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=600&q=80', count: 25 },
+  { name: 'Alaska', slug: 'alaska', image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600&q=80', count: 8 },
+  { name: 'Southeast', slug: 'southeast', image: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=600&q=80', count: 12 },
+  { name: 'Northeast', slug: 'northeast', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80', count: 4 },
+  { name: 'Midwest', slug: 'midwest', image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80', count: 7 },
+  { name: 'Islands', slug: 'islands', image: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&q=80', count: 7 },
+];
+
+// Schema for homepage
+const homeSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteConfig.name,
+  url: siteConfig.url,
+  description: siteConfig.description,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${siteConfig.url}/search?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+
+<BaseLayout schema={homeSchema}>
+  <!-- Hero Section -->
+  <section class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+      <img
+        src="https://images.unsplash.com/photo-1472396961693-142e6e269027?w=1920&q=80"
+        alt="Grand Canyon at sunset"
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+    </div>
+
+    <!-- Hero Content -->
+    <div class="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
+      <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 drop-shadow-lg">
+        Explore America's 63 National Parks
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-white/90 drop-shadow">
+        {siteConfig.tagline}
+      </p>
+
+      <!-- Search Bar -->
+      <div class="max-w-xl mx-auto mb-8">
+        <form action="/search" method="get" class="relative">
+          <input
+            type="text"
+            name="q"
+            placeholder="Search parks by name..."
+            class="w-full px-6 py-4 pl-14 rounded-full text-gray-900 text-lg shadow-xl focus:outline-none focus:ring-4 focus:ring-secondary"
+          />
+          <svg
+            class="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </form>
+      </div>
+
+      <!-- Quick Filter Buttons -->
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="/parks?filter=nearby" class="btn-secondary text-sm">
+          Near Me
+        </a>
+        <a href="/parks?filter=family" class="btn-secondary text-sm">
+          Best for Families
+        </a>
+        <a href="/parks?filter=quiet" class="btn-secondary text-sm">
+          Least Crowded
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="bg-primary text-white py-8">
+    <div class="container-site">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div>
+          <div class="text-4xl font-display font-bold text-secondary mb-1">63</div>
+          <div class="text-white/80">National Parks</div>
+        </div>
+        <div>
+          <div class="text-4xl font-display font-bold text-secondary mb-1">331M+</div>
+          <div class="text-white/80">Annual Visitors</div>
+        </div>
+        <div>
+          <div class="text-4xl font-display font-bold text-secondary mb-1">30</div>
+          <div class="text-white/80">States & Territories</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Parks Section -->
+  <section class="section-padding bg-gray-50">
+    <div class="container-site">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Popular Parks
+        </h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          Start your adventure with America's most beloved national parks
+        </p>
+      </div>
+
+      {featuredParks.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredParks.map((park) => (
+            <ParkCard park={park} />
+          ))}
+        </div>
+      ) : (
+        <!-- Placeholder cards when no data -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { name: 'Great Smoky Mountains', state: 'Tennessee, North Carolina', visitors: '12.9M' },
+            { name: 'Grand Canyon', state: 'Arizona', visitors: '6.4M' },
+            { name: 'Zion', state: 'Utah', visitors: '4.7M' },
+            { name: 'Yellowstone', state: 'Wyoming, Montana, Idaho', visitors: '4.9M' },
+            { name: 'Rocky Mountain', state: 'Colorado', visitors: '4.7M' },
+            { name: 'Acadia', state: 'Maine', visitors: '4.1M' },
+          ].map((park) => (
+            <div class="card">
+              <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
+                <img
+                  src={`https://source.unsplash.com/800x600/?${park.name.toLowerCase().replace(/\s/g, '-')},national-park`}
+                  alt={park.name}
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <span class="badge badge-family absolute top-3 left-3">Family Friendly</span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-1">{park.name}</h3>
+                <p class="text-gray-600 text-sm mb-2">{park.state}</p>
+                <p class="text-gray-500 text-sm">{park.visitors} visitors/year</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div class="text-center mt-10">
+        <a href="/parks" class="btn-primary">
+          View All 63 Parks
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Map Preview -->
+  <section class="section-padding bg-white">
+    <div class="container-site">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+            Explore the Map
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Find parks near you or plan your next road trip with our interactive map.
+            Filter by region, difficulty, and amenities to find your perfect park.
+          </p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-3 text-gray-700">
+              <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              All 63 national parks mapped
+            </li>
+            <li class="flex items-center gap-3 text-gray-700">
+              <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              Filter by difficulty and amenities
+            </li>
+            <li class="flex items-center gap-3 text-gray-700">
+              <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              Find parks near your location
+            </li>
+          </ul>
+          <a href="/map" class="btn-primary">
+            Open Interactive Map
+          </a>
+        </div>
+        <div class="relative aspect-[4/3] rounded-xl overflow-hidden shadow-xl">
+          <img
+            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80"
+            alt="Map preview showing national parks"
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+            <div class="bg-white rounded-lg px-6 py-3 shadow-lg">
+              <span class="text-primary font-semibold">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Browse by Region -->
+  <section class="section-padding bg-gray-50">
+    <div class="container-site">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Browse by Region
+        </h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+          Discover parks in your favorite part of the country
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        {regions.map((region) => (
+          <a
+            href={`/regions/${region.slug}`}
+            class="group relative aspect-[4/3] rounded-xl overflow-hidden shadow-md"
+          >
+            <img
+              src={region.image}
+              alt={`${region.name} national parks`}
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div class="absolute bottom-0 left-0 right-0 p-4">
+              <h3 class="font-display font-bold text-white text-lg md:text-xl">{region.name}</h3>
+              <p class="text-white/80 text-sm">{region.count} parks</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Signup -->
+  <section class="section-padding bg-secondary">
+    <div class="container-site">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Get Your Free Parks Checklist
+        </h2>
+        <p class="text-gray-800 mb-8">
+          Join our newsletter and receive a printable checklist of all 63 national parks,
+          plus trip planning tips and seasonal guides.
+        </p>
+        <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            required
+          />
+          <button type="submit" class="btn-primary whitespace-nowrap">
+            Get Free Checklist
+          </button>
+        </form>
+        <p class="text-gray-700 text-sm mt-4">
+          No spam, ever. Unsubscribe anytime.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,30 @@
+{
+  "name": "Best US National Parks",
+  "tagline": "Your guide to planning the perfect park adventure",
+  "description": "Explore America's 63 National Parks. Find detailed guides, interactive maps, and trip planning resources for every US National Park.",
+  "domain": "bestusnationalparks.com",
+  "url": "https://bestusnationalparks.com",
+  "contact": {
+    "email": "hello@bestusnationalparks.com"
+  },
+  "social": {
+    "instagram": "",
+    "pinterest": "",
+    "twitter": ""
+  },
+  "seo": {
+    "titleTemplate": "%s | Best US National Parks",
+    "defaultTitle": "Best US National Parks - Your Complete Guide to America's National Parks",
+    "defaultDescription": "Explore all 63 US National Parks with detailed guides, interactive maps, trip planning resources, and insider tips. Plan your perfect park adventure."
+  },
+  "stats": {
+    "parkCount": 63,
+    "annualVisitors": "331+ million",
+    "stateCount": "30 states + territories"
+  },
+  "features": {
+    "mapbox": true,
+    "search": true,
+    "newsletter": true
+  }
+}

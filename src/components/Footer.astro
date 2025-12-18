@@ -1,0 +1,113 @@
+---
+import siteConfig from '../data/site-config.json';
+
+const footerLinks = {
+  explore: [
+    { href: '/parks', label: 'All Parks' },
+    { href: '/map', label: 'Interactive Map' },
+    { href: '/states', label: 'Parks by State' },
+    { href: '/regions', label: 'Parks by Region' },
+  ],
+  plan: [
+    { href: '/guides', label: 'Trip Guides' },
+    { href: '/gear', label: 'Gear Guides' },
+    { href: '/itineraries', label: 'Road Trips' },
+    { href: '/tips', label: 'Pro Tips' },
+  ],
+  about: [
+    { href: '/about', label: 'About Us' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/submit', label: 'Submit a Tip' },
+    { href: '/privacy', label: 'Privacy Policy' },
+    { href: '/terms', label: 'Terms of Service' },
+  ],
+};
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-primary text-white">
+  <div class="container-site section-padding">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <svg class="w-8 h-8 text-secondary" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="font-display text-xl font-bold">{siteConfig.name}</span>
+        </a>
+        <p class="text-white/80 text-sm mb-6">
+          {siteConfig.tagline}
+        </p>
+        <p class="text-white/60 text-sm">
+          Not affiliated with the National Park Service. This is an independent travel resource.
+        </p>
+      </div>
+
+      <!-- Explore Links -->
+      <div>
+        <h3 class="font-display text-lg font-semibold mb-4">Explore</h3>
+        <ul class="space-y-2">
+          {footerLinks.explore.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-white/80 hover:text-secondary transition-colors text-sm"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Plan Links -->
+      <div>
+        <h3 class="font-display text-lg font-semibold mb-4">Plan Your Trip</h3>
+        <ul class="space-y-2">
+          {footerLinks.plan.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-white/80 hover:text-secondary transition-colors text-sm"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- About Links -->
+      <div>
+        <h3 class="font-display text-lg font-semibold mb-4">About</h3>
+        <ul class="space-y-2">
+          {footerLinks.about.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-white/80 hover:text-secondary transition-colors text-sm"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white/60 text-sm">
+        &copy; {currentYear} {siteConfig.name}. All rights reserved.
+      </p>
+      <p class="text-white/60 text-xs">
+        <a href="/affiliate-disclosure" class="hover:text-secondary transition-colors">
+          Affiliate Disclosure
+        </a>
+        : Some links on this site may earn us a commission at no extra cost to you.
+      </p>
+    </div>
+  </div>
+</footer>

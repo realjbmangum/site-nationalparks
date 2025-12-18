@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ParkCard from '../../components/ParkCard.astro';
+import { getAllParks } from '../../lib/supabase';
+
+const allParks = await getAllParks();
+
+// If no data from Supabase, use placeholder data
+const placeholderParks = [
+  { name: 'Great Smoky Mountains', slug: 'great-smoky-mountains', state: 'Tennessee', annual_visitors: 12900000, difficulty: 'family' as const },
+  { name: 'Grand Canyon', slug: 'grand-canyon', state: 'Arizona', annual_visitors: 6400000, difficulty: 'moderate' as const },
+  { name: 'Zion', slug: 'zion', state: 'Utah', annual_visitors: 4700000, difficulty: 'challenging' as const },
+  { name: 'Yellowstone', slug: 'yellowstone', state: 'Wyoming', annual_visitors: 4900000, difficulty: 'family' as const },
+  { name: 'Rocky Mountain', slug: 'rocky-mountain', state: 'Colorado', annual_visitors: 4700000, difficulty: 'moderate' as const },
+  { name: 'Acadia', slug: 'acadia', state: 'Maine', annual_visitors: 4100000, difficulty: 'family' as const },
+  { name: 'Yosemite', slug: 'yosemite', state: 'California', annual_visitors: 3900000, difficulty: 'moderate' as const },
+  { name: 'Grand Teton', slug: 'grand-teton', state: 'Wyoming', annual_visitors: 3500000, difficulty: 'moderate' as const },
+  { name: 'Glacier', slug: 'glacier', state: 'Montana', annual_visitors: 3100000, difficulty: 'challenging' as const },
+  { name: 'Joshua Tree', slug: 'joshua-tree', state: 'California', annual_visitors: 3000000, difficulty: 'moderate' as const },
+];
+
+const parks = allParks.length > 0 ? allParks : placeholderParks;
+---
+
+<BaseLayout
+  title="All 63 National Parks"
+  description="Explore all 63 US National Parks. Find detailed guides, photos, and trip planning information for every park."
+>
+  <section class="bg-primary text-white py-16">
+    <div class="container-site text-center">
+      <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+        All National Parks
+      </h1>
+      <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        Discover America's 63 national parks. Use the filters below to find your perfect park adventure.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-padding bg-gray-50">
+    <div class="container-site">
+      <!-- Filters -->
+      <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div class="grid md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+            <select class="input-field" id="filter-region">
+              <option value="">All Regions</option>
+              <option value="west">West</option>
+              <option value="alaska">Alaska</option>
+              <option value="southeast">Southeast</option>
+              <option value="northeast">Northeast</option>
+              <option value="midwest">Midwest</option>
+              <option value="islands">Islands</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+            <select class="input-field" id="filter-difficulty">
+              <option value="">All Difficulties</option>
+              <option value="family">Family Friendly</option>
+              <option value="moderate">Moderate</option>
+              <option value="challenging">Challenging</option>
+              <option value="expert">Expert</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
+            <select class="input-field" id="filter-amenities">
+              <option value="">All Amenities</option>
+              <option value="camping">Camping</option>
+              <option value="lodging">In-Park Lodging</option>
+              <option value="rv">RV Facilities</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+            <select class="input-field" id="sort-by">
+              <option value="name">Name (A-Z)</option>
+              <option value="visitors">Most Visited</option>
+              <option value="state">State</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <p class="text-gray-600 mb-6">
+        Showing <span class="font-semibold">{parks.length}</span> of 63 national parks
+      </p>
+
+      <!-- Parks Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="parks-grid">
+        {parks.map((park) => (
+          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty}>
+            <a href={`/parks/${park.slug}`} class="block">
+              <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
+                <img
+                  src={park.photo_url || `https://source.unsplash.com/800x600/?${park.name.toLowerCase().replace(/\s/g, '-')},national-park`}
+                  alt={park.name}
+                  class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                />
+                <span class={`badge absolute top-3 left-3 badge-${park.difficulty || 'moderate'}`}>
+                  {park.difficulty === 'family' ? 'Family Friendly' :
+                   park.difficulty === 'challenging' ? 'Challenging' :
+                   park.difficulty === 'expert' ? 'Expert' : 'Moderate'}
+                </span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-1 hover:text-primary transition-colors">
+                  {park.name}
+                </h3>
+                <p class="text-gray-600 text-sm mb-2">{park.state}</p>
+                <p class="text-gray-500 text-sm">
+                  {park.annual_visitors >= 1000000
+                    ? `${(park.annual_visitors / 1000000).toFixed(1)}M visitors/year`
+                    : `${Math.round(park.annual_visitors / 1000)}K visitors/year`}
+                </p>
+              </div>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,301 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllParks, getParkBySlug, type ParkLocation } from '../../lib/supabase';
+import siteConfig from '../../data/site-config.json';
+
+export async function getStaticPaths() {
+  const parks = await getAllParks();
+  return parks.map((park) => ({
+    params: { slug: park.slug },
+    props: { park },
+  }));
+}
+
+interface Props {
+  park: ParkLocation;
+}
+
+const { park } = Astro.props;
+
+if (!park) {
+  return Astro.redirect('/404');
+}
+
+// Difficulty badge helper
+const difficultyConfig: Record<string, { class: string; label: string }> = {
+  family: { class: 'badge-family', label: 'Family Friendly' },
+  moderate: { class: 'badge-moderate', label: 'Moderate' },
+  challenging: { class: 'badge-challenging', label: 'Challenging' },
+  expert: { class: 'badge-expert', label: 'Expert' },
+};
+
+const difficulty = difficultyConfig[park.difficulty] || difficultyConfig.moderate;
+
+// Format visitor count
+function formatVisitors(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}M`;
+  }
+  if (count >= 1000) {
+    return `${Math.round(count / 1000)}K`;
+  }
+  return count.toString();
+}
+
+// Schema.org markup for TouristAttraction
+const parkSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: `${park.name} National Park`,
+  description: park.description || park.ai_description,
+  image: park.photo_url,
+  url: `${siteConfig.url}/parks/${park.slug}`,
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: park.latitude,
+    longitude: park.longitude,
+  },
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: park.state,
+    addressCountry: 'US',
+  },
+  publicAccess: true,
+  isAccessibleForFree: park.entrance_fee === 0,
+  sameAs: park.nps_url,
+};
+
+const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&q=80';
+---
+
+<BaseLayout
+  title={`${park.name} National Park`}
+  description={park.description || `Explore ${park.name} National Park in ${park.state}. Plan your visit with guides, tips, and essential information.`}
+  image={park.photo_url || defaultImage}
+  schema={parkSchema}
+>
+  <!-- Hero Section -->
+  <section class="relative h-[60vh] md:h-[70vh] overflow-hidden">
+    <img
+      src={park.photo_url || defaultImage}
+      alt={`${park.name} National Park`}
+      class="w-full h-full object-cover"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+    <!-- Breadcrumb & Title -->
+    <div class="absolute bottom-0 left-0 right-0 p-6 md:p-12">
+      <div class="container-site">
+        <nav class="text-white/80 text-sm mb-4">
+          <a href="/" class="hover:text-white">Home</a>
+          <span class="mx-2">/</span>
+          <a href="/parks" class="hover:text-white">Parks</a>
+          <span class="mx-2">/</span>
+          <a href={`/states/${park.state.toLowerCase().replace(/\s/g, '-')}`} class="hover:text-white">{park.state}</a>
+        </nav>
+        <h1 class="text-4xl md:text-6xl font-display font-bold text-white mb-4">
+          {park.name}
+        </h1>
+        <div class="flex flex-wrap items-center gap-4">
+          <span class={`badge ${difficulty.class}`}>{difficulty.label}</span>
+          <span class="text-white/90">{park.state}</span>
+          {park.states && park.states.length > 1 && (
+            <span class="text-white/70 text-sm">
+              Also in: {park.states.filter(s => s !== park.state).join(', ')}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container-site section-padding">
+    <div class="grid lg:grid-cols-3 gap-12">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-12">
+        <!-- Overview -->
+        <section>
+          <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Overview</h2>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            {park.description || park.ai_description || `${park.name} National Park is located in ${park.state} and welcomes millions of visitors each year.`}
+          </p>
+        </section>
+
+        <!-- Things to Do -->
+        {park.things_to_do && park.things_to_do.length > 0 && (
+          <section>
+            <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Things to Do</h2>
+            <ul class="grid md:grid-cols-2 gap-3">
+              {park.things_to_do.map((activity) => (
+                <li class="flex items-start gap-3 text-gray-700">
+                  <svg class="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                  {activity}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <!-- Wildlife -->
+        {park.wildlife && park.wildlife.length > 0 && (
+          <section>
+            <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Wildlife</h2>
+            <p class="text-gray-600 mb-4">Keep an eye out for these animals during your visit:</p>
+            <div class="flex flex-wrap gap-2">
+              {park.wildlife.map((animal) => (
+                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                  {animal}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- Insider Tips -->
+        {park.insider_tips && park.insider_tips.length > 0 && (
+          <section class="bg-secondary/10 rounded-xl p-6">
+            <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Pro Tips</h2>
+            <ul class="space-y-3">
+              {park.insider_tips.map((tip) => (
+                <li class="flex items-start gap-3 text-gray-700">
+                  <span class="text-secondary text-xl">💡</span>
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <!-- Weather Notes -->
+        {park.weather_notes && (
+          <section>
+            <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Weather & Best Time to Visit</h2>
+            <p class="text-gray-700">{park.weather_notes}</p>
+            {park.best_seasons && park.best_seasons.length > 0 && (
+              <div class="mt-4">
+                <span class="text-sm text-gray-600">Best seasons: </span>
+                <span class="font-medium">{park.best_seasons.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}</span>
+              </div>
+            )}
+          </section>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-1">
+        <div class="sticky top-24 space-y-6">
+          <!-- Quick Facts Card -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Quick Facts</h3>
+            <dl class="space-y-4 text-sm">
+              <div class="flex justify-between">
+                <dt class="text-gray-600">State</dt>
+                <dd class="font-medium text-gray-900">{park.state}</dd>
+              </div>
+              {park.established && (
+                <div class="flex justify-between">
+                  <dt class="text-gray-600">Established</dt>
+                  <dd class="font-medium text-gray-900">{new Date(park.established).getFullYear()}</dd>
+                </div>
+              )}
+              {park.size_acres && (
+                <div class="flex justify-between">
+                  <dt class="text-gray-600">Size</dt>
+                  <dd class="font-medium text-gray-900">{park.size_acres.toLocaleString()} acres</dd>
+                </div>
+              )}
+              <div class="flex justify-between">
+                <dt class="text-gray-600">Annual Visitors</dt>
+                <dd class="font-medium text-gray-900">{formatVisitors(park.annual_visitors)}</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-gray-600">Entrance Fee</dt>
+                <dd class="font-medium text-gray-900">
+                  {park.entrance_fee === 0 ? 'Free' : `$${park.entrance_fee}`}
+                </dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-gray-600">Reservations</dt>
+                <dd class="font-medium text-gray-900">
+                  {park.reservation_required ? 'Required' : 'Not required'}
+                </dd>
+              </div>
+            </dl>
+
+            {/* Directions Button */}
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${park.latitude},${park.longitude}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-primary w-full mt-6 flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Get Directions
+            </a>
+          </div>
+
+          <!-- Amenities Card -->
+          {park.features && (
+            <div class="bg-white rounded-xl shadow-md p-6">
+              <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Amenities</h3>
+              <ul class="space-y-3">
+                {park.features.camping && (
+                  <li class="flex items-center gap-3 text-gray-700">
+                    <span class="text-xl">⛺</span> Camping Available
+                  </li>
+                )}
+                {park.features.lodging && (
+                  <li class="flex items-center gap-3 text-gray-700">
+                    <span class="text-xl">🏨</span> In-Park Lodging
+                  </li>
+                )}
+                {park.features.rv_facilities && (
+                  <li class="flex items-center gap-3 text-gray-700">
+                    <span class="text-xl">🚐</span> RV Facilities
+                  </li>
+                )}
+                {park.features.wheelchair_accessible && (
+                  <li class="flex items-center gap-3 text-gray-700">
+                    <span class="text-xl">♿</span> Wheelchair Accessible
+                  </li>
+                )}
+                {park.features.dog_friendly && (
+                  <li class="flex items-center gap-3 text-gray-700">
+                    <span class="text-xl">🐕</span> Dog-Friendly Trails
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          <!-- Official Link -->
+          {park.nps_url && (
+            <a
+              href={park.nps_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block bg-primary/5 rounded-xl p-6 hover:bg-primary/10 transition-colors"
+            >
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">Official NPS Page</div>
+                  <div class="text-sm text-gray-600">nps.gov</div>
+                </div>
+              </div>
+            </a>
+          )}
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

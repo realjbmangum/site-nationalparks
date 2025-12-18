@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../data/site-config.json';
+---
+
+<BaseLayout
+  title="About Us"
+  description="Learn about Best US National Parks - your independent guide to exploring America's 63 national parks."
+>
+  <div class="section-padding bg-white">
+    <div class="container-site">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-6">
+          About {siteConfig.name}
+        </h1>
+
+        <div class="prose prose-lg max-w-none">
+          <p class="text-xl text-gray-600 mb-8">
+            We're passionate about helping people discover and explore America's incredible national parks.
+          </p>
+
+          <h2 class="font-display">Our Mission</h2>
+          <p>
+            Our mission is simple: make it easier for everyone to plan unforgettable national park adventures.
+            Whether you're a first-time visitor or a seasoned park enthusiast, we provide the tools and information
+            you need to make the most of your visit.
+          </p>
+
+          <h2 class="font-display">What We Offer</h2>
+          <ul>
+            <li><strong>Comprehensive Park Guides</strong> - Detailed information on all 63 US national parks</li>
+            <li><strong>Interactive Map</strong> - Find parks near you or plan your road trip route</li>
+            <li><strong>Trip Planning Resources</strong> - Best times to visit, what to pack, and insider tips</li>
+            <li><strong>Honest Reviews</strong> - Real experiences and recommendations from park visitors</li>
+          </ul>
+
+          <h2 class="font-display">Independent & Unbiased</h2>
+          <p>
+            {siteConfig.name} is an independent website and is not affiliated with the National Park Service
+            or any government agency. We're park enthusiasts who want to share our love of these incredible places.
+          </p>
+          <p>
+            We do earn commissions from some links on this site (like booking accommodations or gear), but this
+            never influences our recommendations. We only suggest products and services we genuinely believe will
+            help you have a better park experience.
+          </p>
+
+          <h2 class="font-display">Get In Touch</h2>
+          <p>
+            Have a question, tip, or suggestion? We'd love to hear from you! Visit our
+            <a href="/contact" class="link-primary">contact page</a> or
+            <a href="/submit" class="link-primary">submit a tip</a> about your favorite park.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose h2 {
+    @apply text-2xl font-bold text-gray-900 mt-10 mb-4;
+  }
+  .prose p {
+    @apply text-gray-700 mb-4;
+  }
+  .prose ul {
+    @apply list-disc list-inside mb-6 space-y-2;
+  }
+  .prose li {
+    @apply text-gray-700;
+  }
+</style>

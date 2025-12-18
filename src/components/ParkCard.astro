@@ -1,0 +1,126 @@
+---
+import type { ParkLocation } from '../lib/supabase';
+
+interface Props {
+  park: ParkLocation;
+  variant?: 'default' | 'compact' | 'featured';
+}
+
+const { park, variant = 'default' } = Astro.props;
+
+const difficultyColors: Record<string, string> = {
+  family: 'badge-family',
+  moderate: 'badge-moderate',
+  challenging: 'badge-challenging',
+  expert: 'badge-expert',
+};
+
+const difficultyLabels: Record<string, string> = {
+  family: 'Family Friendly',
+  moderate: 'Moderate',
+  challenging: 'Challenging',
+  expert: 'Expert',
+};
+
+// Format visitor count
+function formatVisitors(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}M visitors/year`;
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(0)}K visitors/year`;
+  }
+  return `${count} visitors/year`;
+}
+
+// Get feature tags (max 3)
+const featureTags: string[] = [];
+if (park.features?.camping) featureTags.push('Camping');
+if (park.features?.lodging) featureTags.push('Lodging');
+if (park.features?.rv_facilities) featureTags.push('RV Friendly');
+if (park.features?.wheelchair_accessible) featureTags.push('Accessible');
+if (park.reservation_required) featureTags.push('Reservations');
+const displayTags = featureTags.slice(0, 3);
+
+const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80';
+---
+
+<a
+  href={`/parks/${park.slug}`}
+  class:list={[
+    'card group block',
+    variant === 'featured' && 'lg:flex lg:flex-row',
+  ]}
+>
+  <!-- Image Container -->
+  <div
+    class:list={[
+      'relative overflow-hidden',
+      variant === 'featured' ? 'lg:w-1/2 aspect-[16/10] lg:aspect-auto' : 'aspect-[4/3]',
+    ]}
+  >
+    <img
+      src={park.photo_url || defaultImage}
+      alt={`${park.name} National Park`}
+      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      loading="lazy"
+    />
+
+    <!-- Difficulty Badge -->
+    <span
+      class:list={[
+        'badge absolute top-3 left-3',
+        difficultyColors[park.difficulty] || 'badge-moderate',
+      ]}
+    >
+      {difficultyLabels[park.difficulty] || 'Moderate'}
+    </span>
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+  </div>
+
+  <!-- Content -->
+  <div
+    class:list={[
+      'p-5',
+      variant === 'featured' && 'lg:w-1/2 lg:p-8 lg:flex lg:flex-col lg:justify-center',
+    ]}
+  >
+    <h3
+      class:list={[
+        'font-display font-bold text-gray-900 group-hover:text-primary transition-colors',
+        variant === 'featured' ? 'text-2xl lg:text-3xl mb-2' : 'text-lg mb-1',
+      ]}
+    >
+      {park.name}
+    </h3>
+
+    <p class="text-gray-600 text-sm mb-2">
+      {park.state}
+    </p>
+
+    {variant !== 'compact' && (
+      <p class="text-gray-500 text-sm mb-3">
+        {formatVisitors(park.annual_visitors)}
+      </p>
+    )}
+
+    {variant === 'featured' && park.description && (
+      <p class="text-gray-600 text-sm mb-4 line-clamp-3 hidden lg:block">
+        {park.description}
+      </p>
+    )}
+
+    <!-- Feature Tags -->
+    {displayTags.length > 0 && variant !== 'compact' && (
+      <div class="flex flex-wrap gap-2">
+        {displayTags.map((tag) => (
+          <span class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+</a>
