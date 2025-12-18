@@ -92,13 +92,12 @@ CREATE POLICY "Public insert contact" ON parks_contact_messages
 -- ===========================================
 -- REGISTER IN SITES TABLE
 -- ===========================================
-INSERT INTO sites (id, name, slug, table_name, submissions_table, site_type, domain)
+-- Note: 'slug' is derived from 'id' in the Directory Factory code
+INSERT INTO sites (id, name, table_name, site_type, domain)
 VALUES (
     'parks',
     'Best US National Parks',
-    'nationalparks',
     'parks_locations',
-    'parks_submissions',
     'place',
     'bestusnationalparks.com'
 );
