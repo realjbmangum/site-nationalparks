@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllParks } from '../lib/supabase';
+
+const parks = await getAllParks();
+
+// Convert parks to GeoJSON for Mapbox
+const parksGeoJSON = {
+  type: 'FeatureCollection',
+  features: parks.map(park => ({
+    type: 'Feature',
+    properties: {
+      id: park.id,
+      name: park.name,
+      slug: park.slug,
+      state: park.state,
+      difficulty: park.difficulty,
+      annual_visitors: park.annual_visitors,
+      photo_url: park.photo_url,
+      entrance_fee: park.entrance_fee,
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: [park.longitude, park.latitude],
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="Interactive Map"
+  description="Explore all 63 US National Parks on our interactive map. Find parks near you, filter by difficulty, and plan your next adventure."
+>
+  <div class="h-screen flex flex-col">
+    <!-- Header Bar -->
+    <div class="bg-white border-b px-4 py-3 flex items-center justify-between z-10">
+      <div>
+        <h1 class="text-xl font-display font-bold text-gray-900">National Parks Map</h1>
+        <p class="text-sm text-gray-600">Showing {parks.length} parks</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Filter Dropdown -->
+        <select id="difficulty-filter" class="text-sm border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary">
+          <option value="">All Difficulties</option>
+          <option value="family">Family Friendly</option>
+          <option value="moderate">Moderate</option>
+          <option value="challenging">Challenging</option>
+          <option value="expert">Expert</option>
+        </select>
+        <!-- Locate Me Button -->
+        <button id="locate-btn" class="flex items-center gap-2 text-sm bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Near Me
+        </button>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map" class="flex-grow"></div>
+  </div>
+
+  <!-- Mapbox CSS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
+</BaseLayout>
+
+<script define:vars={{ parksGeoJSON, mapboxToken: import.meta.env.PUBLIC_MAPBOX_TOKEN }}>
+  // Load Mapbox GL JS
+  const script = document.createElement('script');
+  script.src = 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js';
+  script.onload = initMap;
+  document.head.appendChild(script);
+
+  let map;
+  let markers = [];
+
+  function initMap() {
+    mapboxgl.accessToken = mapboxToken;
+
+    map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/outdoors-v12',
+      center: [-98.5795, 39.8283], // Center of US
+      zoom: 3.5,
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    map.on('load', () => {
+      // Add parks source
+      map.addSource('parks', {
+        type: 'geojson',
+        data: parksGeoJSON,
+        cluster: true,
+        clusterMaxZoom: 6,
+        clusterRadius: 50,
+      });
+
+      // Cluster circles
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'parks',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': '#1E4D2B',
+          'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 25, 40],
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff',
+        },
+      });
+
+      // Cluster count labels
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'parks',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 14,
+        },
+        paint: {
+          'text-color': '#ffffff',
+        },
+      });
+
+      // Individual park markers
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'parks',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': [
+            'match',
+            ['get', 'difficulty'],
+            'family', '#2563EB',
+            'moderate', '#D97706',
+            'challenging', '#EA580C',
+            'expert', '#DC2626',
+            '#1E4D2B', // default
+          ],
+          'circle-radius': 10,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff',
+        },
+      });
+
+      // Click on cluster to zoom
+      map.on('click', 'clusters', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource('parks').getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) return;
+          map.easeTo({
+            center: features[0].geometry.coordinates,
+            zoom: zoom,
+          });
+        });
+      });
+
+      // Click on park marker to show popup
+      map.on('click', 'unclustered-point', (e) => {
+        const props = e.features[0].properties;
+        const coords = e.features[0].geometry.coordinates.slice();
+
+        const difficultyColors = {
+          family: 'bg-blue-500',
+          moderate: 'bg-amber-500',
+          challenging: 'bg-orange-500',
+          expert: 'bg-red-500',
+        };
+
+        const difficultyLabels = {
+          family: 'Family Friendly',
+          moderate: 'Moderate',
+          challenging: 'Challenging',
+          expert: 'Expert',
+        };
+
+        const visitors = props.annual_visitors >= 1000000
+          ? `${(props.annual_visitors / 1000000).toFixed(1)}M`
+          : `${Math.round(props.annual_visitors / 1000)}K`;
+
+        const html = `
+          <div class="p-1 max-w-[250px]">
+            ${props.photo_url ? `<img src="${props.photo_url}" alt="${props.name}" class="w-full h-32 object-cover rounded-lg mb-2" />` : ''}
+            <h3 class="font-bold text-gray-900">${props.name}</h3>
+            <p class="text-sm text-gray-600 mb-2">${props.state}</p>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs px-2 py-1 rounded-full text-white ${difficultyColors[props.difficulty] || 'bg-green-700'}">
+                ${difficultyLabels[props.difficulty] || 'Moderate'}
+              </span>
+              <span class="text-xs text-gray-500">${visitors} visitors/yr</span>
+            </div>
+            <a href="/parks/${props.slug}" class="text-sm text-primary hover:underline font-medium">View Park Details →</a>
+          </div>
+        `;
+
+        new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
+          .setLngLat(coords)
+          .setHTML(html)
+          .addTo(map);
+      });
+
+      // Cursor changes
+      map.on('mouseenter', 'clusters', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'clusters', () => {
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('mouseenter', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    });
+
+    // Difficulty filter
+    document.getElementById('difficulty-filter').addEventListener('change', (e) => {
+      const difficulty = e.target.value;
+      if (difficulty) {
+        map.setFilter('unclustered-point', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'difficulty'], difficulty]]);
+      } else {
+        map.setFilter('unclustered-point', ['!', ['has', 'point_count']]);
+      }
+    });
+
+    // Locate me button
+    document.getElementById('locate-btn').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            map.flyTo({
+              center: [position.coords.longitude, position.coords.latitude],
+              zoom: 6,
+            });
+
+            // Add user marker
+            new mapboxgl.Marker({ color: '#F4A300' })
+              .setLngLat([position.coords.longitude, position.coords.latitude])
+              .setPopup(new mapboxgl.Popup().setHTML('<p class="font-medium">You are here</p>'))
+              .addTo(map);
+          },
+          (error) => {
+            alert('Could not get your location. Please enable location services.');
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser.');
+      }
+    });
+  }
+</script>
+
+<style>
+  .mapboxgl-popup-content {
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .mapboxgl-popup-close-button {
+    font-size: 18px;
+    padding: 4px 8px;
+  }
+</style>
