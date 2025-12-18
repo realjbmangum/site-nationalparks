@@ -4,6 +4,9 @@ import ParkCard from '../components/ParkCard.astro';
 import siteConfig from '../data/site-config.json';
 import { getFeaturedParks } from '../lib/supabase';
 
+// Server-side render for fresh data
+export const prerender = false;
+
 // Fetch featured parks (most visited)
 const featuredParks = await getFeaturedParks(6);
 

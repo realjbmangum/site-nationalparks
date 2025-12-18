@@ -3,6 +3,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ParkCard from '../../components/ParkCard.astro';
 import { getAllParks } from '../../lib/supabase';
 
+// Server-side render for fresh data
+export const prerender = false;
+
 const allParks = await getAllParks();
 
 // If no data from Supabase, use placeholder data

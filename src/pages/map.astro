@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getAllParks } from '../lib/supabase';
 
+// Server-side render for fresh data
+export const prerender = false;
+
 const parks = await getAllParks();
 
 // Convert parks to GeoJSON for Mapbox

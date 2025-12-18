@@ -1,21 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getAllParks, getParkBySlug, type ParkLocation } from '../../lib/supabase';
+import { getParkBySlug, type ParkLocation } from '../../lib/supabase';
 import siteConfig from '../../data/site-config.json';
 
-export async function getStaticPaths() {
-  const parks = await getAllParks();
-  return parks.map((park) => ({
-    params: { slug: park.slug },
-    props: { park },
-  }));
-}
+// Server-side render this page (fetch data on each request)
+export const prerender = false;
 
-interface Props {
-  park: ParkLocation;
-}
-
-const { park } = Astro.props;
+const { slug } = Astro.params;
+const park = await getParkBySlug(slug || '');
 
 if (!park) {
   return Astro.redirect('/404');
