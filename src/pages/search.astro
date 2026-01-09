@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ParkCard from '../components/ParkCard.astro';
+import { searchParks, getAllParks, type ParkLocation } from '../lib/supabase';
+
+// Get search query from URL
+const query = Astro.url.searchParams.get('q') || '';
+
+// Fetch results
+let parks: ParkLocation[] = [];
+let searchPerformed = false;
+
+if (query.trim()) {
+  searchPerformed = true;
+  parks = await searchParks(query);
+}
+
+// If no query, show popular parks as suggestions
+const suggestedParks = !searchPerformed ? await getAllParks() : [];
+---
+
+<BaseLayout
+  title={query ? `Search: ${query}` : 'Search Parks'}
+  description={query ? `Search results for "${query}" in US National Parks` : 'Search all 63 US National Parks by name'}
+>
+  <div class="section-padding bg-gray-50 min-h-screen">
+    <div class="container-site">
+      <!-- Search Header -->
+      <div class="max-w-2xl mx-auto text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-6">
+          Search Parks
+        </h1>
+
+        <!-- Search Form -->
+        <form action="/search" method="get" class="relative">
+          <input
+            type="text"
+            name="q"
+            value={query}
+            placeholder="Search by park name..."
+            aria-label="Search parks by name"
+            class="w-full px-6 py-4 pl-14 rounded-full text-gray-900 text-lg shadow-md border border-gray-200 focus:outline-none focus:ring-4 focus:ring-primary/30 focus:border-primary"
+          />
+          <svg
+            class="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <button
+            type="submit"
+            class="absolute right-2 top-1/2 -translate-y-1/2 btn-primary py-2 px-6"
+          >
+            Search
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Section -->
+      {searchPerformed && (
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-display font-semibold text-gray-900">
+              {parks.length > 0
+                ? `Found ${parks.length} park${parks.length === 1 ? '' : 's'} for "${query}"`
+                : `No parks found for "${query}"`
+              }
+            </h2>
+            {query && (
+              <a href="/search" class="text-primary hover:text-primary-light text-sm">
+                Clear search
+              </a>
+            )}
+          </div>
+
+          {parks.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {parks.map((park) => (
+                <ParkCard park={park} />
+              ))}
+            </div>
+          ) : (
+            <div class="bg-white rounded-xl shadow-md p-8 text-center">
+              <div class="text-6xl mb-4">🏔️</div>
+              <h3 class="text-xl font-display font-semibold text-gray-900 mb-2">
+                No parks found
+              </h3>
+              <p class="text-gray-600 mb-6">
+                Try searching for a different park name, or browse all parks.
+              </p>
+              <a href="/parks" class="btn-primary">
+                View All Parks
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <!-- Browse All (shown when no search) -->
+      {!searchPerformed && (
+        <div>
+          <h2 class="text-xl font-display font-semibold text-gray-900 mb-6">
+            Or browse all {suggestedParks.length} parks
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {suggestedParks.slice(0, 12).map((park) => (
+              <ParkCard park={park} />
+            ))}
+          </div>
+          {suggestedParks.length > 12 && (
+            <div class="text-center mt-8">
+              <a href="/parks" class="btn-primary">
+                View All {suggestedParks.length} Parks
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <!-- Quick Links -->
+      <div class="mt-16 pt-12 border-t border-gray-200">
+        <h2 class="text-xl font-display font-semibold text-gray-900 mb-6 text-center">
+          Popular Searches
+        </h2>
+        <div class="flex flex-wrap justify-center gap-3">
+          {['Yellowstone', 'Grand Canyon', 'Yosemite', 'Zion', 'Glacier', 'Acadia'].map((name) => (
+            <a
+              href={`/search?q=${encodeURIComponent(name)}`}
+              class="px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200 text-gray-700 hover:border-primary hover:text-primary transition-colors"
+            >
+              {name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

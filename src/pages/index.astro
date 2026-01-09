@@ -61,6 +61,7 @@ const homeSchema = {
             type="text"
             name="q"
             placeholder="Search parks by name..."
+            aria-label="Search parks by name"
             class="w-full px-6 py-4 pl-14 rounded-full text-gray-900 text-lg shadow-xl focus:outline-none focus:ring-4 focus:ring-secondary"
           />
           <svg
@@ -271,22 +272,62 @@ const homeSchema = {
           Join our newsletter and receive a printable checklist of all 63 national parks,
           plus trip planning tips and seasonal guides.
         </p>
-        <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input type="hidden" name="access_key" value={import.meta.env.PUBLIC_WEB3FORMS_KEY || ''} />
+          <input type="hidden" name="subject" value="New Newsletter Signup - Best US National Parks" />
+          <input type="hidden" name="from_name" value="National Parks Newsletter" />
+          <input type="checkbox" name="botcheck" class="hidden" />
           <input
             type="email"
+            name="email"
             placeholder="Enter your email"
+            aria-label="Email address for newsletter"
             class="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             required
           />
-          <button type="submit" class="btn-primary whitespace-nowrap">
+          <button type="submit" id="newsletter-btn" class="btn-primary whitespace-nowrap">
             Get Free Checklist
           </button>
         </form>
-        <p class="text-gray-700 text-sm mt-4">
+        <p id="newsletter-message" class="text-gray-700 text-sm mt-4">
           No spam, ever. Unsubscribe anytime.
         </p>
       </div>
     </div>
   </section>
 </BaseLayout>
-<!-- rebuild Wed Dec 17 22:55:25 EST 2025 -->
+
+<script>
+  const form = document.getElementById('newsletter-form') as HTMLFormElement;
+  const btn = document.getElementById('newsletter-btn') as HTMLButtonElement;
+  const message = document.getElementById('newsletter-message') as HTMLParagraphElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Signing up...';
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        message.textContent = "You're in! Check your email for the parks checklist.";
+        message.className = 'text-green-700 text-sm mt-4 font-medium';
+        form.reset();
+        btn.textContent = 'Subscribed!';
+      } else {
+        throw new Error('Failed to subscribe');
+      }
+    } catch (error) {
+      message.textContent = 'Something went wrong. Please try again.';
+      message.className = 'text-red-600 text-sm mt-4';
+      btn.disabled = false;
+      btn.textContent = 'Get Free Checklist';
+    }
+  });
+</script>
