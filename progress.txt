@@ -98,3 +98,48 @@ See `/tasks/marketing-plan-nationalparks.md` for full plan including:
 - Boolean fields use 0/1 instead of true/false
 - JSON parsing needed for array/object fields from D1
 - Must use SSR mode (output: 'server') for D1 access
+
+---
+
+## Session - January 27, 2026
+
+### Completed
+
+**Production Deployment:**
+- [x] Fixed wrangler.toml database name ("national-parks" not "parks_db")
+- [x] Initialized production D1 schema with d1-schema.sql
+- [x] Seeded production D1 database with 63 parks
+- [x] Configured D1 binding in Cloudflare Pages dashboard (DB → national-parks)
+- [x] Fixed esbuild compilation error in parks/index.astro (template literal issue)
+- [x] Deployed to Cloudflare Pages - site fully live
+
+**Build Fix:**
+- parks/index.astro had complex inline JSX that esbuild couldn't parse
+- Simplified to use ParkCard component instead of inline card rendering
+- Build now completes successfully
+
+### Files Changed
+- `wrangler.toml` - Fixed database_name to "national-parks"
+- `src/pages/parks/index.astro` - Simplified to use ParkCard component
+
+### Verified Working
+- Homepage: https://bestusnationalparks.com/
+- Parks listing: https://bestusnationalparks.com/parks
+- Individual parks: https://bestusnationalparks.com/parks/yellowstone
+- Region pages: https://bestusnationalparks.com/regions/west
+- State pages: https://bestusnationalparks.com/states/california
+- Map: https://bestusnationalparks.com/map
+
+### Next Steps
+- [ ] Set PUBLIC_WEB3FORMS_KEY in Cloudflare dashboard (for contact/submit forms)
+- [ ] Execute marketing plan (see tasks/marketing-plan-nationalparks.md)
+  - Set up Google Search Console
+  - Create Instagram account
+  - Create Pinterest account
+  - Create PDF checklist of 63 parks
+  - Join Facebook groups
+
+### Gotchas
+- Cloudflare Pages project name is "site-nationalparks" (not "site-nationalparks-directory")
+- D1 database name is "national-parks"
+- Must use --commit-dirty=true when deploying with uncommitted changes

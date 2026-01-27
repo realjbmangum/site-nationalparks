@@ -80,39 +80,9 @@ const parks = await getAllParks(db);
 
       <!-- Parks Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="parks-grid">
-        {parks.map((park) => {
-          const features = parseJsonObject<ParkFeatures>(park.features);
-          const amenitiesStr = features ? Object.entries(features).filter(([k, v]) => v).map(([k]) => k).join(',') : '';
-          return (
-          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty} data-visitors={park.annual_visitors} data-amenities={amenitiesStr}>
-            <a href={`/parks/${park.slug}`} class="block">
-              <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
-                <img
-                  src={park.photo_url || `https://source.unsplash.com/800x600/?${park.name.toLowerCase().replace(/\s/g, '-')},national-park`}
-                  alt={park.name}
-                  class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  loading="lazy"
-                />
-                <span class={`badge absolute top-3 left-3 badge-${park.difficulty || 'moderate'}`}>
-                  {park.difficulty === 'family' ? 'Family Friendly' :
-                   park.difficulty === 'challenging' ? 'Challenging' :
-                   park.difficulty === 'expert' ? 'Expert' : 'Moderate'}
-                </span>
-              </div>
-              <div class="p-5">
-                <h3 class="font-display font-bold text-lg text-gray-900 mb-1 hover:text-primary transition-colors">
-                  {park.name}
-                </h3>
-                <p class="text-gray-600 text-sm mb-2">{park.state}</p>
-                <p class="text-gray-500 text-sm">
-                  {park.annual_visitors >= 1000000
-                    ? `${(park.annual_visitors / 1000000).toFixed(1)}M visitors/year`
-                    : `${Math.round(park.annual_visitors / 1000)}K visitors/year`}
-                </p>
-              </div>
-            </a>
-          </div>
-        ); })}
+        {parks.map((park) => (
+          <ParkCard park={park} />
+        ))}
       </div>
     </div>
   </section>
