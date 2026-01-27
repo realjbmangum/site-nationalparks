@@ -207,6 +207,11 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
     <div class="grid lg:grid-cols-3 gap-12">
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-12">
+        <!-- Park News (Expanded by default) -->
+        {npsCode && (
+          <NewsReleasesWidget newsReleases={newsReleases} parkCode={npsCode} />
+        )}
+
         <!-- Overview -->
         <section>
           <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">Overview</h2>
@@ -243,11 +248,6 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
         <!-- Points of Interest -->
         {npsCode && (
           <PlacesSection places={places} parkCode={npsCode} />
-        )}
-
-        <!-- Park News -->
-        {npsCode && (
-          <NewsReleasesWidget newsReleases={newsReleases} parkCode={npsCode} />
         )}
 
         <!-- Wildlife -->

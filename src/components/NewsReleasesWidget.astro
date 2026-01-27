@@ -29,13 +29,55 @@ function formatDate(dateStr: string): string {
 
 {displayNews.length > 0 && (
   <section class="news-section">
-    <div class="section-header">
-      <h2 class="section-title">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="title-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/>
-        </svg>
-        Park News
-      </h2>
+    <button class="section-toggle" id="news-toggle" aria-expanded="true" aria-controls="news-content">
+      <div class="toggle-left">
+        <h2 class="section-title">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="title-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/>
+          </svg>
+          Park News
+        </h2>
+        <span class="item-count">{newsReleases.length} release{newsReleases.length !== 1 ? 's' : ''}</span>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="chevron-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+      </svg>
+    </button>
+
+    <div class="news-content expanded" id="news-content">
+      <div class="news-list">
+        {displayNews.map((news, index) => (
+          <a
+            href={news.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`news-item ${index < displayNews.length - 1 ? 'border-b' : ''}`}
+          >
+            <div class="news-text">
+              <h3 class="news-title">{news.title}</h3>
+              {news.abstract && (
+                <p class="news-abstract">
+                  {news.abstract.length > 100
+                    ? news.abstract.slice(0, 100) + '...'
+                    : news.abstract}
+                </p>
+              )}
+              <span class="news-date">{formatDate(news.releaseDate)}</span>
+            </div>
+
+            {news.image?.url && (
+              <div class="news-image">
+                <img
+                  src={news.image.url}
+                  alt={news.image.altText || news.title}
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+
       {newsReleases.length > 3 && (
         <a
           href={`https://www.nps.gov/${parkCode}/learn/news/newsreleases.htm`}
@@ -43,59 +85,60 @@ function formatDate(dateStr: string): string {
           rel="noopener noreferrer"
           class="view-all-link"
         >
-          All News
+          View All {newsReleases.length} News Releases
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="arrow-icon">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
           </svg>
         </a>
       )}
     </div>
-
-    <div class="news-list">
-      {displayNews.map((news, index) => (
-        <a
-          href={news.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class={`news-item ${index < displayNews.length - 1 ? 'border-b' : ''}`}
-        >
-          <div class="news-content">
-            <h3 class="news-title">{news.title}</h3>
-            {news.abstract && (
-              <p class="news-abstract">
-                {news.abstract.length > 100
-                  ? news.abstract.slice(0, 100) + '...'
-                  : news.abstract}
-              </p>
-            )}
-            <span class="news-date">{formatDate(news.releaseDate)}</span>
-          </div>
-
-          {news.image?.url && (
-            <div class="news-image">
-              <img
-                src={news.image.url}
-                alt={news.image.altText || news.title}
-                loading="lazy"
-              />
-            </div>
-          )}
-        </a>
-      ))}
-    </div>
   </section>
 )}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('news-toggle');
+    const content = document.getElementById('news-content');
+
+    if (toggle && content) {
+      toggle.addEventListener('click', () => {
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        content.classList.toggle('expanded');
+      });
+    }
+  });
+</script>
 
 <style>
   .news-section {
     margin-top: 2rem;
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    overflow: hidden;
   }
 
-  .section-header {
+  .section-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+
+  .section-toggle:hover {
+    background: var(--color-gray-50, #f9fafb);
+  }
+
+  .toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
   .section-title {
@@ -103,30 +146,62 @@ function formatDate(dateStr: string): string {
     align-items: center;
     gap: 0.5rem;
     font-family: var(--font-display, 'Playfair Display', serif);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-gray-900, #111827);
     margin: 0;
   }
 
   .title-icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
     color: var(--color-primary, #1E4D2B);
+  }
+
+  .item-count {
+    font-size: 0.875rem;
+    color: var(--color-gray-500, #6b7280);
+  }
+
+  .chevron-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-gray-400, #9ca3af);
+    transition: transform 0.2s ease;
+  }
+
+  .section-toggle[aria-expanded="true"] .chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  .news-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .news-content.expanded {
+    max-height: 2000px;
   }
 
   .view-all-link {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.375rem;
+    margin: 0 1.25rem 1.25rem;
+    padding: 0.625rem 1rem;
+    background: rgba(30, 77, 43, 0.05);
     color: var(--color-primary, #1E4D2B);
+    border-radius: 0.375rem;
     font-size: 0.875rem;
     font-weight: 500;
     text-decoration: none;
+    transition: background-color 0.15s;
   }
 
   .view-all-link:hover {
-    text-decoration: underline;
+    background: rgba(30, 77, 43, 0.1);
   }
 
   .arrow-icon {
@@ -135,10 +210,12 @@ function formatDate(dateStr: string): string {
   }
 
   .news-list {
-    background: white;
-    border-radius: 0.75rem;
+    margin: 0 1.25rem;
+    background: var(--color-gray-50, #f9fafb);
+    border-radius: 0.5rem;
     border: 1px solid var(--color-gray-200, #e5e7eb);
     overflow: hidden;
+    margin-bottom: 1rem;
   }
 
   .news-item {
@@ -157,7 +234,7 @@ function formatDate(dateStr: string): string {
     border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
   }
 
-  .news-content {
+  .news-text {
     flex: 1;
     min-width: 0;
   }
