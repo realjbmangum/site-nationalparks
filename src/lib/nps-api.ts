@@ -114,6 +114,145 @@ export interface NPSEvent {
   }>;
 }
 
+export interface NPSVisitorCenter {
+  id: string;
+  name: string;
+  description: string;
+  parkCode: string;
+  directionsInfo: string;
+  directionsUrl: string;
+  addresses: Array<{
+    type: string;
+    line1: string;
+    line2: string;
+    line3: string;
+    city: string;
+    stateCode: string;
+    postalCode: string;
+  }>;
+  contacts: {
+    phoneNumbers: Array<{
+      phoneNumber: string;
+      description: string;
+      extension: string;
+      type: string;
+    }>;
+    emailAddresses: Array<{
+      emailAddress: string;
+      description: string;
+    }>;
+  };
+  operatingHours: Array<{
+    name: string;
+    description: string;
+    standardHours: {
+      sunday: string;
+      monday: string;
+      tuesday: string;
+      wednesday: string;
+      thursday: string;
+      friday: string;
+      saturday: string;
+    };
+    exceptions: Array<{
+      name: string;
+      startDate: string;
+      endDate: string;
+    }>;
+  }>;
+  images: Array<{
+    url: string;
+    altText: string;
+    caption: string;
+  }>;
+  url: string;
+  latLong: string;
+}
+
+export interface NPSWebcam {
+  id: string;
+  title: string;
+  description: string;
+  parkCode: string;
+  url: string;
+  images: Array<{
+    url: string;
+    altText: string;
+    caption: string;
+  }>;
+  status: string;
+  statusMessage: string;
+  isStreaming: boolean;
+  tags: string[];
+}
+
+export interface NPSThingToDo {
+  id: string;
+  title: string;
+  shortDescription: string;
+  longDescription: string;
+  parkCode: string;
+  url: string;
+  images: Array<{
+    url: string;
+    altText: string;
+    caption: string;
+  }>;
+  activities: Array<{
+    id: string;
+    name: string;
+  }>;
+  topics: Array<{
+    id: string;
+    name: string;
+  }>;
+  duration: string;
+  durationDescription: string;
+  accessibilityInformation: string;
+  petsDescription: string;
+  isReservationRequired: string;
+  feeDescription: string;
+  doFeesApply: string;
+  arePetsPermittedWithRestrictions: string;
+  location: string;
+  locationDescription: string;
+  season: string[];
+  timeOfDay: string[];
+  tags: string[];
+}
+
+export interface NPSPlace {
+  id: string;
+  title: string;
+  listingDescription: string;
+  bodyText: string;
+  parkCode: string;
+  url: string;
+  images: Array<{
+    url: string;
+    altText: string;
+    caption: string;
+  }>;
+  latLong: string;
+  amenities: string[];
+  isPassportStampLocation: string;
+  tags: string[];
+}
+
+export interface NPSNewsRelease {
+  id: string;
+  title: string;
+  abstract: string;
+  parkCode: string;
+  url: string;
+  releaseDate: string;
+  image: {
+    url: string;
+    altText: string;
+    caption: string;
+  };
+}
+
 interface NPSApiResponse<T> {
   total: string;
   limit: string;
@@ -191,6 +330,56 @@ export class NPSClient {
       parkCode,
       dateStart: today,
       limit: "20",
+    });
+  }
+
+  /**
+   * Get visitor centers for a park
+   */
+  async getVisitorCenters(parkCode: string): Promise<NPSVisitorCenter[]> {
+    return this.fetch<NPSVisitorCenter>("/visitorcenters", {
+      parkCode,
+      limit: "20",
+    });
+  }
+
+  /**
+   * Get webcams for a park
+   */
+  async getWebcams(parkCode: string): Promise<NPSWebcam[]> {
+    return this.fetch<NPSWebcam>("/webcams", {
+      parkCode,
+      limit: "20",
+    });
+  }
+
+  /**
+   * Get things to do at a park
+   */
+  async getThingsToDo(parkCode: string): Promise<NPSThingToDo[]> {
+    return this.fetch<NPSThingToDo>("/thingstodo", {
+      parkCode,
+      limit: "30",
+    });
+  }
+
+  /**
+   * Get places/points of interest at a park
+   */
+  async getPlaces(parkCode: string): Promise<NPSPlace[]> {
+    return this.fetch<NPSPlace>("/places", {
+      parkCode,
+      limit: "30",
+    });
+  }
+
+  /**
+   * Get news releases for a park
+   */
+  async getNewsReleases(parkCode: string): Promise<NPSNewsRelease[]> {
+    return this.fetch<NPSNewsRelease>("/newsreleases", {
+      parkCode,
+      limit: "10",
     });
   }
 }

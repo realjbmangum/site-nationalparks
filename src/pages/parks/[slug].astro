@@ -4,8 +4,24 @@ import WeatherWidget from '../../components/WeatherWidget.astro';
 import AlertBanner from '../../components/AlertBanner.astro';
 import CampgroundsSection from '../../components/CampgroundsSection.astro';
 import EventsWidget from '../../components/EventsWidget.astro';
+import VisitorCentersWidget from '../../components/VisitorCentersWidget.astro';
+import WebcamsLink from '../../components/WebcamsLink.astro';
+import ThingsToDoSection from '../../components/ThingsToDoSection.astro';
+import PlacesSection from '../../components/PlacesSection.astro';
+import NewsReleasesWidget from '../../components/NewsReleasesWidget.astro';
 import { getParkBySlug, parseJsonArray, parseJsonObject, type Park, type ParkFeatures } from '../../lib/db';
-import { NPSClient, extractNPSCode, type NPSAlert, type NPSCampground, type NPSEvent } from '../../lib/nps-api';
+import {
+  NPSClient,
+  extractNPSCode,
+  type NPSAlert,
+  type NPSCampground,
+  type NPSEvent,
+  type NPSVisitorCenter,
+  type NPSWebcam,
+  type NPSThingToDo,
+  type NPSPlace,
+  type NPSNewsRelease
+} from '../../lib/nps-api';
 import { getCachedNPSData } from '../../lib/nps-cache';
 import siteConfig from '../../data/site-config.json';
 
@@ -24,10 +40,15 @@ if (!park) {
 // Get NPS park code (from database or extract from URL)
 const npsCode = park.nps_code || extractNPSCode(park.nps_url);
 
-// Fetch NPS API data (alerts, campgrounds, events)
+// Fetch NPS API data
 let alerts: NPSAlert[] = [];
 let campgrounds: NPSCampground[] = [];
 let events: NPSEvent[] = [];
+let visitorCenters: NPSVisitorCenter[] = [];
+let webcams: NPSWebcam[] = [];
+let npsThingsToDo: NPSThingToDo[] = [];
+let places: NPSPlace[] = [];
+let newsReleases: NPSNewsRelease[] = [];
 
 // Only fetch NPS data if we have an API key and park code
 const npsApiKey = runtime.NPS_API_KEY;
@@ -37,7 +58,16 @@ if (npsApiKey && npsCode) {
   const npsClient = new NPSClient(npsApiKey);
 
   // Fetch all NPS data in parallel with caching
-  const [alertsData, campgroundsData, eventsData] = await Promise.all([
+  const [
+    alertsData,
+    campgroundsData,
+    eventsData,
+    visitorCentersData,
+    webcamsData,
+    thingsToDoData,
+    placesData,
+    newsReleasesData
+  ] = await Promise.all([
     getCachedNPSData<NPSAlert[]>(npsCache, 'alerts', npsCode, () =>
       npsClient.getAlerts(npsCode)
     ),
@@ -47,11 +77,31 @@ if (npsApiKey && npsCode) {
     getCachedNPSData<NPSEvent[]>(npsCache, 'events', npsCode, () =>
       npsClient.getEvents(npsCode)
     ),
+    getCachedNPSData<NPSVisitorCenter[]>(npsCache, 'visitorcenters', npsCode, () =>
+      npsClient.getVisitorCenters(npsCode)
+    ),
+    getCachedNPSData<NPSWebcam[]>(npsCache, 'webcams', npsCode, () =>
+      npsClient.getWebcams(npsCode)
+    ),
+    getCachedNPSData<NPSThingToDo[]>(npsCache, 'thingstodo', npsCode, () =>
+      npsClient.getThingsToDo(npsCode)
+    ),
+    getCachedNPSData<NPSPlace[]>(npsCache, 'places', npsCode, () =>
+      npsClient.getPlaces(npsCode)
+    ),
+    getCachedNPSData<NPSNewsRelease[]>(npsCache, 'newsreleases', npsCode, () =>
+      npsClient.getNewsReleases(npsCode)
+    ),
   ]);
 
   alerts = alertsData;
   campgrounds = campgroundsData;
   events = eventsData;
+  visitorCenters = visitorCentersData;
+  webcams = webcamsData;
+  npsThingsToDo = thingsToDoData;
+  places = placesData;
+  newsReleases = newsReleasesData;
 }
 
 // Parse JSON fields
@@ -185,6 +235,21 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
         <!-- Campgrounds -->
         <CampgroundsSection campgrounds={campgrounds} />
 
+        <!-- NPS Things To Do -->
+        {npsCode && (
+          <ThingsToDoSection thingsToDo={npsThingsToDo} parkCode={npsCode} />
+        )}
+
+        <!-- Points of Interest -->
+        {npsCode && (
+          <PlacesSection places={places} parkCode={npsCode} />
+        )}
+
+        <!-- Park News -->
+        {npsCode && (
+          <NewsReleasesWidget newsReleases={newsReleases} parkCode={npsCode} />
+        )}
+
         <!-- Wildlife -->
         {wildlife && wildlife.length > 0 && (
           <section>
@@ -294,6 +359,16 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
           <!-- Upcoming Events -->
           {npsCode && (
             <EventsWidget events={events} parkCode={npsCode} />
+          )}
+
+          <!-- Visitor Centers -->
+          {npsCode && (
+            <VisitorCentersWidget visitorCenters={visitorCenters} parkCode={npsCode} />
+          )}
+
+          <!-- Webcams Link -->
+          {npsCode && (
+            <WebcamsLink webcams={webcams} parkCode={npsCode} />
           )}
 
           <!-- Amenities Card -->

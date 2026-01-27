@@ -9,13 +9,18 @@
  * - Campgrounds: 4 hours (mostly static data)
  */
 
-type NPSDataType = "alerts" | "events" | "campgrounds";
+type NPSDataType = "alerts" | "events" | "campgrounds" | "visitorcenters" | "webcams" | "thingstodo" | "places" | "newsreleases";
 
 // Cache TTLs in seconds
 const CACHE_TTL: Record<NPSDataType, number> = {
   alerts: 15 * 60, // 15 minutes
   events: 2 * 60 * 60, // 2 hours
   campgrounds: 4 * 60 * 60, // 4 hours
+  visitorcenters: 24 * 60 * 60, // 24 hours (rarely changes)
+  webcams: 4 * 60 * 60, // 4 hours
+  thingstodo: 12 * 60 * 60, // 12 hours
+  places: 24 * 60 * 60, // 24 hours (rarely changes)
+  newsreleases: 1 * 60 * 60, // 1 hour
 };
 
 interface CacheEntry<T> {
