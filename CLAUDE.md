@@ -4,136 +4,147 @@
 
 - **Domain:** bestusnationalparks.com
 - **Type:** place directory
-- **Prefix:** parks (used for Supabase tables)
-- **Site ID:** parks (in `sites` table)
+- **Database:** Cloudflare D1 (`parks_db`)
 
 ---
 
-## Before Making Changes
-
-1. **Read the playbook:** `~/new-project/site-directory-factory/DIRECTORY-SITE-PLAYBOOK.md`
-2. **Verify architecture decisions** - especially per-site tables pattern
-3. **Never assume** - verify before recommending
-
----
-
-## Tech Stack (DO NOT CHANGE)
+## Tech Stack
 
 | Component | Technology | Notes |
 |-----------|------------|-------|
-| Framework | Astro | Static-first |
+| Framework | Astro | SSR mode with Cloudflare adapter |
 | Styling | Tailwind CSS | |
-| Database | Supabase | Per-site tables |
+| Database | Cloudflare D1 | SQLite-based, edge-native |
 | Hosting | Cloudflare Pages | Auto-deploy on push |
-| Forms | Web3Forms | Dual-write to Supabase |
-| DNS | Cloudflare | Proxied |
+| Maps | Mapbox | Interactive park map |
+| Forms | Web3Forms | Email notifications |
 
 ---
 
-## Supabase Tables
+## D1 Database
 
-This site uses:
-- `parks_locations` - All 63 national parks data
-- `parks_submissions` - User tips and corrections
-- `parks_contact_messages` - Contact form
+### Tables
+- `parks` - All 63 national parks
+- `submissions` - User tips and corrections
+- `contact_messages` - Contact form messages
+- `newsletter_subscribers` - Newsletter signups
 
-**DO NOT** create shared tables or use `site_id` columns.
+### Local Development
+```bash
+# Create D1 database
+npm run db:create
+
+# Initialize schema
+npm run db:init
+
+# Seed data
+npm run db:seed
+```
+
+### Production Commands
+```bash
+npm run db:init:prod
+npm run db:seed:prod
+```
+
+### Accessing D1 in Astro
+```typescript
+// In any .astro page
+const db = Astro.locals.runtime.env.DB;
+const parks = await getAllParks(db);
+```
 
 ---
 
 ## Environment Variables
 
-All env vars are in **Cloudflare Pages**, not local `.env` files:
-- `PUBLIC_SUPABASE_URL`
-- `PUBLIC_SUPABASE_ANON_KEY`
-- `PUBLIC_WEB3FORMS_KEY`
-- `PUBLIC_MAPBOX_TOKEN` (for interactive map)
+Set in **Cloudflare Pages dashboard**:
+- `PUBLIC_MAPBOX_TOKEN` - Map display
+- `PUBLIC_WEB3FORMS_KEY` - Form submissions
 
 ---
 
-## Form Handling
+## Project Structure
 
-All forms use Web3Forms + Supabase dual-write pattern:
-1. POST to Web3Forms (email notification)
-2. INSERT to Supabase `parks_submissions` or `parks_contact_messages`
+```
+site-nationalparks-directory/
+├── d1-schema.sql          # Database schema
+├── data/
+│   └── seed-parks.sql     # All 63 parks data
+├── src/
+│   ├── components/        # Reusable UI components
+│   ├── data/
+│   │   └── site-config.json
+│   ├── layouts/
+│   │   └── BaseLayout.astro
+│   ├── lib/
+│   │   └── db.ts          # D1 queries and types
+│   ├── pages/
+│   │   ├── index.astro    # Homepage
+│   │   ├── parks/
+│   │   │   ├── index.astro
+│   │   │   └── [slug].astro
+│   │   ├── regions/
+│   │   │   └── [slug].astro
+│   │   ├── states/
+│   │   │   └── [slug].astro
+│   │   ├── map.astro
+│   │   └── search.astro
+│   └── styles/
+│       └── global.css
+├── wrangler.toml          # D1 binding config
+└── astro.config.mjs       # Cloudflare adapter
+```
 
-See playbook for implementation pattern.
+---
+
+## Design System
+
+- **Primary:** #1E4D2B (NPS Green)
+- **Secondary:** #F4A300 (Golden Hour)
+- **Accent:** #5B3A29 (Earth Brown)
+- **Fonts:** Playfair Display (headings), Inter (body)
+
+---
+
+## Key Data Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `slug` | TEXT | URL-friendly name |
+| `name` | TEXT | Park name |
+| `state` | TEXT | Primary state |
+| `states` | JSON | All states (multi-state parks) |
+| `region` | TEXT | west/alaska/southeast/northeast/midwest/islands |
+| `annual_visitors` | INT | For popularity sorting |
+| `entrance_fee` | REAL | $0 for free parks |
+| `reservation_required` | INT | 0/1 boolean |
+| `difficulty` | TEXT | family/moderate/challenging/expert |
+| `features` | JSON | camping/lodging/rv/accessible/dogs |
+
+---
+
+## Regions
+
+| Slug | Name | Parks |
+|------|------|-------|
+| west | Western US | ~31 |
+| alaska | Alaska | 8 |
+| southeast | Southeast | 9 |
+| northeast | Northeast | 3 |
+| midwest | Midwest | 4 |
+| islands | Islands & Pacific | 4 |
 
 ---
 
 ## Deployment
 
-- Push to `main` → Cloudflare Pages auto-deploys
-- Deploy hook available in Directory Factory
-- Verify www → root redirect is configured
+1. Push to `main` → Cloudflare Pages auto-deploys
+2. D1 database ID must be configured in wrangler.toml
+3. Update database ID after running `npm run db:create`
 
 ---
 
-## Common Tasks
+## Session History
 
-### Add a new page
-1. Create in `src/pages/`
-2. Use `BaseLayout.astro`
-3. Include SEOHead component with unique title/description
-
-### Modify park listings display
-1. Check `src/lib/supabase.ts` for queries
-2. Update `ParkCard.astro` for card styling
-3. Modify `src/pages/parks/[slug].astro` for detail page
-
-### Update site config
-1. Edit `src/data/site-config.json`
-2. Colors, contact info, SEO settings
-
----
-
-## Site-Specific Context
-
-### Design System
-- **Primary color:** #1E4D2B (NPS Green)
-- **Secondary color:** #F4A300 (Golden Hour)
-- **Accent:** #5B3A29 (Earth Brown)
-- **Fonts:** Playfair Display (headings), Inter (body)
-
-### Content Priorities
-1. Top 10 most visited parks (content-complete)
-2. All 63 parks (basic info)
-3. State landing pages
-4. Guide/blog articles
-
-### Monetization (Future)
-- REI affiliate for America the Beautiful Pass
-- Booking.com for gateway town lodging
-- Viator for park tours
-- Amazon for guidebooks/gear
-
-### Data Fields (parks_locations)
-Key fields beyond standard location fields:
-- `annual_visitors` - for sorting by popularity
-- `entrance_fee` - $0 for free parks
-- `reservation_required` - boolean
-- `best_seasons` - array of seasons
-- `difficulty` - family/moderate/challenging/expert
-- `features` - JSONB for camping/lodging/rv/accessible/dogs
-- `things_to_do` - array of activities
-- `wildlife` - array of animals
-- `nps_url` - link to official NPS page
-
----
-
-## DO NOT
-
-- Change the tech stack
-- Use shared tables with site_id
-- Hardcode API keys in source (use CF env vars)
-- Skip the playbook when making architecture decisions
-- Create .env files (all env vars in Cloudflare)
-
----
-
-## Reference
-
-- Playbook: `~/new-project/site-directory-factory/DIRECTORY-SITE-PLAYBOOK.md`
-- Directory Factory: https://directory-factory.pages.dev
-- Site repo: `~/new-project/site-nationalparks-directory/`
-- Research docs: `national-parks-strategy.md`, `national-parks-checklist.md`
+See `progress.txt` for detailed session history.

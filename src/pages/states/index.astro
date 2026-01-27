@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getStatesWithCounts, stateNameToSlug } from '../../lib/db';
+
+// Get D1 database from Cloudflare runtime
+const db = Astro.locals.runtime.env.DB;
+
+// Get all states with park counts
+const states = await getStatesWithCounts(db);
+
+// Total parks
+const totalParks = states.reduce((sum, s) => sum + s.count, 0);
+---
+
+<BaseLayout
+  title="National Parks by State"
+  description={`Browse national parks across ${states.length} US states and territories. Find parks near you.`}
+>
+  <section class="bg-primary text-white py-16">
+    <div class="container-site text-center">
+      <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+        National Parks by State
+      </h1>
+      <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        Explore national parks in {states.length} states and territories across America
+      </p>
+    </div>
+  </section>
+
+  <section class="section-padding bg-gray-50">
+    <div class="container-site">
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+          <div class="text-3xl font-display font-bold text-primary">{totalParks}</div>
+          <div class="text-gray-600 text-sm">Total Parks</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+          <div class="text-3xl font-display font-bold text-primary">{states.length}</div>
+          <div class="text-gray-600 text-sm">States & Territories</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-6 text-center hidden md:block">
+          <div class="text-3xl font-display font-bold text-primary">
+            {Math.max(...states.map(s => s.count))}
+          </div>
+          <div class="text-gray-600 text-sm">Most Parks in One State</div>
+        </div>
+      </div>
+
+      <!-- States Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {states.map((state) => (
+          <a
+            href={`/states/${stateNameToSlug(state.state)}`}
+            class="bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow group"
+          >
+            <div class="flex items-center justify-between">
+              <h2 class="font-display font-bold text-gray-900 group-hover:text-primary transition-colors">
+                {state.state}
+              </h2>
+              <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                {state.count} park{state.count !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Map CTA -->
+      <div class="mt-12 text-center">
+        <p class="text-gray-600 mb-4">Want to see all parks on a map?</p>
+        <a href="/map" class="btn-primary">View Interactive Map</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getAllParks } from '../lib/supabase';
+import { getAllParks } from '../lib/db';
 
-const parks = await getAllParks();
+// Get D1 database from Cloudflare runtime
+const db = Astro.locals.runtime.env.DB;
+
+const parks = await getAllParks(db);
 
 // Convert parks to GeoJSON for Mapbox
 const parksGeoJSON = {

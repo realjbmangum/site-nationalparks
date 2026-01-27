@@ -1,0 +1,100 @@
+# National Parks Directory - Progress
+
+## Session - January 26, 2026
+
+### Completed
+
+**D1 Migration (Supabase → Cloudflare D1):**
+- Created `d1-schema.sql` with tables: parks, submissions, contact_messages, newsletter_subscribers
+- Created `data/seed-parks.sql` with all 63 national parks in D1-compatible format
+- Set up `wrangler.toml` with D1 binding configuration
+- Updated `astro.config.mjs` to use Cloudflare adapter with SSR
+- Created `src/lib/db.ts` with typed D1 queries and helper functions
+- Created `src/env.d.ts` for TypeScript definitions
+- Updated `package.json` - removed Supabase, added wrangler, added db scripts
+- Updated `CLAUDE.md` to reflect D1 setup
+
+**Page Conversions (Supabase → D1):**
+- `src/pages/index.astro` - Homepage with featured parks and regions
+- `src/pages/parks/index.astro` - All parks listing with filters
+- `src/pages/parks/[slug].astro` - Individual park detail pages
+- `src/pages/map.astro` - Interactive Mapbox map
+- `src/pages/search.astro` - Park search functionality
+- `src/pages/contact.astro` - Removed Supabase, kept Web3Forms
+- `src/pages/submit.astro` - Removed Supabase, kept Web3Forms
+
+**New Pages Created:**
+- `src/pages/regions/index.astro` - Browse all regions
+- `src/pages/regions/[slug].astro` - Individual region pages (west, alaska, southeast, northeast, midwest, islands)
+- `src/pages/states/index.astro` - Browse all states with park counts
+- `src/pages/states/[slug].astro` - Individual state pages
+
+**Components Updated:**
+- `src/components/ParkCard.astro` - Updated to use D1 types
+
+**Files Deleted:**
+- `src/lib/supabase.ts` - No longer needed
+
+### Files Changed
+- `d1-schema.sql` - New
+- `data/seed-parks.sql` - New
+- `wrangler.toml` - New
+- `astro.config.mjs` - Updated for SSR
+- `package.json` - Updated dependencies
+- `src/lib/db.ts` - New
+- `src/env.d.ts` - New
+- `src/pages/*.astro` - All converted to D1
+- `src/pages/regions/*.astro` - New
+- `src/pages/states/*.astro` - New
+- `src/components/ParkCard.astro` - Updated
+- `CLAUDE.md` - Updated
+
+### Decisions Made
+- Converted from Supabase to Cloudflare D1 for edge-native database
+- Changed from static site generation (SSG) to server-side rendering (SSR) for D1 compatibility
+- Removed Supabase from contact/submit forms, relying on Web3Forms for email notifications
+- JSON fields stored as TEXT in SQLite (vs JSONB in Postgres)
+- Added helper functions `parseJsonArray` and `parseJsonObject` for D1 JSON handling
+
+### Database Setup Commands
+```bash
+# Create D1 database (first time only)
+npm run db:create
+
+# Initialize schema locally
+npm run db:init
+
+# Seed data locally
+npm run db:seed
+
+# For production
+npm run db:init:prod
+npm run db:seed:prod
+```
+
+### Environment Variables Needed
+Set in Cloudflare Pages dashboard:
+- `PUBLIC_MAPBOX_TOKEN` - For interactive map
+- `PUBLIC_WEB3FORMS_KEY` - For contact/submit forms
+
+### Next Steps
+- [x] Create D1 database in Cloudflare dashboard (ID: ff199121-eb1b-4c5a-8a6c-8ae514705068)
+- [x] Update wrangler.toml with actual database ID
+- [ ] Run db:init:prod and db:seed:prod to populate production database
+- [ ] Test deployment on Cloudflare Pages
+- [ ] Set environment variables in Cloudflare dashboard (PUBLIC_WEB3FORMS_KEY)
+- [x] Run marketing skill to plan launch strategy (saved to tasks/marketing-plan-nationalparks.md)
+
+### Marketing Plan Created
+See `/tasks/marketing-plan-nationalparks.md` for full plan including:
+- Week 1 quick wins (social setup, PDF checklist, Reddit/Pinterest strategy)
+- SEO content strategy (comparison pages, city guides, long-tail keywords)
+- Community engagement (Reddit, Facebook groups, Pinterest)
+- Monetization setup (affiliates, AdSense, badge/merch system)
+- 30-60-90 day milestones
+
+### Gotchas
+- D1 uses SQLite syntax, not Postgres - ARRAY types become JSON TEXT
+- Boolean fields use 0/1 instead of true/false
+- JSON parsing needed for array/object fields from D1
+- Must use SSR mode (output: 'server') for D1 access

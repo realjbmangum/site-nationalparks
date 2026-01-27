@@ -1,8 +1,8 @@
 ---
-import type { ParkLocation } from '../lib/supabase';
+import { parseJsonObject, type Park, type ParkFeatures } from '../lib/db';
 
 interface Props {
-  park: ParkLocation;
+  park: Park;
   variant?: 'default' | 'compact' | 'featured';
 }
 
@@ -33,12 +33,15 @@ function formatVisitors(count: number): string {
   return `${count} visitors/year`;
 }
 
+// Parse features from JSON string
+const features = parseJsonObject<ParkFeatures>(park.features);
+
 // Get feature tags (max 3)
 const featureTags: string[] = [];
-if (park.features?.camping) featureTags.push('Camping');
-if (park.features?.lodging) featureTags.push('Lodging');
-if (park.features?.rv_facilities) featureTags.push('RV Friendly');
-if (park.features?.wheelchair_accessible) featureTags.push('Accessible');
+if (features?.camping) featureTags.push('Camping');
+if (features?.lodging) featureTags.push('Lodging');
+if (features?.rv_facilities) featureTags.push('RV Friendly');
+if (features?.wheelchair_accessible) featureTags.push('Accessible');
 if (park.reservation_required) featureTags.push('Reservations');
 const displayTags = featureTags.slice(0, 3);
 

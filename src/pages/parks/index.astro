@@ -1,25 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ParkCard from '../../components/ParkCard.astro';
-import { getAllParks } from '../../lib/supabase';
+import { getAllParks, parseJsonObject, type ParkFeatures } from '../../lib/db';
 
-const allParks = await getAllParks();
+// Get D1 database from Cloudflare runtime
+const db = Astro.locals.runtime.env.DB;
 
-// If no data from Supabase, use placeholder data
-const placeholderParks = [
-  { name: 'Great Smoky Mountains', slug: 'great-smoky-mountains', state: 'Tennessee', annual_visitors: 12900000, difficulty: 'family' as const },
-  { name: 'Grand Canyon', slug: 'grand-canyon', state: 'Arizona', annual_visitors: 6400000, difficulty: 'moderate' as const },
-  { name: 'Zion', slug: 'zion', state: 'Utah', annual_visitors: 4700000, difficulty: 'challenging' as const },
-  { name: 'Yellowstone', slug: 'yellowstone', state: 'Wyoming', annual_visitors: 4900000, difficulty: 'family' as const },
-  { name: 'Rocky Mountain', slug: 'rocky-mountain', state: 'Colorado', annual_visitors: 4700000, difficulty: 'moderate' as const },
-  { name: 'Acadia', slug: 'acadia', state: 'Maine', annual_visitors: 4100000, difficulty: 'family' as const },
-  { name: 'Yosemite', slug: 'yosemite', state: 'California', annual_visitors: 3900000, difficulty: 'moderate' as const },
-  { name: 'Grand Teton', slug: 'grand-teton', state: 'Wyoming', annual_visitors: 3500000, difficulty: 'moderate' as const },
-  { name: 'Glacier', slug: 'glacier', state: 'Montana', annual_visitors: 3100000, difficulty: 'challenging' as const },
-  { name: 'Joshua Tree', slug: 'joshua-tree', state: 'California', annual_visitors: 3000000, difficulty: 'moderate' as const },
-];
-
-const parks = allParks.length > 0 ? allParks : placeholderParks;
+const parks = await getAllParks(db);
 ---
 
 <BaseLayout
@@ -93,8 +80,11 @@ const parks = allParks.length > 0 ? allParks : placeholderParks;
 
       <!-- Parks Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="parks-grid">
-        {parks.map((park) => (
-          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty} data-visitors={park.annual_visitors} data-amenities={park.features ? Object.entries(park.features).filter(([k, v]) => v).map(([k]) => k).join(',') : ''}>
+        {parks.map((park) => {
+          const features = parseJsonObject<ParkFeatures>(park.features);
+          const amenitiesStr = features ? Object.entries(features).filter(([k, v]) => v).map(([k]) => k).join(',') : '';
+          return (
+          <div class="card" data-region={park.region?.toLowerCase()} data-difficulty={park.difficulty} data-visitors={park.annual_visitors} data-amenities={amenitiesStr}>
             <a href={`/parks/${park.slug}`} class="block">
               <div class="aspect-[4/3] bg-gray-200 relative overflow-hidden">
                 <img
@@ -122,7 +112,7 @@ const parks = allParks.length > 0 ? allParks : placeholderParks;
               </div>
             </a>
           </div>
-        ))}
+        ); })}
       </div>
     </div>
   </section>

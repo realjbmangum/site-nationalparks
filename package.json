@@ -1,18 +1,25 @@
 {
-  "name": "astro-temp",
+  "name": "site-nationalparks-directory",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:create": "wrangler d1 create parks_db",
+    "db:init": "wrangler d1 execute parks_db --file=d1-schema.sql",
+    "db:seed": "wrangler d1 execute parks_db --file=data/seed-parks.sql",
+    "db:init:prod": "wrangler d1 execute parks_db --file=d1-schema.sql --remote",
+    "db:seed:prod": "wrangler d1 execute parks_db --file=data/seed-parks.sql --remote"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/tailwind": "^6.0.2",
-    "@supabase/supabase-js": "^2.88.0",
     "astro": "^5.16.6",
     "tailwindcss": "^3.4.19"
+  },
+  "devDependencies": {
+    "wrangler": "^3.99.0"
   }
 }

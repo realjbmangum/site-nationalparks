@@ -1,22 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ParkCard from '../components/ParkCard.astro';
-import { searchParks, getAllParks, type ParkLocation } from '../lib/supabase';
+import { searchParks, getAllParks, type Park } from '../lib/db';
+
+// Get D1 database from Cloudflare runtime
+const db = Astro.locals.runtime.env.DB;
 
 // Get search query from URL
 const query = Astro.url.searchParams.get('q') || '';
 
 // Fetch results
-let parks: ParkLocation[] = [];
+let parks: Park[] = [];
 let searchPerformed = false;
 
 if (query.trim()) {
   searchPerformed = true;
-  parks = await searchParks(query);
+  parks = await searchParks(db, query);
 }
 
 // If no query, show popular parks as suggestions
-const suggestedParks = !searchPerformed ? await getAllParks() : [];
+const suggestedParks = !searchPerformed ? await getAllParks(db) : [];
 ---
 
 <BaseLayout
