@@ -19,4 +19,4 @@ PUBLIC_MAPBOX_TOKEN = "pk.eyJ1IjoiYm1hbmd1bTEiLCJhIjoiY21qazZzYjk4MXU2bTNkb2IzaD
 [[env.production.d1_databases]]
 database_id = "ff199121-eb1b-4c5a-8a6c-8ae514705068"
 binding = "DB"
-database_name = "parks_db"
+database_name = "national-parks"
