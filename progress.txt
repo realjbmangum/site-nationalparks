@@ -1,5 +1,26 @@
 # National Parks Directory - Progress
 
+## Current Status: LIVE
+
+**Site:** https://bestusnationalparks.com/
+**Database:** Cloudflare D1 (63 parks seeded)
+**Last Deploy:** January 27, 2026
+
+### Quick Reference
+| Resource | Location |
+|----------|----------|
+| Marketing Plan | `tasks/marketing-plan-nationalparks.md` |
+| Printful Plan | `tasks/printful-integration-plan.md` |
+| D1 Database ID | `ff199121-eb1b-4c5a-8a6c-8ae514705068` |
+| CF Pages Project | `site-nationalparks` |
+
+### Pending Actions
+- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
+- [ ] Create Printful account + get API key
+- [ ] Execute marketing plan Week 1 quick wins
+
+---
+
 ## Session - January 26, 2026
 
 ### Completed
@@ -80,8 +101,8 @@ Set in Cloudflare Pages dashboard:
 ### Next Steps
 - [x] Create D1 database in Cloudflare dashboard (ID: ff199121-eb1b-4c5a-8a6c-8ae514705068)
 - [x] Update wrangler.toml with actual database ID
-- [ ] Run db:init:prod and db:seed:prod to populate production database
-- [ ] Test deployment on Cloudflare Pages
+- [x] Run db:init:prod and db:seed:prod to populate production database (completed Jan 27)
+- [x] Test deployment on Cloudflare Pages (completed Jan 27 - all pages returning 200)
 - [ ] Set environment variables in Cloudflare dashboard (PUBLIC_WEB3FORMS_KEY)
 - [x] Run marketing skill to plan launch strategy (saved to tasks/marketing-plan-nationalparks.md)
 
@@ -138,6 +159,19 @@ See `/tasks/marketing-plan-nationalparks.md` for full plan including:
   - Create Pinterest account
   - Create PDF checklist of 63 parks
   - Join Facebook groups
+- [ ] Printful integration for badge merchandise (see tasks/printful-integration-plan.md)
+  - [ ] Create Printful account + Manual/API store
+  - [ ] Get API key → add to Cloudflare env vars
+  - [ ] Build batch sync script
+  - [ ] Create /shop pages on Astro site
+
+### Printful Merchandise Plan Created
+See `tasks/printful-integration-plan.md` for full plan including:
+- Batch upload 63 badges → 315 products (mugs, shirts, stickers, posters, totes)
+- /shop pages on Astro fetching from Printful API
+- Direct checkout via Printful (zero fulfillment work)
+- Revenue projections: $125-$2,625/month depending on traffic
+- Prerequisites: Create Printful account, get API key
 
 ### Gotchas
 - Cloudflare Pages project name is "site-nationalparks" (not "site-nationalparks-directory")
