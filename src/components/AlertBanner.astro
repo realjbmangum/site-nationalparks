@@ -1,0 +1,155 @@
+---
+/**
+ * Alert Banner Component
+ *
+ * Displays active NPS alerts at the top of park detail pages.
+ * Color-coded by severity:
+ * - Danger (red): Fire, bear activity, extreme weather
+ * - Park Closure (orange): Road/trail closures
+ * - Caution (yellow): Construction, limited services
+ * - Information (blue): General announcements
+ */
+import type { NPSAlert } from '../lib/nps-api';
+import { getAlertColors, getAlertSeverity } from '../lib/nps-api';
+
+interface Props {
+  alerts: NPSAlert[];
+}
+
+const { alerts } = Astro.props;
+
+// Sort alerts by severity (most severe first)
+const sortedAlerts = [...alerts].sort((a, b) => {
+  return getAlertSeverity(b.category) - getAlertSeverity(a.category);
+});
+
+// Limit to top 3 alerts to avoid overwhelming the page
+const displayAlerts = sortedAlerts.slice(0, 3);
+
+// Alert icon SVG by category
+const alertIcons: Record<string, string> = {
+  'Danger': `<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>`,
+  'Park Closure': `<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>`,
+  'Caution': `<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>`,
+  'Information': `<path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>`,
+};
+---
+
+{displayAlerts.length > 0 && (
+  <div class="alert-banner-container">
+    {displayAlerts.map((alert) => {
+      const colors = getAlertColors(alert.category);
+      const icon = alertIcons[alert.category] || alertIcons['Information'];
+
+      return (
+        <div class={`alert-banner ${colors.bg} ${colors.text}`}>
+          <div class="alert-banner-content">
+            <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" set:html={icon} />
+
+            <div class="alert-text">
+              <span class="alert-category">{alert.category}:</span>
+              <span class="alert-title">{alert.title}</span>
+            </div>
+
+            {alert.url && (
+              <a
+                href={alert.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="alert-link"
+              >
+                Details
+                <svg class="link-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                </svg>
+              </a>
+            )}
+          </div>
+        </div>
+      );
+    })}
+
+    {alerts.length > 3 && (
+      <div class="alert-more bg-gray-100 text-gray-700">
+        <span>+{alerts.length - 3} more alerts</span>
+      </div>
+    )}
+  </div>
+)}
+
+<style>
+  .alert-banner-container {
+    width: 100%;
+  }
+
+  .alert-banner {
+    padding: 0.75rem 1rem;
+  }
+
+  .alert-banner-content {
+    max-width: 80rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .alert-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .alert-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert-category {
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+
+  .alert-title {
+    font-weight: 400;
+  }
+
+  .alert-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  .alert-link:hover {
+    opacity: 0.8;
+  }
+
+  .link-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .alert-more {
+    padding: 0.5rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 640px) {
+    .alert-banner-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .alert-link {
+      align-self: flex-end;
+    }
+  }
+</style>

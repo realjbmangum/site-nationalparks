@@ -177,3 +177,114 @@ See `tasks/printful-integration-plan.md` for full plan including:
 - Cloudflare Pages project name is "site-nationalparks" (not "site-nationalparks-directory")
 - D1 database name is "national-parks"
 - Must use --commit-dirty=true when deploying with uncommitted changes
+
+---
+
+## Session - January 27, 2026 (NPS API Integration)
+
+### Completed
+
+**Phase 1: Remotion Video Mockup**
+- Created `promo-video/` Remotion project for animated UX walkthrough
+- Built 6-scene video mockup (30 seconds):
+  - Scene 1: Current park page "Before"
+  - Scene 2: Alert banner animation (red/orange/yellow severity)
+  - Scene 3: Campground cards with amenities, fees, reserve buttons
+  - Scene 4: Events widget in sidebar
+  - Scene 5: Full page "After" view
+  - Scene 6: Mobile responsive showcase
+
+**Phase 2: Foundation (Technical Setup)**
+- Added `nps_code` column to parks table schema
+- Added `idx_parks_nps_code` index for performance
+- Added KV namespace binding (`NPS_CACHE`) to wrangler.toml
+- Updated `src/env.d.ts` with `NPS_CACHE` and `NPS_API_KEY` types
+- Created `src/lib/nps-api.ts`:
+  - NPSClient class with getAlerts, getCampgrounds, getEvents methods
+  - TypeScript interfaces for NPSAlert, NPSCampground, NPSEvent
+  - Helper functions: extractNPSCode, getAlertColors, getUpcomingEvents, formatCampgroundFee, getCampgroundAmenities
+- Created `src/lib/nps-cache.ts`:
+  - KV-based caching with TTLs (alerts: 15min, events: 2hr, campgrounds: 4hr)
+  - getCachedNPSData function with fallback to direct fetch
+  - Cache invalidation utilities
+
+**Phase 3-5: Components**
+- Created `src/components/AlertBanner.astro`:
+  - Color-coded alerts (Danger=red, Closure=orange, Caution=yellow, Info=blue)
+  - SVG icons per category
+  - Links to NPS alert details
+  - Shows top 3 alerts, with "+X more" indicator
+- Created `src/components/CampgroundsSection.astro`:
+  - Grid of campground cards (2 columns on desktop)
+  - Shows name, site count, amenities icons, fee, reserve button
+  - Hover effects and responsive design
+- Created `src/components/EventsWidget.astro`:
+  - Sidebar widget showing next 5 events
+  - Event title, date/time, type badge (color-coded)
+  - Location display
+  - "View All Events" link to NPS
+
+**Phase 6: Integration**
+- Updated `src/pages/parks/[slug].astro`:
+  - Import new components and NPS utilities
+  - Fetch NPS data in parallel with caching
+  - AlertBanner at top of page (after BaseLayout)
+  - CampgroundsSection after "Things to Do" section
+  - EventsWidget in sidebar after WeatherWidget
+
+### Files Created
+- `promo-video/package.json` - Remotion project config
+- `promo-video/remotion.config.ts` - Remotion settings
+- `promo-video/tsconfig.json` - TypeScript config
+- `promo-video/src/index.ts` - Entry point
+- `promo-video/src/Root.tsx` - Composition registry
+- `promo-video/src/NPSIntegrationMockup.tsx` - Video scenes
+- `src/lib/nps-api.ts` - NPS API client
+- `src/lib/nps-cache.ts` - KV caching layer
+- `src/components/AlertBanner.astro` - Alert banner component
+- `src/components/CampgroundsSection.astro` - Campgrounds component
+- `src/components/EventsWidget.astro` - Events widget component
+- `scripts/migrate-nps-codes.sql` - Database migration
+
+### Files Modified
+- `d1-schema.sql` - Added nps_code column and index
+- `wrangler.toml` - Added KV namespace binding
+- `src/env.d.ts` - Added NPS_CACHE and NPS_API_KEY types
+- `src/lib/db.ts` - Added nps_code to Park interface
+- `src/pages/parks/[slug].astro` - Integrated NPS components
+
+### Deployment Steps Required
+1. Register for NPS API key: https://www.nps.gov/subjects/developer/get-started.htm
+2. Add `NPS_API_KEY` to Cloudflare Pages environment variables
+3. Create KV namespace: `npx wrangler kv:namespace create NPS_CACHE`
+4. Update wrangler.toml with actual KV namespace ID
+5. Run schema migration: `npx wrangler d1 execute national-parks --file=d1-schema.sql --remote`
+6. Run NPS code migration: `npx wrangler d1 execute national-parks --file=scripts/migrate-nps-codes.sql --remote`
+7. Deploy: `npx wrangler pages deploy dist`
+
+### New Environment Variables
+| Variable | Source |
+|----------|--------|
+| `NPS_API_KEY` | https://www.nps.gov/subjects/developer/get-started.htm |
+
+### Cache TTLs
+| Endpoint | TTL | Reason |
+|----------|-----|--------|
+| Alerts | 15 min | Safety-critical, needs freshness |
+| Events | 2 hours | Changes occasionally |
+| Campgrounds | 4 hours | Mostly static data |
+
+### Verification Steps
+1. Preview Remotion mockup: `cd promo-video && npm install && npm run dev`
+2. Test locally with NPS API key in .dev.vars
+3. Verify alerts display with color coding
+4. Check campground cards render correctly
+5. Confirm events widget shows upcoming events
+6. Test mobile responsiveness
+
+### Next Steps
+- [ ] Register for NPS API key
+- [ ] Create KV namespace and update wrangler.toml
+- [ ] Run database migrations
+- [ ] Deploy and verify live
+- [ ] Render Remotion video for marketing

@@ -1,0 +1,248 @@
+---
+/**
+ * Campgrounds Section Component
+ *
+ * Displays campground information from the NPS API.
+ * Shows campground cards with:
+ * - Name and total sites
+ * - Key amenities (restrooms, showers, water, etc.)
+ * - Fee information
+ * - Reservation link
+ */
+import type { NPSCampground } from '../lib/nps-api';
+import { formatCampgroundFee, getCampgroundAmenities } from '../lib/nps-api';
+
+interface Props {
+  campgrounds: NPSCampground[];
+}
+
+const { campgrounds } = Astro.props;
+
+// Amenity icons
+const amenityIcons: Record<string, string> = {
+  'Restrooms': `<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819"/>`,
+  'Showers': `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>`,
+  'Water': `<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>`,
+  'Dump Station': `<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>`,
+  'Camp Store': `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z"/>`,
+  'Laundry': `<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`,
+};
+
+// Default icon for unknown amenities
+const defaultIcon = `<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/>`;
+---
+
+{campgrounds.length > 0 && (
+  <section class="campgrounds-section">
+    <h2 class="section-title">Campgrounds</h2>
+
+    <div class="campgrounds-grid">
+      {campgrounds.map((campground) => {
+        const fee = formatCampgroundFee(campground.fees);
+        const amenities = getCampgroundAmenities(campground.amenities);
+        const totalSites = parseInt(campground.totalSites) || 0;
+
+        return (
+          <div class="campground-card">
+            {campground.images?.[0] && (
+              <div class="campground-image">
+                <img
+                  src={campground.images[0].url}
+                  alt={campground.images[0].altText || campground.name}
+                  loading="lazy"
+                />
+              </div>
+            )}
+
+            <div class="campground-content">
+              <h3 class="campground-name">{campground.name}</h3>
+
+              <p class="campground-sites">
+                {totalSites > 0 ? `${totalSites} sites` : 'Sites available'}
+              </p>
+
+              {amenities.length > 0 && (
+                <div class="campground-amenities">
+                  {amenities.map((amenity) => {
+                    const icon = amenityIcons[amenity] || defaultIcon;
+                    return (
+                      <span class="amenity-tag" title={amenity}>
+                        <svg
+                          class="amenity-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          set:html={icon}
+                        />
+                        <span class="amenity-label">{amenity}</span>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div class="campground-footer">
+                <span class="campground-fee">{fee}</span>
+
+                {campground.reservationUrl ? (
+                  <a
+                    href={campground.reservationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="reserve-button"
+                  >
+                    Reserve
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="reserve-icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                    </svg>
+                  </a>
+                ) : (
+                  <span class="no-reservations">Walk-in only</span>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+)}
+
+<style>
+  .campgrounds-section {
+    margin-top: 2rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display, 'Playfair Display', serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-gray-900, #111827);
+    margin-bottom: 1rem;
+  }
+
+  .campgrounds-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .campgrounds-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .campground-card {
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .campground-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .campground-image {
+    height: 8rem;
+    overflow: hidden;
+  }
+
+  .campground-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .campground-content {
+    padding: 1rem;
+  }
+
+  .campground-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--color-gray-900, #111827);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .campground-sites {
+    font-size: 0.875rem;
+    color: var(--color-gray-600, #4b5563);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .campground-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .amenity-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(30, 77, 43, 0.1);
+    color: var(--color-primary, #1E4D2B);
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  .amenity-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .amenity-label {
+    white-space: nowrap;
+  }
+
+  .campground-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-gray-100, #f3f4f6);
+  }
+
+  .campground-fee {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-gray-900, #111827);
+  }
+
+  .reserve-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: var(--color-primary, #1E4D2B);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s;
+  }
+
+  .reserve-button:hover {
+    background: color-mix(in srgb, var(--color-primary, #1E4D2B) 85%, black);
+  }
+
+  .reserve-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .no-reservations {
+    font-size: 0.875rem;
+    color: var(--color-gray-500, #6b7280);
+    font-style: italic;
+  }
+</style>

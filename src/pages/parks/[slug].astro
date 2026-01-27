@@ -1,11 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WeatherWidget from '../../components/WeatherWidget.astro';
+import AlertBanner from '../../components/AlertBanner.astro';
+import CampgroundsSection from '../../components/CampgroundsSection.astro';
+import EventsWidget from '../../components/EventsWidget.astro';
 import { getParkBySlug, parseJsonArray, parseJsonObject, type Park, type ParkFeatures } from '../../lib/db';
+import { NPSClient, extractNPSCode, type NPSAlert, type NPSCampground, type NPSEvent } from '../../lib/nps-api';
+import { getCachedNPSData } from '../../lib/nps-cache';
 import siteConfig from '../../data/site-config.json';
 
-// Get D1 database from Cloudflare runtime
-const db = Astro.locals.runtime.env.DB;
+// Get runtime environment
+const runtime = Astro.locals.runtime.env;
+const db = runtime.DB;
 
 // Get park slug from URL
 const { slug } = Astro.params;
@@ -13,6 +19,39 @@ const park = await getParkBySlug(db, slug!);
 
 if (!park) {
   return Astro.redirect('/404');
+}
+
+// Get NPS park code (from database or extract from URL)
+const npsCode = park.nps_code || extractNPSCode(park.nps_url);
+
+// Fetch NPS API data (alerts, campgrounds, events)
+let alerts: NPSAlert[] = [];
+let campgrounds: NPSCampground[] = [];
+let events: NPSEvent[] = [];
+
+// Only fetch NPS data if we have an API key and park code
+const npsApiKey = runtime.NPS_API_KEY;
+const npsCache = runtime.NPS_CACHE;
+
+if (npsApiKey && npsCode) {
+  const npsClient = new NPSClient(npsApiKey);
+
+  // Fetch all NPS data in parallel with caching
+  const [alertsData, campgroundsData, eventsData] = await Promise.all([
+    getCachedNPSData<NPSAlert[]>(npsCache, 'alerts', npsCode, () =>
+      npsClient.getAlerts(npsCode)
+    ),
+    getCachedNPSData<NPSCampground[]>(npsCache, 'campgrounds', npsCode, () =>
+      npsClient.getCampgrounds(npsCode)
+    ),
+    getCachedNPSData<NPSEvent[]>(npsCache, 'events', npsCode, () =>
+      npsClient.getEvents(npsCode)
+    ),
+  ]);
+
+  alerts = alertsData;
+  campgrounds = campgroundsData;
+  events = eventsData;
 }
 
 // Parse JSON fields
@@ -76,6 +115,9 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
   image={park.photo_url || defaultImage}
   schema={parkSchema}
 >
+  <!-- NPS Alerts Banner -->
+  <AlertBanner alerts={alerts} />
+
   <!-- Hero Section -->
   <section class="relative h-[60vh] md:h-[70vh] overflow-hidden">
     <img
@@ -139,6 +181,9 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
             </ul>
           </section>
         )}
+
+        <!-- Campgrounds -->
+        <CampgroundsSection campgrounds={campgrounds} />
 
         <!-- Wildlife -->
         {wildlife && wildlife.length > 0 && (
@@ -244,6 +289,11 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
           <!-- Weather Widget -->
           {park.latitude && park.longitude && (
             <WeatherWidget latitude={park.latitude} longitude={park.longitude} parkName={park.name} />
+          )}
+
+          <!-- Upcoming Events -->
+          {npsCode && (
+            <EventsWidget events={events} parkCode={npsCode} />
           )}
 
           <!-- Amenities Card -->

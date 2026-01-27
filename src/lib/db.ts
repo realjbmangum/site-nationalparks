@@ -34,6 +34,7 @@ export interface Park {
   photo_url: string | null;
   features: string | null; // JSON object
   nps_url: string | null;
+  nps_code: string | null;  // NPS API park code (e.g., 'yell' for Yellowstone)
   verified: number;
   featured: number;
   created_at: string;

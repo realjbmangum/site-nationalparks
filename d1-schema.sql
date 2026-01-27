@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS parks (
 
   -- External links
   nps_url TEXT,
+  nps_code TEXT,           -- NPS API park code (e.g., 'yell' for Yellowstone)
 
   -- Status
   verified INTEGER DEFAULT 0,
@@ -66,6 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_parks_state ON parks(state);
 CREATE INDEX IF NOT EXISTS idx_parks_region ON parks(region);
 CREATE INDEX IF NOT EXISTS idx_parks_visitors ON parks(annual_visitors DESC);
 CREATE INDEX IF NOT EXISTS idx_parks_difficulty ON parks(difficulty);
+CREATE INDEX IF NOT EXISTS idx_parks_nps_code ON parks(nps_code);
 
 -- ============================================
 -- SUBMISSIONS (User tips & corrections)
