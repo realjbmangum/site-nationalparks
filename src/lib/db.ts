@@ -312,7 +312,7 @@ export const REGIONS = {
     description:
       'Discover dramatic landscapes from desert canyons to towering peaks across the American West.',
     heroImage:
-      'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-west.png',
   },
   alaska: {
     slug: 'alaska',
@@ -320,7 +320,7 @@ export const REGIONS = {
     description:
       "Experience America's last frontier with vast wilderness, glaciers, and untamed wildlife.",
     heroImage:
-      'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-alaska.png',
   },
   southeast: {
     slug: 'southeast',
@@ -328,7 +328,7 @@ export const REGIONS = {
     description:
       'Explore ancient forests, coastal wetlands, and rich cultural history.',
     heroImage:
-      'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-southeast.png',
   },
   northeast: {
     slug: 'northeast',
@@ -336,7 +336,7 @@ export const REGIONS = {
     description:
       'Discover rugged coastlines, scenic valleys, and accessible wilderness.',
     heroImage:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-northeast.png',
   },
   midwest: {
     slug: 'midwest',
@@ -344,7 +344,7 @@ export const REGIONS = {
     description:
       'Find hidden gems from underground caves to remote island wilderness.',
     heroImage:
-      'https://images.unsplash.com/photo-1577473961960-edb6e3b5df62?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-midwest.png',
   },
   islands: {
     slug: 'islands',
@@ -352,7 +352,7 @@ export const REGIONS = {
     description:
       'Visit tropical paradises from Hawaii to American Samoa and the Virgin Islands.',
     heroImage:
-      'https://images.unsplash.com/photo-1542259009477-d625272157b7?w=1920&q=80',
+      'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-islands.png',
   },
 } as const;
 
