@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../data/site-config.json';
+
+const lastUpdated = 'January 28, 2026';
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description="Terms of service for Best US National Parks. Please read these terms carefully before using our website."
+>
+  <div class="section-padding bg-white">
+    <div class="container-site">
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-display font-bold text-gray-900 mb-4">
+          Terms of Service
+        </h1>
+        <p class="text-gray-500 mb-8">Last updated: {lastUpdated}</p>
+
+        <div class="prose prose-lg max-w-none">
+          <p>
+            Welcome to {siteConfig.name}. By accessing or using our website at {siteConfig.url},
+            you agree to be bound by these Terms of Service. If you do not agree to these terms,
+            please do not use our website.
+          </p>
+
+          <h2>Use of Website</h2>
+          <p>
+            You may use our website for lawful purposes only. You agree not to:
+          </p>
+          <ul>
+            <li>Use the website in any way that violates applicable laws or regulations</li>
+            <li>Attempt to gain unauthorized access to any part of the website</li>
+            <li>Use automated systems to scrape or collect content without permission</li>
+            <li>Transmit any malicious code, viruses, or harmful content</li>
+            <li>Impersonate any person or entity</li>
+            <li>Interfere with the proper functioning of the website</li>
+          </ul>
+
+          <h2>Content and Information</h2>
+          <p>
+            The information on this website is provided for general informational purposes only.
+            While we strive to keep information accurate and up-to-date, we make no warranties
+            about the completeness, reliability, or accuracy of this information.
+          </p>
+          <p>
+            <strong>Important:</strong> National park conditions, regulations, fees, and hours
+            change frequently. Always verify current information with the official National Park
+            Service website (nps.gov) before planning your visit.
+          </p>
+
+          <h2>Not Affiliated with NPS</h2>
+          <p>
+            {siteConfig.name} is an independent website and is <strong>not affiliated with,
+            endorsed by, or connected to the National Park Service</strong>, the U.S. Department
+            of the Interior, or any government agency. Any views or opinions expressed on this
+            website are our own.
+          </p>
+
+          <h2>User Submissions</h2>
+          <p>
+            When you submit tips, corrections, photos, or other content to our website, you:
+          </p>
+          <ul>
+            <li>Grant us a non-exclusive, royalty-free license to use, modify, and publish your submission</li>
+            <li>Confirm that you own the content or have permission to submit it</li>
+            <li>Understand that we may edit submissions for clarity, accuracy, or length</li>
+            <li>Agree that we are not obligated to use or publish any submission</li>
+          </ul>
+
+          <h2>Intellectual Property</h2>
+          <p>
+            The content on this website, including text, graphics, logos, and images, is owned by
+            {siteConfig.name} or used with permission. You may not reproduce, distribute, or create
+            derivative works from our content without written permission.
+          </p>
+          <p>
+            Park photographs may be subject to National Park Service usage guidelines or third-party
+            copyrights. AI-generated images on this site are clearly identified as such.
+          </p>
+
+          <h2>Affiliate Links and Advertising</h2>
+          <p>
+            Our website may contain affiliate links to products, services, and booking platforms.
+            If you make a purchase through these links, we may earn a commission at no additional
+            cost to you.
+          </p>
+          <p>
+            We only recommend products and services we believe provide value to our visitors.
+            However, affiliate relationships do not influence our editorial content or reviews.
+          </p>
+
+          <h2>Third-Party Links</h2>
+          <p>
+            Our website contains links to third-party websites, including the National Park Service,
+            Recreation.gov, and various travel services. We are not responsible for the content,
+            privacy practices, or terms of service of these external sites.
+          </p>
+
+          <h2>Disclaimer of Warranties</h2>
+          <p>
+            This website is provided "as is" without any warranties, express or implied. We do not
+            warrant that:
+          </p>
+          <ul>
+            <li>The website will be available at all times or free from errors</li>
+            <li>Information on the website is complete, accurate, or current</li>
+            <li>The website is free from viruses or harmful components</li>
+          </ul>
+
+          <h2>Limitation of Liability</h2>
+          <p>
+            To the fullest extent permitted by law, {siteConfig.name} shall not be liable for any
+            indirect, incidental, special, or consequential damages arising from your use of this
+            website, including but not limited to:
+          </p>
+          <ul>
+            <li>Errors or inaccuracies in content</li>
+            <li>Personal injury or property damage resulting from your park visits</li>
+            <li>Unauthorized access to your personal information</li>
+            <li>Any interruption or cessation of our services</li>
+          </ul>
+          <p>
+            <strong>Safety Notice:</strong> National parks contain inherent risks including wildlife,
+            extreme weather, difficult terrain, and remote locations. Always prepare adequately,
+            follow park regulations, and make safety your top priority.
+          </p>
+
+          <h2>Indemnification</h2>
+          <p>
+            You agree to indemnify and hold harmless {siteConfig.name} and its owners from any
+            claims, damages, or expenses arising from your use of the website or violation of
+            these terms.
+          </p>
+
+          <h2>Changes to Terms</h2>
+          <p>
+            We reserve the right to modify these Terms of Service at any time. Changes will be
+            effective immediately upon posting to this page. Your continued use of the website
+            after changes constitutes acceptance of the new terms.
+          </p>
+
+          <h2>Governing Law</h2>
+          <p>
+            These Terms of Service shall be governed by and construed in accordance with the laws
+            of the United States, without regard to conflict of law principles.
+          </p>
+
+          <h2>Contact Us</h2>
+          <p>
+            If you have any questions about these Terms of Service, please contact us at:
+          </p>
+          <p>
+            Email: <a href={`mailto:${siteConfig.contact.email}`} class="link-primary">{siteConfig.contact.email}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose h2 {
+    @apply text-2xl font-display font-bold text-gray-900 mt-10 mb-4;
+  }
+  .prose p {
+    @apply text-gray-700 mb-4;
+  }
+  .prose ul {
+    @apply list-disc list-inside mb-6 space-y-1;
+  }
+  .prose li {
+    @apply text-gray-700;
+  }
+</style>
