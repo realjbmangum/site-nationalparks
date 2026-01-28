@@ -405,6 +405,24 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
             </div>
           )}
 
+          <!-- Shop Merch CTA -->
+          <a
+            href={`/shop/${park.slug}`}
+            class="block bg-secondary/10 rounded-xl p-6 hover:bg-secondary/20 transition-colors"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div>
+                <div class="font-medium text-gray-900">Shop Merch</div>
+                <div class="text-sm text-gray-600">Mugs, shirts, stickers & more</div>
+              </div>
+            </div>
+          </a>
+
           <!-- Official Link -->
           {park.nps_url && (
             <a

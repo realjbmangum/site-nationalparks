@@ -71,6 +71,19 @@ export interface NewsletterSubscriber {
   unsubscribed_at: string | null;
 }
 
+export interface PrintfulProduct {
+  id: number;
+  park_slug: string;
+  printful_sync_id: string;
+  printful_variant_id: string;
+  product_type: string;
+  name: string;
+  price_cents: number;
+  mockup_url: string | null;
+  checkout_url: string | null;
+  created_at: string;
+}
+
 // Helper to parse JSON arrays from D1
 export function parseJsonArray<T = string>(json: string | null): T[] {
   if (!json) return [];
@@ -392,6 +405,52 @@ export async function getParksByStateName(
     .prepare('SELECT * FROM parks WHERE state = ? ORDER BY name ASC')
     .bind(stateName)
     .all<Park>();
+  return result.results;
+}
+
+// =============================================================================
+// Printful Product Queries
+// =============================================================================
+
+export async function getProductsByPark(
+  db: D1Database,
+  parkSlug: string
+): Promise<PrintfulProduct[]> {
+  const result = await db
+    .prepare('SELECT * FROM printful_products WHERE park_slug = ? ORDER BY product_type ASC')
+    .bind(parkSlug)
+    .all<PrintfulProduct>();
+  return result.results;
+}
+
+export async function getParksWithProducts(
+  db: D1Database
+): Promise<{ park_slug: string; product_count: number }[]> {
+  const result = await db
+    .prepare(
+      'SELECT park_slug, COUNT(*) as product_count FROM printful_products GROUP BY park_slug ORDER BY park_slug ASC'
+    )
+    .all<{ park_slug: string; product_count: number }>();
+  return result.results;
+}
+
+export async function getProductTypes(
+  db: D1Database
+): Promise<string[]> {
+  const result = await db
+    .prepare('SELECT DISTINCT product_type FROM printful_products ORDER BY product_type ASC')
+    .all<{ product_type: string }>();
+  return result.results.map((r) => r.product_type);
+}
+
+export async function getProductsByType(
+  db: D1Database,
+  productType: string
+): Promise<PrintfulProduct[]> {
+  const result = await db
+    .prepare('SELECT * FROM printful_products WHERE product_type = ? ORDER BY park_slug ASC')
+    .bind(productType)
+    .all<PrintfulProduct>();
   return result.results;
 }
 
