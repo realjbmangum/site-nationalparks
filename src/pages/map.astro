@@ -133,14 +133,6 @@ const parksGeoJSON = {
   };
 
   function initMap() {
-    console.log('Mapbox token:', mapboxToken ? 'Token exists (' + mapboxToken.substring(0, 20) + '...)' : 'NO TOKEN');
-
-    if (!mapboxToken || mapboxToken === 'undefined') {
-      console.error('Mapbox token is missing!');
-      document.getElementById('map').innerHTML = '<div class="flex items-center justify-center h-full bg-red-50 text-red-600">Map token not configured</div>';
-      return;
-    }
-
     mapboxgl.accessToken = mapboxToken;
 
     map = new mapboxgl.Map({
@@ -150,10 +142,6 @@ const parksGeoJSON = {
       zoom: 3.5,
       pitch: 0,
       bearing: 0,
-    });
-
-    map.on('error', (e) => {
-      console.error('Mapbox error:', e.error);
     });
 
     // Add controls
