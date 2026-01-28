@@ -1,0 +1,326 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const guides = [
+  {
+    slug: 'first-time-visitor',
+    title: 'First-Time National Park Visitor Guide',
+    description: 'Everything you need to know before your first visit to a US National Park.',
+    icon: '🏕️',
+    content: [
+      {
+        heading: 'Get the America the Beautiful Pass',
+        text: 'If you plan to visit more than 2-3 parks in a year, the $80 annual pass pays for itself. It covers entrance fees at all 400+ National Park Service sites, plus National Forests, Wildlife Refuges, and BLM lands. Buy it at any park entrance or online at USGS.gov.',
+      },
+      {
+        heading: 'Make Reservations Early',
+        text: 'Popular parks like Yosemite, Glacier, Rocky Mountain, and Arches now require timed entry reservations during peak season (typically May-October). Reservations open 60-120 days in advance and sell out within minutes. Set calendar reminders and be ready at 7am MT when Recreation.gov releases new dates.',
+      },
+      {
+        heading: 'Arrive Early or Stay Late',
+        text: 'Most visitors arrive between 10am-2pm. Beat the crowds by starting your day at sunrise - you\'ll have trails to yourself, better wildlife viewing, and golden photography light. Sunset is equally magical with fewer people.',
+      },
+      {
+        heading: 'Download Offline Maps',
+        text: 'Cell service is limited or nonexistent in most parks. Download the NPS app offline maps, Google Maps offline area, or AllTrails maps before you arrive. Never rely solely on GPS in the backcountry.',
+      },
+      {
+        heading: 'Check Park Alerts',
+        text: 'Before every visit, check the park\'s official NPS.gov page for current conditions, road closures, wildlife warnings, and fire restrictions. Conditions change rapidly, especially in mountain parks.',
+      },
+      {
+        heading: 'Respect Wildlife Distance',
+        text: 'Stay at least 100 yards (91m) from bears and wolves, 25 yards (23m) from all other wildlife. Use binoculars or a telephoto lens - never approach animals for photos. Fed animals become dangerous animals.',
+      },
+    ],
+  },
+  {
+    slug: 'best-times-to-visit',
+    title: 'Best Times to Visit National Parks',
+    description: 'Season-by-season guide to planning your park visits for ideal weather and smaller crowds.',
+    icon: '📅',
+    content: [
+      {
+        heading: 'Shoulder Seasons Are Golden',
+        text: 'April-May and September-October offer the best combination of good weather, lower crowds, and reasonable prices. You\'ll find shorter lines, available campsites, and more peaceful trails.',
+      },
+      {
+        heading: 'Desert Parks: Winter Is Prime Time',
+        text: 'Death Valley, Joshua Tree, Saguaro, and Big Bend are best November through March when temperatures are pleasant. Summer visits can be dangerous with temps exceeding 120°F.',
+      },
+      {
+        heading: 'Mountain Parks: Late Summer Sweet Spot',
+        text: 'High-elevation parks like Glacier, Rocky Mountain, and North Cascades have short summers. July-September offers snow-free trails and full facility access. Going-to-the-Sun Road typically opens mid-June.',
+      },
+      {
+        heading: 'Alaska: June-August Only',
+        text: 'Alaska\'s parks have extremely short seasons. Denali, Katmai, and Glacier Bay are only fully accessible June through August. Book lodges and tours 6-12 months ahead.',
+      },
+      {
+        heading: 'Avoid Holiday Weekends',
+        text: 'Memorial Day, July 4th, and Labor Day are the most crowded times at nearly every park. If you must visit during holidays, arrive before 7am or after 5pm.',
+      },
+      {
+        heading: 'Fall Foliage Hotspots',
+        text: 'Great Smoky Mountains, Shenandoah, and Acadia are spectacular mid-October. Zion and Grand Canyon have beautiful November cottonwood colors with far fewer visitors.',
+      },
+    ],
+  },
+  {
+    slug: 'camping-tips',
+    title: 'National Park Camping Guide',
+    description: 'How to score campsites and make the most of sleeping under the stars.',
+    icon: '⛺',
+    content: [
+      {
+        heading: 'Book 6 Months Ahead',
+        text: 'Popular campgrounds release reservations on Recreation.gov exactly 6 months in advance at 7am MT. Sites at parks like Yosemite Valley, Zion, and Glacier sell out in seconds. Have your dates ready and refresh the page at exactly 7:00:00.',
+      },
+      {
+        heading: 'Try First-Come-First-Served',
+        text: 'Many parks hold back FCFS sites. Arrive by Thursday morning for weekend camping. Have a backup plan - if your first choice is full, know the next-closest campground.',
+      },
+      {
+        heading: 'Consider Gateway Towns',
+        text: 'National Forest and BLM campgrounds near park entrances are often cheaper, less crowded, and easier to book. They\'re usually 15-30 minutes from the park.',
+      },
+      {
+        heading: 'Food Storage Is Mandatory',
+        text: 'All parks require proper food storage. Use provided bear boxes, or rent/buy a bear canister for backcountry trips. Never store food in your tent or car in bear country.',
+      },
+      {
+        heading: 'Check Fire Restrictions',
+        text: 'Many parks ban campfires during dry seasons. Bring a camp stove for cooking. Even where fires are allowed, only use designated fire rings and never leave fires unattended.',
+      },
+      {
+        heading: 'Quiet Hours Matter',
+        text: 'Most campgrounds enforce quiet hours (typically 10pm-6am). Generators, loud music, and rowdy behavior can get you kicked out. Be a good neighbor.',
+      },
+    ],
+  },
+  {
+    slug: 'hiking-safety',
+    title: 'Hiking Safety & Preparation',
+    description: 'Essential safety knowledge for hiking in national parks.',
+    icon: '🥾',
+    content: [
+      {
+        heading: 'The Ten Essentials',
+        text: 'Never hike without: 1) Navigation (map/compass), 2) Sun protection, 3) Insulation (extra layers), 4) Illumination (headlamp), 5) First aid kit, 6) Fire starter, 7) Repair tools (knife), 8) Nutrition (extra food), 9) Hydration (extra water), 10) Emergency shelter (space blanket).',
+      },
+      {
+        heading: 'Know Your Limits',
+        text: 'Altitude affects everyone differently. At elevations above 8,000 feet, take it slow and stay hydrated. Turn back if you experience severe headache, nausea, or confusion - these are signs of altitude sickness.',
+      },
+      {
+        heading: 'Tell Someone Your Plans',
+        text: 'Leave a detailed itinerary with someone at home including your route, expected return time, and what to do if you don\'t check in. For backcountry trips, register with the park ranger station.',
+      },
+      {
+        heading: 'Water: Bring More Than You Think',
+        text: 'Carry at least 1 liter per hour of hiking in hot weather, 0.5 liters in cool weather. For desert hikes, double that. Never drink untreated water from streams - giardia is real.',
+      },
+      {
+        heading: 'Weather Changes Fast',
+        text: 'Mountain weather is unpredictable. Start hikes early to avoid afternoon thunderstorms. If you hear thunder, get below treeline immediately. Never shelter under lone trees.',
+      },
+      {
+        heading: 'Wildlife Encounters',
+        text: 'Make noise while hiking to avoid surprising animals. If you encounter a bear, don\'t run - back away slowly while speaking calmly. Carry bear spray in grizzly country and know how to use it.',
+      },
+    ],
+  },
+  {
+    slug: 'photography-tips',
+    title: 'National Park Photography Guide',
+    description: 'Capture stunning photos at America\'s most scenic places.',
+    icon: '📷',
+    content: [
+      {
+        heading: 'Golden Hour Is Everything',
+        text: 'The hour after sunrise and before sunset provides the best light for landscape photography. Harsh midday sun creates unflattering shadows and blown-out skies. Plan your shots around golden hour.',
+      },
+      {
+        heading: 'Blue Hour for Drama',
+        text: 'The 20-30 minutes before sunrise and after sunset offer deep blue skies perfect for silhouettes and long exposures. You\'ll need a tripod, but the results are worth it.',
+      },
+      {
+        heading: 'Scout Locations First',
+        text: 'Visit your shooting location during the day to find compositions, check sun angles (use PhotoPills or Sun Surveyor apps), and identify any access issues. Return for the good light.',
+      },
+      {
+        heading: 'Wide Angle for Landscapes',
+        text: 'A 16-35mm wide angle lens is essential for grand landscapes. Include foreground interest (rocks, flowers, water) to add depth and lead the viewer\'s eye into the scene.',
+      },
+      {
+        heading: 'Telephoto for Wildlife',
+        text: 'You need at least 200mm, ideally 400mm+ for wildlife photography from safe distances. A 100-400mm zoom offers flexibility. Never approach animals for a better shot.',
+      },
+      {
+        heading: 'Protect Your Gear',
+        text: 'Dust, moisture, and temperature changes are tough on cameras. Bring lens cloths, a rain cover, and extra batteries (cold drains them fast). Use a UV filter to protect your lens.',
+      },
+    ],
+  },
+  {
+    slug: 'family-travel',
+    title: 'Visiting National Parks with Kids',
+    description: 'Family-friendly tips for memorable park adventures with children.',
+    icon: '👨‍👩‍👧‍👦',
+    content: [
+      {
+        heading: 'Junior Ranger Programs',
+        text: 'Every park offers free Junior Ranger programs. Kids complete activity booklets and earn badges - it\'s educational, fun, and gives them a sense of accomplishment. Pick up booklets at visitor centers.',
+      },
+      {
+        heading: 'Start with Easy Trails',
+        text: 'Choose trails under 2 miles with less than 200 feet elevation gain for young kids. Paved trails and boardwalks work great for strollers. Let kids set the pace and stop to explore.',
+      },
+      {
+        heading: 'Make It a Scavenger Hunt',
+        text: 'Keep kids engaged by creating lists of things to spot: specific animals, rock colors, tree types, or trail markers. Small prizes for completing the list work wonders.',
+      },
+      {
+        heading: 'Pack Smart',
+        text: 'Bring more snacks and water than you think you\'ll need. Pack layers, rain gear, and a change of clothes. Wet wipes, hand sanitizer, and a first aid kit are essential with kids.',
+      },
+      {
+        heading: 'Manage Expectations',
+        text: 'Young kids won\'t appreciate views the same way adults do. Focus on the journey - creeks to splash in, rocks to climb, animals to spot. Short attention spans are normal.',
+      },
+      {
+        heading: 'Ranger Programs',
+        text: 'Most parks offer free ranger-led programs perfect for families: campfire talks, nature walks, stargazing programs. Check the park newspaper or visitor center for schedules.',
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="National Park Planning Guides"
+  description="Essential guides for planning your national park adventure. Expert tips on camping, hiking, photography, visiting with kids, and more."
+>
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16">
+    <div class="container-site text-center">
+      <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+        Park Planning Guides
+      </h1>
+      <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        Expert tips and comprehensive guides to help you plan the perfect national park adventure.
+      </p>
+    </div>
+  </section>
+
+  <!-- Quick Links -->
+  <section class="bg-gray-50 py-6 border-b sticky top-16 md:top-20 z-40">
+    <div class="container-site">
+      <div class="flex gap-3 overflow-x-auto pb-2 -mb-2">
+        {guides.map((guide) => (
+          <a
+            href={`#${guide.slug}`}
+            class="bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-primary hover:text-white transition-colors whitespace-nowrap shadow-sm"
+          >
+            {guide.icon} {guide.title.split(' ').slice(0, 2).join(' ')}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Guides -->
+  <section class="section-padding">
+    <div class="container-site">
+      <div class="max-w-4xl mx-auto space-y-16">
+        {guides.map((guide) => (
+          <article id={guide.slug} class="scroll-mt-32">
+            <div class="flex items-start gap-4 mb-6">
+              <span class="text-4xl">{guide.icon}</span>
+              <div>
+                <h2 class="text-3xl font-display font-bold text-gray-900">
+                  {guide.title}
+                </h2>
+                <p class="text-gray-600 mt-1">{guide.description}</p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              {guide.content.map((section) => (
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    {section.heading}
+                  </h3>
+                  <p class="text-gray-700 leading-relaxed">
+                    {section.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Official Resources -->
+  <section class="bg-primary/5 section-padding">
+    <div class="container-site">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-6 text-center">
+        Official Resources
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <a
+          href="https://www.nps.gov/planyourvisit/index.htm"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow"
+        >
+          <div class="font-semibold text-gray-900">NPS Plan Your Visit</div>
+          <div class="text-sm text-gray-500">Official planning resources</div>
+        </a>
+        <a
+          href="https://www.recreation.gov"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow"
+        >
+          <div class="font-semibold text-gray-900">Recreation.gov</div>
+          <div class="text-sm text-gray-500">Camping & permits</div>
+        </a>
+        <a
+          href="https://store.usgs.gov/pass/index.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow"
+        >
+          <div class="font-semibold text-gray-900">America the Beautiful</div>
+          <div class="text-sm text-gray-500">$80 annual pass</div>
+        </a>
+        <a
+          href="/gear"
+          class="bg-primary/10 rounded-lg p-4 text-center hover:bg-primary/20 transition-colors"
+        >
+          <div class="font-semibold text-primary">Recommended Gear</div>
+          <div class="text-sm text-primary/70">What to pack</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-white">
+    <div class="container-site text-center">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">
+        Ready to Explore?
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Find your next adventure from our complete guide to all 63 national parks.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/parks" class="btn-primary">Browse All Parks</a>
+        <a href="/map" class="btn-secondary">View Park Map</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

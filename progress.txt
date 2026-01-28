@@ -13,11 +13,18 @@
 | Printful Plan | `tasks/printful-integration-plan.md` |
 | D1 Database ID | `ff199121-eb1b-4c5a-8a6c-8ae514705068` |
 | CF Pages Project | `site-nationalparks` |
+| R2 Bucket | `national-parks` |
+| R2 Public URL | `https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev` |
+| Image Gen Skill | `skills/creative/google-ai-image-gen.md` |
 
 ### Pending Actions
 - [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
 - [ ] Create Printful account + get API key
 - [ ] Execute marketing plan Week 1 quick wins
+- [ ] Choose logo concept and add to site
+- [x] Generate AI images for all 63 parks (R2: parks/*.png)
+- [x] Generate AI images for 6 regions (R2: regions/*.png)
+- [x] Fix states page font overlap
 
 ---
 
@@ -283,8 +290,283 @@ See `tasks/printful-integration-plan.md` for full plan including:
 6. Test mobile responsiveness
 
 ### Next Steps
-- [ ] Register for NPS API key
-- [ ] Create KV namespace and update wrangler.toml
-- [ ] Run database migrations
-- [ ] Deploy and verify live
+- [x] Register for NPS API key
+- [x] Create KV namespace and update wrangler.toml
+- [x] Run database migrations
+- [x] Deploy and verify live
 - [ ] Render Remotion video for marketing
+
+---
+
+## Session - January 27, 2026 (Phase 2 NPS + Collapsible Sections)
+
+### Completed
+
+**Phase 2 NPS API Integration:**
+- Added 5 new NPS API endpoints to `src/lib/nps-api.ts`:
+  - `getVisitorCenters()` - Phone, address, hours
+  - `getWebcams()` - Live webcam feeds
+  - `getThingsToDo()` - Activities with duration, seasons
+  - `getPlaces()` - Points of interest with images
+  - `getNewsReleases()` - Latest park news
+- Updated `src/lib/nps-cache.ts` with new data types and TTLs:
+  - Visitor Centers: 24 hours
+  - Webcams: 1 hour
+  - Things To Do: 12 hours
+  - Places: 24 hours
+  - News Releases: 1 hour
+
+**New Components Created:**
+- `src/components/VisitorCentersWidget.astro` - Sidebar widget with phone, address, today's hours
+- `src/components/WebcamsLink.astro` - Sidebar link to live webcams with active count
+- `src/components/ThingsToDoSection.astro` - Activity cards with duration, seasons, reservation badges
+- `src/components/PlacesSection.astro` - Points of interest with images, passport stamp badges
+- `src/components/NewsReleasesWidget.astro` - Latest park news with dates and thumbnails
+
+**Collapsible Sections (UX Improvement):**
+- Made all NPS sections collapsible to save vertical real estate
+- Each section shows item count when collapsed (e.g., "3 campgrounds", "12 activities")
+- Consistent toggle styling with chevron rotation animation
+- **News:** Expanded by default, moved to top of main content
+- **Campgrounds:** Collapsed by default
+- **Things To Do:** Collapsed by default
+- **Places:** Collapsed by default
+
+**Logo Concepts Created:**
+- Created `logo-concepts/` folder with 10 SVG concepts:
+  1. Mountain Sunrise - Classic combo
+  2. Sun Rays - Energetic discovery feel
+  3. Mountain Path - Journey/trail theme
+  4. Circle Badge - Official stamp feel
+  5. Pine Trees - Forest/wilderness vibe
+  6. Compass Mountain - Perfect for "directory"
+  7. Minimal Peak - Great at tiny sizes
+  8. Layered Mountains - Premium with depth
+  9. Horizon Sun - Dramatic silhouette
+  10. Modern Arrowhead - Badge with scene + text
+- Created `logo-concepts/preview.html` - Visual gallery of all concepts
+- All use brand colors: #1E4D2B (NPS Green) + #F4A300 (Golden Hour)
+
+### Files Created
+- `src/components/VisitorCentersWidget.astro`
+- `src/components/WebcamsLink.astro`
+- `src/components/ThingsToDoSection.astro`
+- `src/components/PlacesSection.astro`
+- `src/components/NewsReleasesWidget.astro`
+- `logo-concepts/01-mountain-sunrise.svg`
+- `logo-concepts/02-mountain-sun-rays.svg`
+- `logo-concepts/03-mountain-path.svg`
+- `logo-concepts/04-circle-badge.svg`
+- `logo-concepts/05-pine-trees.svg`
+- `logo-concepts/06-compass-mountain.svg`
+- `logo-concepts/07-minimal-peak.svg`
+- `logo-concepts/08-layered-mountains.svg`
+- `logo-concepts/09-horizon-sun.svg`
+- `logo-concepts/10-arrowhead-modern.svg`
+- `logo-concepts/preview.html`
+
+### Files Modified
+- `src/lib/nps-api.ts` - Added 5 new endpoint methods + types
+- `src/lib/nps-cache.ts` - Added new data types and TTLs
+- `src/pages/parks/[slug].astro` - Integrated all new components, reordered layout
+- `src/components/CampgroundsSection.astro` - Made collapsible
+- `src/components/ThingsToDoSection.astro` - Made collapsible
+- `src/components/PlacesSection.astro` - Made collapsible
+- `src/components/NewsReleasesWidget.astro` - Made collapsible (expanded default)
+
+### New Page Layout
+```
+┌─ Alert Banner ─────────────────────────────────────┐
+├─ Hero ─────────────────────────────────────────────┤
+│                                                    │
+│  MAIN CONTENT              │  SIDEBAR              │
+│  Park News (expanded)      │  Quick Facts          │
+│  Overview                  │  Weather Widget       │
+│  Things to Do (static)     │  Events               │
+│  Campgrounds (collapsed)   │  Visitor Centers      │
+│  Things To Do (collapsed)  │  Webcams Link         │
+│  Places (collapsed)        │  Amenities            │
+│  Wildlife                  │  NPS Link             │
+│  Pro Tips                  │                       │
+│  Weather & Seasons         │                       │
+└────────────────────────────────────────────────────┘
+```
+
+### Deployment
+- All changes pushed to GitHub and deployed to Cloudflare Pages
+- KV namespace ID: `b08db194575a48f4b40ad4690d8d243f`
+- NPS API key configured in Cloudflare environment variables
+
+### Next Steps
+- [ ] Choose logo concept and refine
+- [ ] Create favicon from chosen logo
+- [ ] Add logo to site header
+- [ ] Render Remotion promo video for marketing
+- [ ] Execute marketing plan Week 1 quick wins
+
+---
+
+## Session - January 27-28, 2026 (AI Image Generation + R2)
+
+### Completed
+
+**AI-Generated Park Images (63 parks):**
+- Created batch image generation system using Google AI Studio (Nano Banana model)
+- Model: `gemini-2.0-flash-exp-image-generation`
+- Created `ai-images/prompts.json` with all 63 parks and scene descriptions
+- Created `ai-images/batch-generate.cjs` with features:
+  - `--key=` for API key
+  - `--limit=N` for testing with subset
+  - `--skip-top20` for hybrid manual/API approach
+  - Skip existing files for resumable generation
+  - 5-second rate limiting between requests
+- Style: National Geographic photography (vivid, sharp, iconic viewpoints, golden hour)
+- Hybrid approach: User manually generated top 20 parks for quality, API did remaining 43
+- All 63 images generated and verified
+
+**R2 Image Storage:**
+- Set up Cloudflare R2 bucket: `national-parks`
+- Public URL: `https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev`
+- Uploaded 63 park images to `parks/{slug}.png`
+- Uploaded 6 region images to `regions/region-{slug}.png`
+- Updated D1 database with R2 URLs for all 63 parks
+
+**Region Images (6 regions):**
+- Created `ai-images/generate-regions.cjs` for region-specific generation
+- Generated 6 region hero images:
+  - `region-west.png` - Southwest canyon landscape
+  - `region-alaska.png` - Denali wilderness
+  - `region-southeast.png` - Great Smoky Mountains
+  - `region-northeast.png` - Acadia coastline
+  - `region-midwest.png` - Badlands formations
+  - `region-islands.png` - Hawaiian volcanic coast
+- Updated `src/lib/db.ts` REGIONS constant with R2 URLs
+
+**States Page Fix:**
+- Fixed font overlap issue on `/states` page
+- Changed from `font-display` to `font-semibold` for better fit
+- Added `truncate` class for long state names
+- Added `gap-3` and `flex-shrink-0` to prevent column overlap
+- Simplified badge to show just count number
+
+**Skills/Documentation:**
+- Created `skills/creative/google-ai-image-gen.md` for future reference
+- Documents Nano Banana model, API endpoint, request format
+- Includes batch processing workflow
+
+### Files Created
+- `ai-images/prompts.json` - Master prompts for 63 parks
+- `ai-images/batch-generate.cjs` - Batch generation script
+- `ai-images/generate-regions.cjs` - Region image generator
+- `ai-images/region-prompts.json` - Region prompt definitions
+- `ai-images/update-images.sql` - SQL to update D1 with R2 URLs
+- `ai-images/check-missing.cjs` - Utility to find missing images
+- `ai-images/top20-prompts.txt` - Top 20 parks for manual generation
+- `skills/creative/google-ai-image-gen.md` - Skill documentation
+- `ai-images/generated/*.png` - 63 park images + 6 region images
+
+### Files Modified
+- `src/lib/db.ts` - Updated REGIONS heroImage URLs to R2
+- `src/pages/states/index.astro` - Fixed font overlap issue
+
+### Database Updates
+- Executed `update-images.sql` on production D1
+- All 63 parks now have R2 image URLs
+
+### R2 Structure
+```
+national-parks/
+├── parks/
+│   ├── acadia.png
+│   ├── yellowstone.png
+│   └── ... (63 total)
+└── regions/
+    ├── region-west.png
+    ├── region-alaska.png
+    ├── region-southeast.png
+    ├── region-northeast.png
+    ├── region-midwest.png
+    └── region-islands.png
+```
+
+### Image URLs
+- Parks: `https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/{slug}.png`
+- Regions: `https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/regions/region-{slug}.png`
+
+### Commits
+- `fix(ui): Fix states page font overlap issue`
+- `feat(images): Add AI-generated region hero images`
+
+### Gotchas
+- Gemini image generation API doesn't support `aspectRatio` parameter
+- Must use `responseModalities: ["TEXT", "IMAGE"]` (uppercase, both required)
+- Image dimensions vary (API ignores aspect ratio in prompt text)
+- Use CSS `object-fit: cover` to handle varying dimensions
+- R2 requires public access enabled for direct URLs
+
+### Next Steps
+- [ ] Verify park images display correctly on live site
+- [ ] Choose logo concept and add to site
+- [ ] Execute marketing plan Week 1 quick wins
+
+---
+
+## Session - January 28, 2026 (Guides & Gear Pages)
+
+### Completed
+
+**Created /guides Page:**
+- Planning hub for national park visitors
+- 8 guide categories with "Coming Soon" badges:
+  - First-Time Visitor Guide
+  - Best Times to Visit Each Park
+  - National Park Road Trips
+  - Camping in National Parks
+  - Hiking Preparation Guide
+  - National Park Photography
+  - Visiting Parks with Kids
+  - Accessibility Guide
+- Quick tips banner (scrollable tips)
+- Newsletter signup for guide launch notifications
+- Links to official resources (NPS, Recreation.gov, America the Beautiful pass)
+
+**Created /gear Page:**
+- Recommended gear for park adventures
+- 6 gear categories with item recommendations:
+  - Day Hiking Essentials
+  - Camping Gear
+  - Photography
+  - Safety & Emergency
+  - Clothing Layers
+  - Wildlife Viewing
+- "10 Essentials" banner
+- Pro tips section (test gear, buy quality, rent first, etc.)
+- Affiliate disclosure note
+
+**Navigation Update:**
+- Added /gear to main navigation
+- Replaced /about with /gear (about still accessible via footer)
+
+### Files Created
+- `src/pages/guides.astro` - Planning guides hub
+- `src/pages/gear.astro` - Gear recommendations page
+
+### Files Modified
+- `src/components/Nav.astro` - Added /gear link
+
+### Page Status Summary
+| Page | Status |
+|------|--------|
+| `/submit` | Working (needs Web3Forms key) |
+| `/guides` | Created (guides content "Coming Soon") |
+| `/gear` | Created (static content, no affiliates yet) |
+
+### Pending Actions
+- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard for /submit and /contact forms
+- [ ] User needs to set up SendGrid on their side (if switching from Web3Forms)
+- [ ] Add actual guide content when ready
+- [ ] Add affiliate links to gear page when partnerships established
+
+### Gotchas
+- /submit page currently uses Web3Forms, not SendGrid
+- Footer links to pages that don't exist yet (/itineraries, /tips, /privacy, /terms, /affiliate-disclosure)
