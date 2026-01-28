@@ -21,10 +21,14 @@
 - [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
 - [ ] Create Printful account + get API key
 - [ ] Execute marketing plan Week 1 quick wins
-- [ ] Choose logo concept and add to site
+- [ ] Create /itineraries and /affiliate-disclosure pages
 - [x] Generate AI images for all 63 parks (R2: parks/*.png)
 - [x] Generate AI images for 6 regions (R2: regions/*.png)
 - [x] Fix states page font overlap
+- [x] Choose logo concept and add to site
+- [x] Create /guides page with full content
+- [x] Create /gear page with full content
+- [x] Create /privacy and /terms pages
 
 ---
 
@@ -511,62 +515,99 @@ national-parks/
 
 ---
 
-## Session - January 28, 2026 (Guides & Gear Pages)
+## Session - January 28, 2026 (Content Pages + Logo)
 
 ### Completed
 
-**Created /guides Page:**
-- Planning hub for national park visitors
-- 8 guide categories with "Coming Soon" badges:
-  - First-Time Visitor Guide
-  - Best Times to Visit Each Park
-  - National Park Road Trips
-  - Camping in National Parks
-  - Hiking Preparation Guide
-  - National Park Photography
-  - Visiting Parks with Kids
-  - Accessibility Guide
-- Quick tips banner (scrollable tips)
-- Newsletter signup for guide launch notifications
+**Created /guides Page with Full Content:**
+- 6 comprehensive planning guides with real content (not placeholders):
+  1. First-Time National Park Visitor Guide (passes, reservations, etiquette)
+  2. Best Times to Visit National Parks (seasonal tips, shoulder seasons)
+  3. National Park Camping Guide (booking 6 months ahead, FCFS, food storage)
+  4. Hiking Safety & Preparation (10 essentials, altitude, wildlife)
+  5. National Park Photography Guide (golden hour, lenses, locations)
+  6. Visiting National Parks with Kids (Junior Ranger, easy trails, tips)
+- Sticky navigation for jumping between guides
 - Links to official resources (NPS, Recreation.gov, America the Beautiful pass)
 
-**Created /gear Page:**
-- Recommended gear for park adventures
-- 6 gear categories with item recommendations:
-  - Day Hiking Essentials
-  - Camping Gear
-  - Photography
-  - Safety & Emergency
-  - Clothing Layers
-  - Wildlife Viewing
-- "10 Essentials" banner
-- Pro tips section (test gear, buy quality, rent first, etc.)
-- Affiliate disclosure note
+**Created /gear Page with Full Content:**
+- 36 specific product recommendations across 6 categories:
+  1. Day Hiking Essentials (Osprey Talon, Salomon X Ultra, Garmin inReach, etc.)
+  2. Camping Gear (Big Agnes tent, Nemo pad, Jetboil, BearVault)
+  3. Clothing Layers (Patagonia Capilene, Nano Puff, Arc'teryx Beta LT)
+  4. Photography Gear (Sony A7C II, 16-35mm GM, Peak Design tripod)
+  5. Safety & Emergency (bear spray, first aid, Sawyer filter, PLB)
+  6. Wildlife Viewing (Vortex binoculars, field guides, Thermacell)
+- Each item includes: price range, why it's recommended, budget alternative
+- "10 Essentials" banner with gear specifics
+- Pro tips section
 
-**Navigation Update:**
-- Added /gear to main navigation
-- Replaced /about with /gear (about still accessible via footer)
+**Created /privacy Page:**
+- Full privacy policy covering:
+  - Information collected (voluntary + automatic)
+  - Cookie usage and types
+  - Third-party services (Cloudflare, Mapbox, Web3Forms)
+  - Affiliate link disclosure
+  - User rights (access, correction, deletion)
+  - Data retention policies
+
+**Created /terms Page:**
+- Full terms of service covering:
+  - Acceptable use policy
+  - NPS non-affiliation disclaimer
+  - User submissions and licensing
+  - Intellectual property
+  - Affiliate disclosure
+  - Disclaimer of warranties
+  - Limitation of liability
+  - Safety notice for park visitors
+
+**Added Site Logo:**
+- Custom badge/emblem style logo (USNP-LOGO.png → logo.png)
+- Updated Nav component (h-10 mobile, h-12 desktop)
+- Updated Footer component (h-12)
+- Removed placeholder SVG icons
 
 ### Files Created
-- `src/pages/guides.astro` - Planning guides hub
-- `src/pages/gear.astro` - Gear recommendations page
+- `src/pages/guides.astro` - Full planning guides
+- `src/pages/gear.astro` - Full gear recommendations
+- `src/pages/privacy.astro` - Privacy policy
+- `src/pages/terms.astro` - Terms of service
+- `public/logo.png` - Site logo
 
 ### Files Modified
-- `src/components/Nav.astro` - Added /gear link
+- `src/components/Nav.astro` - Logo image instead of SVG
+- `src/components/Footer.astro` - Logo image instead of SVG
+
+### Commits
+- `feat(content): Add guides and gear pages with full content`
+- `feat(legal): Add privacy policy and terms of service pages`
+- `feat(branding): Add logo to header and footer`
 
 ### Page Status Summary
 | Page | Status |
 |------|--------|
-| `/submit` | Working (needs Web3Forms key) |
-| `/guides` | Created (guides content "Coming Soon") |
-| `/gear` | Created (static content, no affiliates yet) |
+| `/guides` | Live - 6 full guides |
+| `/gear` | Live - 36 product recommendations |
+| `/privacy` | Live - Full privacy policy |
+| `/terms` | Live - Full terms of service |
+| `/submit` | Live - needs Web3Forms key |
+| `/contact` | Live - needs Web3Forms key |
 
 ### Pending Actions
-- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard for /submit and /contact forms
-- [ ] User needs to set up SendGrid on their side (if switching from Web3Forms)
-- [ ] Add actual guide content when ready
+- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
 - [ ] Add affiliate links to gear page when partnerships established
+- [ ] Create /itineraries page (road trips)
+- [ ] Create /affiliate-disclosure page
+- [ ] Execute marketing plan Week 1 quick wins
 
-### Gotchas
-- /submit page currently uses Web3Forms, not SendGrid
-- Footer links to pages that don't exist yet (/itineraries, /tips, /privacy, /terms, /affiliate-disclosure)
+### Footer Links Status
+| Link | Status |
+|------|--------|
+| `/guides` | Done |
+| `/gear` | Done |
+| `/privacy` | Done |
+| `/terms` | Done |
+| `/itineraries` | Not created |
+| `/tips` | Redirects could go to /guides |
+| `/affiliate-disclosure` | Not created |

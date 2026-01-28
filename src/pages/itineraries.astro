@@ -1,0 +1,385 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const itineraries = [
+  {
+    slug: 'utah-mighty-five',
+    title: 'Utah Mighty Five',
+    duration: '7-10 days',
+    distance: '900 miles',
+    difficulty: 'Moderate',
+    bestTime: 'April-May, September-October',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/zion.png',
+    description: 'Hit all five of Utah\'s stunning national parks in one epic road trip through red rock country.',
+    parks: ['Zion', 'Bryce Canyon', 'Capitol Reef', 'Arches', 'Canyonlands'],
+    highlights: [
+      'Angels Landing and The Narrows at Zion',
+      'Sunrise at Bryce Canyon amphitheater',
+      'Scenic drive through Capitol Reef',
+      'Delicate Arch sunset at Arches',
+      'Island in the Sky at Canyonlands',
+    ],
+    route: [
+      { day: '1-2', location: 'Zion National Park', notes: 'Fly into Las Vegas, drive 2.5 hours to Zion. Hike Angels Landing or The Narrows.' },
+      { day: '3', location: 'Bryce Canyon', notes: '1.5 hour drive. Catch sunset at Sunset Point, sunrise at Bryce Point.' },
+      { day: '4', location: 'Capitol Reef', notes: '2 hour drive via Scenic Byway 12 (stunning!). Hike Hickman Bridge, pick fruit in orchards.' },
+      { day: '5-6', location: 'Arches National Park', notes: '2.5 hour drive to Moab. Delicate Arch at sunset is a must. Devils Garden for more arches.' },
+      { day: '7', location: 'Canyonlands', notes: '30 min from Moab. Island in the Sky for incredible overlooks. Mesa Arch at sunrise.' },
+    ],
+    tips: [
+      'Book Zion shuttle tickets and Angels Landing permits months ahead',
+      'Stay in Moab for easy access to both Arches and Canyonlands',
+      'Scenic Byway 12 between Bryce and Capitol Reef is worth extra time',
+      'Bring layers - desert temperatures swing 40+ degrees daily',
+      'Download offline maps - cell service is spotty throughout',
+    ],
+  },
+  {
+    slug: 'california-classics',
+    title: 'California National Parks Loop',
+    duration: '10-14 days',
+    distance: '1,200 miles',
+    difficulty: 'Moderate',
+    bestTime: 'May-June, September-October',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/yosemite.png',
+    description: 'From coastal redwoods to Sierra granite to desert dunes - experience California\'s incredible diversity.',
+    parks: ['Yosemite', 'Sequoia', 'Kings Canyon', 'Death Valley', 'Joshua Tree'],
+    highlights: [
+      'Yosemite Valley and Half Dome views',
+      'General Sherman - world\'s largest tree',
+      'Kings Canyon scenic byway',
+      'Badwater Basin - lowest point in North America',
+      'Joshua Tree stargazing',
+    ],
+    route: [
+      { day: '1-3', location: 'Yosemite', notes: 'Fly into San Francisco or Fresno. Yosemite Valley, Glacier Point, Mariposa Grove.' },
+      { day: '4-5', location: 'Sequoia & Kings Canyon', notes: '2.5 hour drive south. General Sherman Tree, Moro Rock, Kings Canyon Scenic Byway.' },
+      { day: '6-7', location: 'Death Valley', notes: '4 hour drive east. Badwater Basin, Zabriskie Point sunrise, Mesquite Dunes.' },
+      { day: '8-9', location: 'Joshua Tree', notes: '3 hour drive south. Keys View sunset, Skull Rock, Hidden Valley.' },
+      { day: '10', location: 'Return', notes: 'Drive to LA (2.5 hours) or Palm Springs for departure.' },
+    ],
+    tips: [
+      'Yosemite requires reservations May-September',
+      'Sequoia and Kings Canyon are one park - get the combo',
+      'Death Valley is best October-April (summer is dangerously hot)',
+      'Joshua Tree has no gas stations - fill up in Twentynine Palms',
+      'Consider adding Pinnacles NP between Yosemite and Sequoia',
+    ],
+  },
+  {
+    slug: 'pacific-northwest',
+    title: 'Pacific Northwest Adventure',
+    duration: '10-12 days',
+    distance: '1,000 miles',
+    difficulty: 'Moderate to Challenging',
+    bestTime: 'July-September',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/olympic.png',
+    description: 'Rainforests, volcanic peaks, and rugged coastline - the best of Washington and Oregon.',
+    parks: ['Olympic', 'Mount Rainier', 'North Cascades', 'Crater Lake'],
+    highlights: [
+      'Hoh Rain Forest - lush temperate rainforest',
+      'Hurricane Ridge alpine views',
+      'Reflection Lakes at Mount Rainier',
+      'Diablo Lake turquoise waters',
+      'Crater Lake\'s impossibly blue water',
+    ],
+    route: [
+      { day: '1-3', location: 'Olympic National Park', notes: 'Fly into Seattle, drive 2.5 hours. Hoh Rain Forest, Hurricane Ridge, Ruby Beach.' },
+      { day: '4-5', location: 'Mount Rainier', notes: '3 hour drive. Paradise area for wildflowers, Sunrise for views. Book lodges early.' },
+      { day: '6-7', location: 'North Cascades', notes: '3 hour drive. Diablo Lake overlook, Cascade Pass hike if conditions allow.' },
+      { day: '8-10', location: 'Crater Lake', notes: '6 hour drive south into Oregon. Rim Drive, boat tour to Wizard Island, Watchman Peak.' },
+    ],
+    tips: [
+      'Summer is the only reliable season - snow closes roads into October',
+      'Olympic has three distinct ecosystems - plan for all three',
+      'Mount Rainier\'s Paradise lot fills by 10am on weekends',
+      'North Cascades is the least crowded park in the lower 48',
+      'Crater Lake boat tours sell out - book at recreation.gov',
+    ],
+  },
+  {
+    slug: 'southwest-grand-circle',
+    title: 'Southwest Grand Circle',
+    duration: '14-21 days',
+    distance: '1,500 miles',
+    difficulty: 'Moderate',
+    bestTime: 'March-May, September-November',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/grand-canyon.png',
+    description: 'The ultimate American Southwest road trip hitting iconic parks across four states.',
+    parks: ['Grand Canyon', 'Zion', 'Bryce Canyon', 'Arches', 'Canyonlands', 'Mesa Verde', 'Petrified Forest'],
+    highlights: [
+      'Grand Canyon South Rim sunrise',
+      'Horseshoe Bend and Antelope Canyon (nearby)',
+      'Monument Valley (Navajo Tribal Park)',
+      'Mesa Verde cliff dwellings',
+      'Four Corners Monument',
+    ],
+    route: [
+      { day: '1-3', location: 'Grand Canyon', notes: 'Fly into Phoenix or Las Vegas. South Rim, Desert View Drive, Rim Trail.' },
+      { day: '4', location: 'Page, AZ', notes: '2 hour drive. Horseshoe Bend, Antelope Canyon tour (book ahead!).' },
+      { day: '5-6', location: 'Monument Valley', notes: '2 hour drive. Navajo-guided tour recommended. Sunrise is magical.' },
+      { day: '7-8', location: 'Mesa Verde', notes: '2.5 hour drive. Cliff Palace tour, Balcony House (if not afraid of heights).' },
+      { day: '9', location: 'Arches/Moab', notes: '2 hour drive. Delicate Arch sunset.' },
+      { day: '10', location: 'Canyonlands', notes: 'Island in the Sky district, Mesa Arch sunrise.' },
+      { day: '11-12', location: 'Capitol Reef', notes: '2 hour drive. Often overlooked gem. Scenic drive, petroglyphs.' },
+      { day: '13', location: 'Bryce Canyon', notes: '2 hour drive. Sunrise Point, Queens Garden/Navajo Loop combo.' },
+      { day: '14', location: 'Zion', notes: '1.5 hour drive. Angels Landing or The Narrows. Return to Las Vegas.' },
+    ],
+    tips: [
+      'This is a big loop - don\'t rush it',
+      'Antelope Canyon requires Navajo tour guides - book weeks ahead',
+      'Monument Valley is NOT a national park but worth the detour',
+      'Mesa Verde cliff dwelling tours require tickets',
+      'Summer is brutally hot - spring and fall are ideal',
+    ],
+  },
+  {
+    slug: 'florida-to-smokies',
+    title: 'Southeast National Parks',
+    duration: '10-14 days',
+    distance: '1,100 miles',
+    difficulty: 'Easy to Moderate',
+    bestTime: 'October-April (Everglades), May-October (Smokies)',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/great-smoky-mountains.png',
+    description: 'From Florida\'s tropical wetlands to the misty Appalachian peaks.',
+    parks: ['Everglades', 'Biscayne', 'Dry Tortugas', 'Congaree', 'Great Smoky Mountains'],
+    highlights: [
+      'Airboat through Everglades sawgrass',
+      'Snorkeling Biscayne\'s coral reefs',
+      'Fort Jefferson on Dry Tortugas',
+      'Congaree\'s champion trees',
+      'Cades Cove wildlife loop',
+    ],
+    route: [
+      { day: '1-2', location: 'Everglades', notes: 'Fly into Miami. Shark Valley tram, Anhinga Trail, flamingos at Eco Pond.' },
+      { day: '3', location: 'Biscayne', notes: '1 hour from Everglades. Snorkeling tour or glass-bottom boat.' },
+      { day: '4', location: 'Dry Tortugas', notes: 'Ferry from Key West (2.5 hours) or seaplane. Fort Jefferson, amazing snorkeling.' },
+      { day: '5', location: 'Travel Day', notes: 'Drive or fly from Miami to South Carolina (10+ hours or short flight).' },
+      { day: '6', location: 'Congaree', notes: 'Near Columbia, SC. Boardwalk Loop, champion trees, firefly season in May.' },
+      { day: '7-10', location: 'Great Smoky Mountains', notes: '4 hour drive. Cades Cove, Clingmans Dome, Roaring Fork Motor Trail.' },
+    ],
+    tips: [
+      'Everglades dry season (Dec-April) is best for wildlife',
+      'Dry Tortugas ferry books up weeks ahead - plan early',
+      'Great Smokies is FREE but requires parking tags',
+      'Cades Cove is packed on weekends - go at dawn',
+      'Fall colors in Smokies peak mid-October',
+    ],
+  },
+  {
+    slug: 'alaska-frontier',
+    title: 'Alaska\'s Wild Parks',
+    duration: '10-14 days',
+    distance: '600 miles (plus flights)',
+    difficulty: 'Challenging',
+    bestTime: 'June-August only',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/denali.png',
+    description: 'America\'s last frontier - massive wilderness, incredible wildlife, and the highest peak in North America.',
+    parks: ['Denali', 'Kenai Fjords', 'Glacier Bay', 'Wrangell-St. Elias'],
+    highlights: [
+      'Denali (Mt. McKinley) - tallest peak in North America',
+      'Grizzly bears and caribou in Denali',
+      'Exit Glacier and Harding Icefield',
+      'Whale watching in Glacier Bay',
+      'Massive glaciers in Wrangell-St. Elias',
+    ],
+    route: [
+      { day: '1', location: 'Anchorage', notes: 'Fly into Anchorage. Explore downtown, Alaska Wildlife Conservation Center.' },
+      { day: '2-4', location: 'Denali', notes: '4 hour drive north. Bus tour deep into park, look for wildlife. Book months ahead!' },
+      { day: '5-6', location: 'Kenai Fjords', notes: '4 hour drive south to Seward. Exit Glacier hike, boat tour to see glaciers calving.' },
+      { day: '7-8', location: 'Glacier Bay', notes: 'Fly to Juneau, then ferry to Gustavus. Day boat tour or kayaking.' },
+      { day: '9-10', location: 'Wrangell-St. Elias', notes: 'Fly back to Anchorage, drive 5 hours to McCarthy. Root Glacier, ghost town of Kennecott.' },
+    ],
+    tips: [
+      'Alaska\'s parks have VERY short seasons - July is peak',
+      'Denali bus permits sell out 6+ months ahead',
+      'Denali is only visible ~30% of days - be flexible',
+      'Bring serious bug spray - Alaska mosquitoes are legendary',
+      'Consider internal flights - distances are huge',
+      'Book everything early - Alaska tourism is competitive',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="National Park Road Trip Itineraries"
+  description="Epic road trip itineraries covering multiple national parks. Detailed routes, daily plans, and insider tips for the ultimate park adventures."
+>
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16">
+    <div class="container-site text-center">
+      <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+        Road Trip Itineraries
+      </h1>
+      <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        Multi-park adventures with detailed routes, timing tips, and everything you need to plan an epic trip.
+      </p>
+    </div>
+  </section>
+
+  <!-- Quick Links -->
+  <section class="bg-gray-50 py-6 border-b sticky top-16 md:top-20 z-40">
+    <div class="container-site">
+      <div class="flex gap-3 overflow-x-auto pb-2 -mb-2">
+        {itineraries.map((itin) => (
+          <a
+            href={`#${itin.slug}`}
+            class="bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-primary hover:text-white transition-colors whitespace-nowrap shadow-sm"
+          >
+            {itin.title}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Itineraries -->
+  <section class="section-padding">
+    <div class="container-site">
+      <div class="space-y-20">
+        {itineraries.map((itin) => (
+          <article id={itin.slug} class="scroll-mt-32">
+            <!-- Header -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+                  {itin.title}
+                </h2>
+                <p class="text-lg text-gray-600 mb-6">{itin.description}</p>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">Duration</div>
+                    <div class="font-semibold text-gray-900">{itin.duration}</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">Distance</div>
+                    <div class="font-semibold text-gray-900">{itin.distance}</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">Difficulty</div>
+                    <div class="font-semibold text-gray-900">{itin.difficulty}</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="text-sm text-gray-500">Best Time</div>
+                    <div class="font-semibold text-gray-900">{itin.bestTime}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative">
+                <img
+                  src={itin.image}
+                  alt={itin.title}
+                  class="w-full h-64 lg:h-full object-cover rounded-xl shadow-lg"
+                />
+                <div class="absolute bottom-4 left-4 right-4">
+                  <div class="flex flex-wrap gap-2">
+                    {itin.parks.map((park) => (
+                      <span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900 shadow">
+                        {park}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Highlights -->
+            <div class="mb-8">
+              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Trip Highlights</h3>
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {itin.highlights.map((highlight) => (
+                  <div class="flex items-start gap-2 bg-primary/5 rounded-lg p-3">
+                    <span class="text-primary mt-0.5">✓</span>
+                    <span class="text-gray-700">{highlight}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Day by Day -->
+            <div class="mb-8">
+              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Day-by-Day Route</h3>
+              <div class="space-y-3">
+                {itin.route.map((stop, i) => (
+                  <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4">
+                    <div class="flex-shrink-0 w-20">
+                      <span class="text-sm font-semibold text-primary">Day {stop.day}</span>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-gray-900">{stop.location}</div>
+                      <div class="text-sm text-gray-600">{stop.notes}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Pro Tips -->
+            <div class="bg-secondary/10 rounded-xl p-6">
+              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Pro Tips</h3>
+              <ul class="space-y-2">
+                {itin.tips.map((tip) => (
+                  <li class="flex items-start gap-2">
+                    <span class="text-secondary font-bold">•</span>
+                    <span class="text-gray-700">{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Planning Resources -->
+  <section class="bg-primary/5 section-padding">
+    <div class="container-site">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-6 text-center">
+        Planning Resources
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <a href="/guides" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+          <div class="font-semibold text-gray-900">Planning Guides</div>
+          <div class="text-sm text-gray-500">First-timer tips & more</div>
+        </a>
+        <a href="/gear" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+          <div class="font-semibold text-gray-900">Gear Guide</div>
+          <div class="text-sm text-gray-500">What to pack</div>
+        </a>
+        <a
+          href="https://www.recreation.gov"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow"
+        >
+          <div class="font-semibold text-gray-900">Recreation.gov</div>
+          <div class="text-sm text-gray-500">Campground reservations</div>
+        </a>
+        <a href="/map" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+          <div class="font-semibold text-gray-900">Park Map</div>
+          <div class="text-sm text-gray-500">Plan your route</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-padding bg-white">
+    <div class="container-site text-center">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">
+        Ready to Start Planning?
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Explore all 63 national parks and find your perfect adventure.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/parks" class="btn-primary">Browse All Parks</a>
+        <a href="/states" class="btn-secondary">Parks by State</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
