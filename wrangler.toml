@@ -4,14 +4,14 @@ pages_build_output_dir = "dist"
 compatibility_date = "2025-01-01"
 
 [vars]
-PUBLIC_MAPBOX_TOKEN = "pk.eyJ1IjoiYm1hbmd1bTEiLCJhIjoiY21qazZzYjk4MXU2bTNkb2IzaDZ5d2cwcSJ9.shiJeOoDR_TydwB3tybPIg"
+# PUBLIC_MAPBOX_TOKEN - Set in Cloudflare Dashboard
 
 [env.production]
 compatibility_date = "2025-01-01"
 
 [env.production.vars]
 SITE_URL = "https://bestusnationalparks.com"
-PUBLIC_MAPBOX_TOKEN = "pk.eyJ1IjoiYm1hbmd1bTEiLCJhIjoiY21qazZzYjk4MXU2bTNkb2IzaDZ5d2cwcSJ9.shiJeOoDR_TydwB3tybPIg"
+# PUBLIC_MAPBOX_TOKEN - Set in Cloudflare Dashboard
 
 # D1 Database binding - create with:
 #   wrangler d1 create parks_db
