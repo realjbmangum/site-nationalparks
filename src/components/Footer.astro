@@ -32,10 +32,7 @@ const currentYear = new Date().getFullYear();
       <!-- Brand -->
       <div class="lg:col-span-1">
         <a href="/" class="flex items-center gap-2 mb-4">
-          <svg class="w-8 h-8 text-secondary" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="font-display text-xl font-bold">{siteConfig.name}</span>
+          <img src="/logo.png" alt={siteConfig.name} class="h-12 w-auto" />
         </a>
         <p class="text-white/80 text-sm mb-6">
           {siteConfig.tagline}

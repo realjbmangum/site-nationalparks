@@ -17,12 +17,7 @@ const currentPath = Astro.url.pathname;
     <div class="flex items-center justify-between h-16 md:h-20">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-2">
-        <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="font-display text-xl font-bold text-primary hidden sm:block">
-          {siteConfig.name}
-        </span>
+        <img src="/logo.png" alt={siteConfig.name} class="h-10 md:h-12 w-auto" />
       </a>
 
       <!-- Desktop Navigation -->
