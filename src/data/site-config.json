@@ -26,5 +26,10 @@
     "mapbox": true,
     "search": true,
     "newsletter": true
+  },
+  "monetization": {
+    "ga4Id": "G-WG2965ESY2",
+    "adsenseId": "",
+    "amazonTag": "jbmangum27-20"
   }
 }

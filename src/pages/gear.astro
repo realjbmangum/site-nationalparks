@@ -1,5 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../data/site-config.json';
+
+const amazonTag = siteConfig.monetization?.amazonTag || '';
+function amazonUrl(productName: string) {
+  return `https://www.amazon.com/s?k=${encodeURIComponent(productName)}&tag=${amazonTag}`;
+}
 
 const gearCategories = [
   {
@@ -405,6 +411,16 @@ const tenEssentials = [
                   <p class="text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                     <span class="font-medium">Budget alternative:</span> {item.alternative}
                   </p>
+                  {amazonTag && (
+                    <a
+                      href={amazonUrl(item.name)}
+                      target="_blank"
+                      rel="nofollow sponsored noopener"
+                      class="inline-block mt-3 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                    >
+                      Check Price on Amazon &rarr;
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -471,9 +487,10 @@ const tenEssentials = [
   <section class="bg-gray-100 py-6">
     <div class="container-site">
       <p class="text-sm text-gray-500 text-center max-w-2xl mx-auto">
-        <strong>Note:</strong> We're an independent site and do not currently have affiliate partnerships.
-        Recommendations are based purely on quality and value. When we add affiliate links in the future,
-        we'll always disclose them and only recommend gear we'd personally use.
+        <strong>Affiliate Disclosure:</strong> Some links on this page are affiliate links.
+        We earn a small commission if you purchase through them, at no extra cost to you.
+        Recommendations are based purely on quality and value — we only recommend gear we'd personally use.
+        <a href="/affiliate-disclosure" class="underline hover:text-gray-700">Learn more</a>.
       </p>
     </div>
   </section>

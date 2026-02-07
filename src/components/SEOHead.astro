@@ -64,3 +64,17 @@ const defaultSchema = {
 
 <!-- Schema.org -->
 <script type="application/ld+json" set:html={JSON.stringify(schema || defaultSchema)} />
+
+<!-- Google Analytics -->
+{siteConfig.monetization?.ga4Id && (
+  <>
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <script is:inline src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.monetization.ga4Id}`} async></script>
+    <script is:inline define:vars={{ ga4Id: siteConfig.monetization.ga4Id }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', ga4Id);
+    </script>
+  </>
+)}
