@@ -11,54 +11,28 @@ export const GET: APIRoute = async ({ locals }) => {
     getStatesWithCounts(db),
   ]);
 
-  const staticPages = [
-    { url: '/', priority: '1.0', changefreq: 'weekly' },
-    { url: '/parks', priority: '0.9', changefreq: 'weekly' },
-    { url: '/map', priority: '0.8', changefreq: 'monthly' },
-    { url: '/states', priority: '0.8', changefreq: 'monthly' },
-    { url: '/regions', priority: '0.8', changefreq: 'monthly' },
-    { url: '/guides', priority: '0.8', changefreq: 'monthly' },
-    { url: '/gear', priority: '0.7', changefreq: 'monthly' },
-    { url: '/itineraries', priority: '0.7', changefreq: 'monthly' },
-    { url: '/about', priority: '0.4', changefreq: 'yearly' },
-    { url: '/contact', priority: '0.3', changefreq: 'yearly' },
-    { url: '/affiliate-disclosure', priority: '0.2', changefreq: 'yearly' },
-    { url: '/privacy', priority: '0.2', changefreq: 'yearly' },
-    { url: '/terms', priority: '0.2', changefreq: 'yearly' },
-  ];
-
-  const urls = [
-    ...staticPages.map(p => `
-    <url>
-      <loc>${site}${p.url}</loc>
-      <changefreq>${p.changefreq}</changefreq>
-      <priority>${p.priority}</priority>
-    </url>`),
-
-    ...parks.map(park => `
-    <url>
-      <loc>${site}/parks/${park.slug}</loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-    </url>`),
-
-    ...states.map(s => `
-    <url>
-      <loc>${site}/states/${stateNameToSlug(s.state)}</loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.7</priority>
-    </url>`),
-
-    ...Object.keys(REGIONS).map(region => `
-    <url>
-      <loc>${site}/regions/${region}</loc>
-      <changefreq>monthly</changefreq>
-      <priority>0.7</priority>
-    </url>`),
+  const pages = [
+    '/',
+    '/parks',
+    '/map',
+    '/states',
+    '/regions',
+    '/guides',
+    '/gear',
+    '/itineraries',
+    '/about',
+    '/contact',
+    '/affiliate-disclosure',
+    '/privacy',
+    '/terms',
+    ...parks.map(p => `/parks/${p.slug}`),
+    ...states.map(s => `/states/${stateNameToSlug(s.state)}`),
+    ...Object.keys(REGIONS).map(r => `/regions/${r}`),
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.join('')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map(p => `  <url><loc>${site}${p}</loc></url>`).join('\n')}
 </urlset>`;
 
   return new Response(xml, {
