@@ -78,3 +78,8 @@ const defaultSchema = {
     </script>
   </>
 )}
+
+<!-- Google AdSense -->
+{siteConfig.monetization?.adsenseId && (
+  <script is:inline src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${siteConfig.monetization.adsenseId}`} crossorigin="anonymous" async></script>
+)}
