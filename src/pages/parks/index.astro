@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ParkCard from '../../components/ParkCard.astro';
 import { getAllParks, parseJsonObject, type ParkFeatures } from '../../lib/db';
+import AdSlot from '../../components/AdSlot.astro';
 
 // Get D1 database from Cloudflare runtime
 const db = Astro.locals.runtime.env.DB;
@@ -85,6 +86,8 @@ const parks = await getAllParks(db);
         ))}
       </div>
     </div>
+
+    <AdSlot slot="inline" />
   </section>
 </BaseLayout>
 

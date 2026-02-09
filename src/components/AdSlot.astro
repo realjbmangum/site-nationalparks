@@ -1,0 +1,26 @@
+---
+import siteConfig from '../data/site-config.json';
+
+interface Props {
+  slot?: 'header' | 'footer' | 'sidebar' | 'inline';
+  class?: string;
+}
+
+const { slot = 'inline', class: className = '' } = Astro.props;
+const adsenseId = siteConfig.monetization?.adsenseId;
+---
+
+{adsenseId && (
+  <div class={`ad-container my-6 text-center ${className}`} data-slot={slot}>
+    <ins
+      class="adsbygoogle"
+      style="display:block; min-height:90px;"
+      data-ad-client={adsenseId}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    />
+    <script is:inline>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+)}

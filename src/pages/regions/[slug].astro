@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ParkCard from '../../components/ParkCard.astro';
 import { getParksByRegion, REGIONS, type RegionSlug } from '../../lib/db';
+import AdSlot from '../../components/AdSlot.astro';
 
 // Get D1 database from Cloudflare runtime
 const db = Astro.locals.runtime.env.DB;
@@ -97,6 +98,11 @@ const regionSchema = {
       )}
     </div>
   </section>
+
+  <!-- Ad -->
+  <div class="container-site">
+    <AdSlot slot="inline" />
+  </div>
 
   <!-- Region Navigation -->
   <section class="py-8 bg-white border-t">

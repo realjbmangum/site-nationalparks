@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ParkCard from '../components/ParkCard.astro';
 import siteConfig from '../data/site-config.json';
 import { getFeaturedParks, getRegionsWithCounts, REGIONS } from '../lib/db';
+import AdSlot from '../components/AdSlot.astro';
 
 // Get D1 database from Cloudflare runtime
 const db = Astro.locals.runtime.env.DB;
@@ -265,6 +266,11 @@ const homeSchema = {
       </div>
     </div>
   </section>
+
+  <!-- Ad -->
+  <div class="container-site">
+    <AdSlot slot="inline" />
+  </div>
 
   <!-- Newsletter Signup -->
   <section class="section-padding bg-secondary">

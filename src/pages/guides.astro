@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
 
 const guides = [
   {
@@ -262,6 +263,11 @@ const guides = [
       </div>
     </div>
   </section>
+
+  <!-- Ad -->
+  <div class="container-site">
+    <AdSlot slot="inline" />
+  </div>
 
   <!-- Official Resources -->
   <section class="bg-primary/5 section-padding">

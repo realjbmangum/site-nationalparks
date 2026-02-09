@@ -8,6 +8,7 @@ import {
   stateNameToSlug,
   US_STATES,
 } from '../../lib/db';
+import AdSlot from '../../components/AdSlot.astro';
 
 // Get D1 database from Cloudflare runtime
 const db = Astro.locals.runtime.env.DB;
@@ -122,6 +123,9 @@ const stateSchema = {
                 </div>
               </dl>
             </div>
+
+            <!-- Ad: Sidebar -->
+            <AdSlot slot="sidebar" />
 
             <!-- Other States -->
             <div class="bg-white rounded-xl shadow-md p-6">

@@ -24,6 +24,7 @@ import {
 } from '../../lib/nps-api';
 import { getCachedNPSData } from '../../lib/nps-cache';
 import siteConfig from '../../data/site-config.json';
+import AdSlot from '../../components/AdSlot.astro';
 
 // Get runtime environment
 const runtime = Astro.locals.runtime.env;
@@ -404,6 +405,9 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
               </ul>
             </div>
           )}
+
+          <!-- Ad: Sidebar -->
+          <AdSlot slot="sidebar" />
 
           <!-- Shop Merch CTA -->
           <a
