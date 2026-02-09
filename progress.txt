@@ -3,6 +3,33 @@
 ## Current Status: LIVE
 
 **Site:** https://bestusnationalparks.com/
+
+---
+
+## Session - February 9, 2026 - AdSense Implementation
+
+### Completed: AdSense Ad Placements
+
+**Infrastructure:**
+- Set `adsenseId` in `src/data/site-config.json` (ca-pub-2962780862577949)
+- Added AdSense script to `src/components/SEOHead.astro`
+- Created `src/components/AdSlot.astro` (auto-format, responsive, `is:inline`, CLS min-height)
+
+**Ad Placements (7 page templates):**
+- `src/pages/index.astro` — After Browse by Region, before Newsletter
+- `src/pages/parks/index.astro` — After parks grid
+- `src/pages/parks/[slug].astro` — Sidebar after Amenities (63 park pages)
+- `src/pages/regions/[slug].astro` — After parks grid (6 region pages)
+- `src/pages/states/[slug].astro` — Sidebar after state stats
+- `src/pages/gear.astro` — Between gear categories and Pro Tips
+- `src/pages/guides.astro` — After guides, before Official Resources
+
+**Pages without ads (intentional):**
+- Contact, Submit, About, Privacy, Terms, Map, Search, 404
+
+### Commits
+- `b76564d` — feat(ads): Add AdSense verification script
+- `e6d25ce` — feat(ads): Add AdSense ad placements across 7 pages
 **Database:** Cloudflare D1 (63 parks seeded)
 **Last Deploy:** January 27, 2026
 
@@ -611,3 +638,48 @@ national-parks/
 | `/itineraries` | Not created |
 | `/tips` | Redirects could go to /guides |
 | `/affiliate-disclosure` | Not created |
+
+---
+
+## Session - January 28, 2026 (Printful Sync Worker)
+
+### Completed
+
+**Printful Sync Worker:**
+- Created `workers/printful-sync/` Cloudflare Worker to replace `scripts/printful-sync.ts`
+- Worker fetches all Printful sync products, extracts variants, and upserts into D1
+- Supports both cron trigger (every 6 hours) and manual HTTP GET
+- Extracts `park_slug` from product name ("Yellowstone - Badge Mug" → "yellowstone")
+- Detects `product_type` from name keywords (mug/shirt/sticker/poster/tote)
+- Full replace strategy: DELETE all rows, INSERT fresh data each sync
+- 500ms delay between Printful API calls for rate limiting
+- Deployed to: https://printful-sync.bmangum1.workers.dev
+- Cron schedule: `0 */6 * * *` (every 6 hours)
+
+**Files Created:**
+- `workers/printful-sync/index.ts` - Worker with fetch + scheduled handlers
+- `workers/printful-sync/wrangler.toml` - D1 binding, cron trigger
+- `workers/printful-sync/package.json` - Minimal worker package
+
+**Files Deleted:**
+- `scripts/printful-sync.ts` - Replaced by worker
+
+### Decisions
+- Full table replace (DELETE + INSERT) instead of upsert — simpler, Printful catalog is small
+- Used parameterized queries (not string interpolation) for D1 writes
+- Worker deployed separately from Pages project, shares same D1 database
+
+### Gotchas
+- Free plan limit of 5 cron triggers across all workers — had to free a slot
+- `wrangler deploy` overrides secrets set via dashboard — use `wrangler secret put` instead
+- Pages env vars and Worker secrets are separate — must set PRINTFUL_API_KEY on the worker, not just Pages
+
+### Blocker
+- **PRINTFUL_API_KEY returning 401** — key set via dashboard and wrangler secret but Printful API rejects it. Need to verify/regenerate token in Printful dashboard (Settings → API Access).
+
+### Next Steps
+- [ ] Fix Printful API key (regenerate in Printful dashboard, re-set on worker)
+- [ ] Trigger manual sync and verify D1 has products
+- [ ] Verify `/shop` page displays synced products
+- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
+- [ ] Execute marketing plan Week 1 quick wins
