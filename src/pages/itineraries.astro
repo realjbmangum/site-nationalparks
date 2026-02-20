@@ -1,210 +1,462 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
 
 const itineraries = [
   {
     slug: 'utah-mighty-five',
-    title: 'Utah Mighty Five',
+    title: 'Utah Mighty 5',
+    tagline: 'Five parks, one unforgettable week through red rock country',
     duration: '7-10 days',
     distance: '900 miles',
-    difficulty: 'Moderate',
-    bestTime: 'April-May, September-October',
+    bestSeason: 'April-May or September-October',
     image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/zion.png',
-    description: 'Hit all five of Utah\'s stunning national parks in one epic road trip through red rock country.',
-    parks: ['Zion', 'Bryce Canyon', 'Capitol Reef', 'Arches', 'Canyonlands'],
-    highlights: [
-      'Angels Landing and The Narrows at Zion',
-      'Sunrise at Bryce Canyon amphitheater',
-      'Scenic drive through Capitol Reef',
-      'Delicate Arch sunset at Arches',
-      'Island in the Sky at Canyonlands',
+    description: 'Utah\'s five national parks pack more geological drama into one state than anywhere else on Earth. From the slot canyons of Zion to the gravity-defying arches near Moab, this route connects them all in a loop that starts and ends in Las Vegas.',
+    parks: [
+      { name: 'Zion', slug: 'zion' },
+      { name: 'Bryce Canyon', slug: 'bryce-canyon' },
+      { name: 'Capitol Reef', slug: 'capitol-reef' },
+      { name: 'Arches', slug: 'arches' },
+      { name: 'Canyonlands', slug: 'canyonlands' },
     ],
+    budget: '$1,200-$2,500 per person',
+    budgetBreakdown: 'Gas ~$120, camping $20-30/night or lodges $150-250/night, food $40-60/day, park passes $80 (America the Beautiful annual pass covers all five)',
     route: [
-      { day: '1-2', location: 'Zion National Park', notes: 'Fly into Las Vegas, drive 2.5 hours to Zion. Hike Angels Landing or The Narrows.' },
-      { day: '3', location: 'Bryce Canyon', notes: '1.5 hour drive. Catch sunset at Sunset Point, sunrise at Bryce Point.' },
-      { day: '4', location: 'Capitol Reef', notes: '2 hour drive via Scenic Byway 12 (stunning!). Hike Hickman Bridge, pick fruit in orchards.' },
-      { day: '5-6', location: 'Arches National Park', notes: '2.5 hour drive to Moab. Delicate Arch at sunset is a must. Devils Garden for more arches.' },
-      { day: '7', location: 'Canyonlands', notes: '30 min from Moab. Island in the Sky for incredible overlooks. Mesa Arch at sunrise.' },
+      {
+        day: 'Day 1',
+        location: 'Las Vegas to Zion National Park',
+        driveTime: '2.5 hours (160 miles)',
+        activities: 'Pick up rental car and groceries in Las Vegas. Drive to Springdale. Check into campground or lodge. Explore the Watchman Trail (3.3 miles, easy) for sunset views of the Watchman and Towers of the Virgin.',
+        tip: 'Stock up on groceries at a Las Vegas Costco or Walmart. Springdale has a small market, but prices are steep.',
+      },
+      {
+        day: 'Days 2-3',
+        location: 'Zion National Park',
+        driveTime: 'Shuttle system within the park',
+        activities: 'Day 2: Hike Angels Landing (5.4 miles, strenuous) - the most thrilling trail in the park system. Requires a permit via recreation.gov lottery. Afternoon: wade The Narrows from the bottom up (at least 3 miles in). Day 3: Observation Point via East Mesa Trail (7.4 miles, moderate) for the best overlook in the park. Drive the Zion-Mount Carmel Highway through the tunnel.',
+        tip: 'Angels Landing permits open as a seasonal lottery and a day-before lottery. Enter both for the best odds.',
+      },
+      {
+        day: 'Day 4',
+        location: 'Bryce Canyon National Park',
+        driveTime: '1.5 hours from Zion (84 miles) via US-89',
+        activities: 'Arrive for sunrise at Bryce Point - the amphitheater filled with orange hoodoos glowing in first light is unforgettable. Hike the Queens Garden/Navajo Loop combo (2.9 miles, moderate) to walk among the hoodoos. Drive the 18-mile scenic road to Rainbow Point for sweeping views. Night: Bryce has some of the darkest skies in North America. Stargaze from the amphitheater.',
+        tip: 'Bryce sits at 8,000+ feet. Even in summer, nighttime temps drop into the 30s. Bring warm layers.',
+      },
+      {
+        day: 'Day 5',
+        location: 'Capitol Reef National Park',
+        driveTime: '2 hours from Bryce (120 miles) via Scenic Byway 12',
+        activities: 'The drive on Scenic Byway 12 is one of America\'s most beautiful roads - take your time. At Capitol Reef, drive the scenic road along the Waterpocket Fold. Hike Hickman Bridge (1.8 miles, easy) and Cassidy Arch (3.4 miles, moderate). Visit the historic Fruita orchards - you can pick cherries, peaches, or apples in season for free.',
+        tip: 'Capitol Reef is the least crowded of the five. Stay at the Fruita Campground ($25/night) for a peaceful night surrounded by deer and orchards.',
+      },
+      {
+        day: 'Days 6-7',
+        location: 'Arches National Park',
+        driveTime: '2.5 hours from Capitol Reef (150 miles) to Moab',
+        activities: 'Day 6: Hike to Delicate Arch at sunset (3 miles roundtrip, moderate) - Utah\'s icon on every license plate. Morning: Windows Section and Double Arch (short, easy walks). Day 7: Devils Garden trail (7.2 miles for the full primitive loop) passes eight named arches including Landscape Arch, the longest in North America. Afternoon: explore Moab for mountain biking, river rafting, or just grabbing dinner.',
+        tip: 'Arches requires timed entry reservations April through October. Book at recreation.gov when they open. Also available day-before at 6pm MT.',
+      },
+      {
+        day: 'Day 8',
+        location: 'Canyonlands National Park',
+        driveTime: '30 minutes from Moab (32 miles) to Island in the Sky',
+        activities: 'Sunrise at Mesa Arch (0.5 miles, easy) - the most photographed arch in Utah with a glowing underside at dawn. Grand View Point (2 miles, easy) for a panorama that rivals the Grand Canyon. Upheaval Dome (1.8 miles, moderate) to see a mysterious crater. If time allows, drive to Dead Horse Point State Park nearby for another jaw-dropping overlook.',
+        tip: 'Canyonlands has four districts that are not connected by road. Island in the Sky is the most accessible. The Needles district (1.5 hours from Moab) is worth a separate day if you have time.',
+      },
+      {
+        day: 'Day 9-10',
+        location: 'Return to Las Vegas',
+        driveTime: '4.5 hours from Moab (300 miles) via I-70 and I-15',
+        activities: 'Drive back via I-70, one of the most scenic interstates in America through the San Rafael Swell. Optional stop: Goblin Valley State Park (1 hour detour) for otherworldly rock formations. Arrive Las Vegas for your flight.',
+        tip: 'If flying out the next morning, stay near the airport. If you have an extra day, detour to Snow Canyon State Park near St. George for one more dose of red rock.',
+      },
     ],
     tips: [
-      'Book Zion shuttle tickets and Angels Landing permits months ahead',
-      'Stay in Moab for easy access to both Arches and Canyonlands',
-      'Scenic Byway 12 between Bryce and Capitol Reef is worth extra time',
-      'Bring layers - desert temperatures swing 40+ degrees daily',
-      'Download offline maps - cell service is spotty throughout',
+      'Buy the $80 America the Beautiful annual pass - it covers all five parks and saves you $100+ over individual fees',
+      'Book Zion shuttle tickets and Angels Landing permits months ahead via recreation.gov',
+      'Stay in Moab for easy access to both Arches and Canyonlands - two parks, one base camp',
+      'Scenic Byway 12 between Bryce and Capitol Reef is worth extra stops. Budget 3+ hours for the drive',
+      'Bring layers - desert temperatures swing 40+ degrees between day and night',
+      'Download offline maps for all five parks. Cell service is spotty to nonexistent',
+      'Carry at least 3 liters of water per person per day. The desert is unforgiving',
     ],
   },
   {
-    slug: 'california-classics',
-    title: 'California National Parks Loop',
-    duration: '10-14 days',
-    distance: '1,200 miles',
-    difficulty: 'Moderate',
-    bestTime: 'May-June, September-October',
+    slug: 'california-big-three',
+    title: 'California\'s Big 3',
+    tagline: 'Giant sequoias, granite cathedrals, and desert extremes',
+    duration: '7-10 days',
+    distance: '1,100 miles',
+    bestSeason: 'May-June or September-October',
     image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/yosemite.png',
-    description: 'From coastal redwoods to Sierra granite to desert dunes - experience California\'s incredible diversity.',
-    parks: ['Yosemite', 'Sequoia', 'Kings Canyon', 'Death Valley', 'Joshua Tree'],
-    highlights: [
-      'Yosemite Valley and Half Dome views',
-      'General Sherman - world\'s largest tree',
-      'Kings Canyon scenic byway',
-      'Badwater Basin - lowest point in North America',
-      'Joshua Tree stargazing',
+    description: 'From the towering granite walls of Yosemite Valley to the world\'s largest trees in Sequoia and Kings Canyon, then east into the surreal extremes of Death Valley. This loop through California captures the state\'s staggering range - lush mountain forests, alpine meadows, and the hottest place on Earth, all within a few hours of each other.',
+    parks: [
+      { name: 'Yosemite', slug: 'yosemite' },
+      { name: 'Sequoia', slug: 'sequoia' },
+      { name: 'Kings Canyon', slug: 'kings-canyon' },
+      { name: 'Death Valley', slug: 'death-valley' },
     ],
+    budget: '$1,500-$3,000 per person',
+    budgetBreakdown: 'Gas ~$150, camping $26-35/night or lodges $200-400/night, food $40-60/day, park passes $80 annual. Yosemite lodges book up a year ahead.',
     route: [
-      { day: '1-3', location: 'Yosemite', notes: 'Fly into San Francisco or Fresno. Yosemite Valley, Glacier Point, Mariposa Grove.' },
-      { day: '4-5', location: 'Sequoia & Kings Canyon', notes: '2.5 hour drive south. General Sherman Tree, Moro Rock, Kings Canyon Scenic Byway.' },
-      { day: '6-7', location: 'Death Valley', notes: '4 hour drive east. Badwater Basin, Zabriskie Point sunrise, Mesquite Dunes.' },
-      { day: '8-9', location: 'Joshua Tree', notes: '3 hour drive south. Keys View sunset, Skull Rock, Hidden Valley.' },
-      { day: '10', location: 'Return', notes: 'Drive to LA (2.5 hours) or Palm Springs for departure.' },
+      {
+        day: 'Day 1',
+        location: 'Fresno to Yosemite National Park',
+        driveTime: '1.5 hours (95 miles) from Fresno via CA-41',
+        activities: 'Fly into Fresno (cheaper and closer than SFO). Drive to Yosemite and stop at Tunnel View for your first iconic view of the valley. Check into camp or lodging. Evening stroll along the Valley Loop Trail (easy, flat) for views of El Capitan and Bridalveil Fall.',
+        tip: 'Yosemite requires timed entry reservations May through September. Reservations open 2 weeks in advance. Set an alarm.',
+      },
+      {
+        day: 'Days 2-4',
+        location: 'Yosemite National Park',
+        driveTime: 'Shuttle within the valley; 1-hour drives to Glacier Point and Tuolumne',
+        activities: 'Day 2: Mist Trail to Vernal and Nevada Falls (5.4 miles, strenuous). The mist from Vernal Fall soaks you - bring a rain layer and enjoy it. Day 3: Drive to Glacier Point for the best panoramic view in the park (open late May-October). Hike Sentinel Dome (2.2 miles, moderate) for 360-degree views. Afternoon: Mariposa Grove to see giant sequoias. Day 4: Tuolumne Meadows area - hike to Cathedral Lakes (7 miles, moderate) for alpine scenery with fewer crowds than the valley.',
+        tip: 'Skip Half Dome unless you won the permit lottery and are in serious hiking shape. Mist Trail + Glacier Point delivers the same views with less suffering.',
+      },
+      {
+        day: 'Days 5-6',
+        location: 'Sequoia & Kings Canyon National Parks',
+        driveTime: '2.5 hours from Yosemite (130 miles) via CA-41 south',
+        activities: 'Day 5: General Sherman Tree - the largest tree on Earth by volume. It\'s humbling. Hike the Congress Trail (2.1 miles, easy) through dozens of giant sequoias. Drive up Moro Rock (300 steps carved into granite) for sunset views across the Great Western Divide. Day 6: Kings Canyon Scenic Byway drops 4,000 feet into one of the deepest canyons in North America. Hike Zumwalt Meadow (1.5 miles, easy) along the Kings River. Visit Boyden Cavern if open.',
+        tip: 'Sequoia and Kings Canyon are managed as one park. The $35 entrance fee covers both. The Generals Highway connecting them is narrow and winding - no RVs over 22 feet.',
+      },
+      {
+        day: 'Days 7-8',
+        location: 'Death Valley National Park',
+        driveTime: '4 hours from Sequoia (230 miles) east via CA-190',
+        activities: 'Day 7: Arrive and head straight to Zabriskie Point for sunset. The eroded badlands glow gold and purple. Night: stargaze - Death Valley is a Gold Tier International Dark Sky Park. Day 8: Sunrise at Mesquite Flat Sand Dunes. Drive to Badwater Basin (-282 feet, lowest point in North America) and walk out onto the salt flats. Artists Drive for colorful mineral deposits. Dante\'s View for a final panoramic overlook of the entire valley.',
+        tip: 'Visit Death Valley October through April only. Summer temperatures exceed 120F and are genuinely dangerous. Even in winter, carry 2 gallons of water per person per day.',
+      },
+      {
+        day: 'Days 9-10',
+        location: 'Return via Las Vegas or Los Angeles',
+        driveTime: '2 hours to Las Vegas (120 miles) or 4.5 hours to LA (280 miles)',
+        activities: 'Drive to Las Vegas for a departing flight, or head south toward LA. Optional stop: Red Rock Canyon National Conservation Area (20 minutes from Vegas) for a scenic loop drive. Or swing through Joshua Tree (3 hours south of Death Valley) if adding days.',
+        tip: 'Flying out of Vegas is often cheapest. If driving to LA, stop in Lone Pine for views of Mount Whitney - the highest point in the lower 48, just 85 miles from the lowest point at Badwater.',
+      },
     ],
     tips: [
-      'Yosemite requires reservations May-September',
-      'Sequoia and Kings Canyon are one park - get the combo',
-      'Death Valley is best October-April (summer is dangerously hot)',
-      'Joshua Tree has no gas stations - fill up in Twentynine Palms',
-      'Consider adding Pinnacles NP between Yosemite and Sequoia',
+      'Yosemite reservations (camping and timed entry) are the hardest part of this trip. Book the moment they open',
+      'Sequoia and Kings Canyon share one entrance fee. Spend at least a full day in each',
+      'The Generals Highway between Sequoia and Kings Canyon is stunning but slow. Plan 1.5 hours for 30 miles',
+      'Death Valley has limited gas stations. Fill up in Lone Pine or Pahrump before entering',
+      'Cell service is nonexistent in most of Death Valley. Download offline maps',
+      'Pack for extremes: Yosemite can be 50F at night while Death Valley is 90F+ during the day',
+      'Spring wildflower blooms (late March-April) add a spectacular layer in Death Valley',
     ],
   },
   {
-    slug: 'pacific-northwest',
-    title: 'Pacific Northwest Adventure',
-    duration: '10-12 days',
-    distance: '1,000 miles',
-    difficulty: 'Moderate to Challenging',
-    bestTime: 'July-September',
-    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/olympic.png',
-    description: 'Rainforests, volcanic peaks, and rugged coastline - the best of Washington and Oregon.',
-    parks: ['Olympic', 'Mount Rainier', 'North Cascades', 'Crater Lake'],
-    highlights: [
-      'Hoh Rain Forest - lush temperate rainforest',
-      'Hurricane Ridge alpine views',
-      'Reflection Lakes at Mount Rainier',
-      'Diablo Lake turquoise waters',
-      'Crater Lake\'s impossibly blue water',
-    ],
-    route: [
-      { day: '1-3', location: 'Olympic National Park', notes: 'Fly into Seattle, drive 2.5 hours. Hoh Rain Forest, Hurricane Ridge, Ruby Beach.' },
-      { day: '4-5', location: 'Mount Rainier', notes: '3 hour drive. Paradise area for wildflowers, Sunrise for views. Book lodges early.' },
-      { day: '6-7', location: 'North Cascades', notes: '3 hour drive. Diablo Lake overlook, Cascade Pass hike if conditions allow.' },
-      { day: '8-10', location: 'Crater Lake', notes: '6 hour drive south into Oregon. Rim Drive, boat tour to Wizard Island, Watchman Peak.' },
-    ],
-    tips: [
-      'Summer is the only reliable season - snow closes roads into October',
-      'Olympic has three distinct ecosystems - plan for all three',
-      'Mount Rainier\'s Paradise lot fills by 10am on weekends',
-      'North Cascades is the least crowded park in the lower 48',
-      'Crater Lake boat tours sell out - book at recreation.gov',
-    ],
-  },
-  {
-    slug: 'southwest-grand-circle',
-    title: 'Southwest Grand Circle',
-    duration: '14-21 days',
-    distance: '1,500 miles',
-    difficulty: 'Moderate',
-    bestTime: 'March-May, September-November',
-    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/grand-canyon.png',
-    description: 'The ultimate American Southwest road trip hitting iconic parks across four states.',
-    parks: ['Grand Canyon', 'Zion', 'Bryce Canyon', 'Arches', 'Canyonlands', 'Mesa Verde', 'Petrified Forest'],
-    highlights: [
-      'Grand Canyon South Rim sunrise',
-      'Horseshoe Bend and Antelope Canyon (nearby)',
-      'Monument Valley (Navajo Tribal Park)',
-      'Mesa Verde cliff dwellings',
-      'Four Corners Monument',
-    ],
-    route: [
-      { day: '1-3', location: 'Grand Canyon', notes: 'Fly into Phoenix or Las Vegas. South Rim, Desert View Drive, Rim Trail.' },
-      { day: '4', location: 'Page, AZ', notes: '2 hour drive. Horseshoe Bend, Antelope Canyon tour (book ahead!).' },
-      { day: '5-6', location: 'Monument Valley', notes: '2 hour drive. Navajo-guided tour recommended. Sunrise is magical.' },
-      { day: '7-8', location: 'Mesa Verde', notes: '2.5 hour drive. Cliff Palace tour, Balcony House (if not afraid of heights).' },
-      { day: '9', location: 'Arches/Moab', notes: '2 hour drive. Delicate Arch sunset.' },
-      { day: '10', location: 'Canyonlands', notes: 'Island in the Sky district, Mesa Arch sunrise.' },
-      { day: '11-12', location: 'Capitol Reef', notes: '2 hour drive. Often overlooked gem. Scenic drive, petroglyphs.' },
-      { day: '13', location: 'Bryce Canyon', notes: '2 hour drive. Sunrise Point, Queens Garden/Navajo Loop combo.' },
-      { day: '14', location: 'Zion', notes: '1.5 hour drive. Angels Landing or The Narrows. Return to Las Vegas.' },
-    ],
-    tips: [
-      'This is a big loop - don\'t rush it',
-      'Antelope Canyon requires Navajo tour guides - book weeks ahead',
-      'Monument Valley is NOT a national park but worth the detour',
-      'Mesa Verde cliff dwelling tours require tickets',
-      'Summer is brutally hot - spring and fall are ideal',
-    ],
-  },
-  {
-    slug: 'florida-to-smokies',
-    title: 'Southeast National Parks',
+    slug: 'pacific-northwest-loop',
+    title: 'Pacific Northwest Loop',
+    tagline: 'Rainforests, volcanoes, and the deepest lake in America',
     duration: '10-14 days',
     distance: '1,100 miles',
-    difficulty: 'Easy to Moderate',
-    bestTime: 'October-April (Everglades), May-October (Smokies)',
-    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/great-smoky-mountains.png',
-    description: 'From Florida\'s tropical wetlands to the misty Appalachian peaks.',
-    parks: ['Everglades', 'Biscayne', 'Dry Tortugas', 'Congaree', 'Great Smoky Mountains'],
-    highlights: [
-      'Airboat through Everglades sawgrass',
-      'Snorkeling Biscayne\'s coral reefs',
-      'Fort Jefferson on Dry Tortugas',
-      'Congaree\'s champion trees',
-      'Cades Cove wildlife loop',
+    bestSeason: 'July-September (only reliable window)',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/olympic.png',
+    description: 'From the moss-draped rainforests of Olympic to the wildflower meadows of Mount Rainier, through the hidden alpine wilderness of North Cascades, and south to the impossibly blue waters of Crater Lake. This loop hits four parks across Washington and Oregon that most visitors never see together. The catch: you only get July through September before snow closes the high roads.',
+    parks: [
+      { name: 'Olympic', slug: 'olympic' },
+      { name: 'Mount Rainier', slug: 'mount-rainier' },
+      { name: 'North Cascades', slug: 'north-cascades' },
+      { name: 'Crater Lake', slug: 'crater-lake' },
     ],
+    budget: '$1,400-$2,800 per person',
+    budgetBreakdown: 'Gas ~$140, camping $20-30/night or lodges $150-350/night, food $40-60/day, park passes $80 annual. Rainier lodges book 6+ months ahead.',
     route: [
-      { day: '1-2', location: 'Everglades', notes: 'Fly into Miami. Shark Valley tram, Anhinga Trail, flamingos at Eco Pond.' },
-      { day: '3', location: 'Biscayne', notes: '1 hour from Everglades. Snorkeling tour or glass-bottom boat.' },
-      { day: '4', location: 'Dry Tortugas', notes: 'Ferry from Key West (2.5 hours) or seaplane. Fort Jefferson, amazing snorkeling.' },
-      { day: '5', location: 'Travel Day', notes: 'Drive or fly from Miami to South Carolina (10+ hours or short flight).' },
-      { day: '6', location: 'Congaree', notes: 'Near Columbia, SC. Boardwalk Loop, champion trees, firefly season in May.' },
-      { day: '7-10', location: 'Great Smoky Mountains', notes: '4 hour drive. Cades Cove, Clingmans Dome, Roaring Fork Motor Trail.' },
+      {
+        day: 'Day 1',
+        location: 'Seattle to Olympic National Park',
+        driveTime: '2.5 hours to Hurricane Ridge (125 miles) via ferry or highway',
+        activities: 'Pick up your car and head to the Olympic Peninsula. Take the Bainbridge Island ferry for a scenic start (35 min crossing). Drive to Port Angeles and ascend Hurricane Ridge Road. At 5,242 feet, Hurricane Ridge offers alpine meadows and views across the Strait of Juan de Fuca to Canada. Short hikes along the ridge are ideal for your first afternoon.',
+        tip: 'The Bainbridge ferry runs every 60-90 minutes. No reservations needed for walk-ons, but car spaces can fill on summer weekends. Arrive 30 minutes early.',
+      },
+      {
+        day: 'Days 2-3',
+        location: 'Olympic National Park',
+        driveTime: '1-2 hours between park zones',
+        activities: 'Day 2: Drive to the Hoh Rain Forest (2 hours from Port Angeles). Walk the Hall of Mosses Trail (0.8 miles, easy) through cathedral-like old growth draped in moss. Hike the Hoh River Trail deeper for solitude. Day 3: Head to the coast. Ruby Beach and Rialto Beach feature dramatic sea stacks and driftwood. Watch for bald eagles. Afternoon: Kalaloch Lodge area for tide pool exploration at Beach 4.',
+        tip: 'Olympic has three distinct ecosystems: alpine (Hurricane Ridge), temperate rainforest (Hoh), and wild coastline. Plan for all three - they feel like different planets.',
+      },
+      {
+        day: 'Days 4-5',
+        location: 'Mount Rainier National Park',
+        driveTime: '3 hours from Olympic coast (170 miles)',
+        activities: 'Day 4: Enter via the Nisqually entrance and drive to Paradise at 5,400 feet. If visiting late July-August, wildflower meadows here are legendary. Hike the Skyline Trail (5.5 miles, moderate) for the best Rainier views and flower displays. Day 5: Drive to the Sunrise area (highest road in the park at 6,400 feet). Hike to Burroughs Mountain (7 miles, strenuous) for a moonscape walk along Rainier\'s flanks. Stop at Reflection Lakes for the classic mirror-image photo of the mountain.',
+        tip: 'Mount Rainier\'s Paradise parking lot fills by 10am on summer weekends. Arrive before 8am or after 4pm. Better yet: visit midweek.',
+      },
+      {
+        day: 'Days 6-7',
+        location: 'North Cascades National Park',
+        driveTime: '3 hours from Rainier (175 miles) via I-5 north and WA-20',
+        activities: 'Day 6: Drive the North Cascades Highway (WA-20), one of the most scenic roads in the Pacific Northwest. Stop at Diablo Lake Overlook - the turquoise water color comes from glacial flour and is not enhanced. Hike the Thunder Knob Trail (3.6 miles, moderate) above the lake. Day 7: Cascade Pass Trail (7.4 miles, strenuous) is the park\'s premier hike through flower-filled meadows to a stunning mountain pass. Keep going to Sahale Arm if you have the legs - the views are world-class.',
+        tip: 'North Cascades is the least visited park in the lower 48. You might see more marmots than people. The highway closes November through May, so this is truly a summer-only park.',
+      },
+      {
+        day: 'Days 8-9',
+        location: 'Travel Day + Crater Lake National Park',
+        driveTime: '6 hours from North Cascades (380 miles) via I-5 south to OR-138',
+        activities: 'Day 8: Long drive south through Oregon. Break it up with a stop in Portland or Salem for lunch. Arrive at Crater Lake in the evening. Day 9: Drive the 33-mile Rim Drive circling the lake (open July-October). Stop at every overlook - each angle reveals different blues. Hike the Cleetwood Cove Trail (2.2 miles, strenuous) down to the lakeshore for the boat tour to Wizard Island. Sunset from Watchman Peak (1.6 miles, moderate) is the highlight of the park.',
+        tip: 'Crater Lake boat tours sell out weeks ahead on recreation.gov. Book the earliest morning slot for calmest waters and best photos.',
+      },
+      {
+        day: 'Days 10-11',
+        location: 'Crater Lake to Portland or Seattle',
+        driveTime: '4.5 hours to Portland (290 miles) or 7 hours to Seattle (440 miles)',
+        activities: 'Spend the morning at Crater Lake for any missed viewpoints. Drive north via US-97 to Bend, Oregon for a lunch stop and craft beer scene. Continue to Portland or Seattle for departure. Optional: detour to Columbia River Gorge and hike to Multnomah Falls.',
+        tip: 'If flying out of Portland, spend an extra night. The city has excellent food, craft beer, and Powell\'s Books is worth a few hours.',
+      },
     ],
     tips: [
-      'Everglades dry season (Dec-April) is best for wildlife',
-      'Dry Tortugas ferry books up weeks ahead - plan early',
-      'Great Smokies is FREE but requires parking tags',
-      'Cades Cove is packed on weekends - go at dawn',
-      'Fall colors in Smokies peak mid-October',
+      'Summer is the ONLY reliable window. Snow closes high-elevation roads from October through June in most years',
+      'Pack rain gear regardless of forecast. The Pacific Northwest earns its reputation, even in summer',
+      'Olympic, Rainier, and North Cascades are all in Washington - saves you three separate state drives',
+      'North Cascades Highway (WA-20) closes in winter. Check WSDOT road status before planning',
+      'Mount Rainier is visible only about 30% of summer days. If you see it, drop everything and take photos',
+      'Mosquitoes are fierce in the Cascades July-August. Bring DEET or permethrin-treated clothing',
+      'Crater Lake\'s water temperature never exceeds 60F. Swimming is for the bold only',
     ],
   },
   {
-    slug: 'alaska-frontier',
-    title: 'Alaska\'s Wild Parks',
-    duration: '10-14 days',
-    distance: '600 miles (plus flights)',
-    difficulty: 'Challenging',
-    bestTime: 'June-August only',
-    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/denali.png',
-    description: 'America\'s last frontier - massive wilderness, incredible wildlife, and the highest peak in North America.',
-    parks: ['Denali', 'Kenai Fjords', 'Glacier Bay', 'Wrangell-St. Elias'],
-    highlights: [
-      'Denali (Mt. McKinley) - tallest peak in North America',
-      'Grizzly bears and caribou in Denali',
-      'Exit Glacier and Harding Icefield',
-      'Whale watching in Glacier Bay',
-      'Massive glaciers in Wrangell-St. Elias',
+    slug: 'grand-circle-southwest',
+    title: 'Grand Circle Southwest',
+    tagline: 'The ultimate American road trip across four states and six parks',
+    duration: '14 days',
+    distance: '1,500 miles',
+    bestSeason: 'March-May or September-November',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/grand-canyon.png',
+    description: 'The Grand Circle is the most iconic road trip in America. Starting and ending in Las Vegas, this two-week loop connects the Grand Canyon, Zion, Bryce Canyon, Mesa Verde, Petrified Forest, and Saguaro across Arizona, Utah, Colorado, and New Mexico. Add Monument Valley, Horseshoe Bend, and Sedona and you have a trip that will fill a lifetime of desktop wallpapers.',
+    parks: [
+      { name: 'Grand Canyon', slug: 'grand-canyon' },
+      { name: 'Zion', slug: 'zion' },
+      { name: 'Bryce Canyon', slug: 'bryce-canyon' },
+      { name: 'Mesa Verde', slug: 'mesa-verde' },
+      { name: 'Petrified Forest', slug: 'petrified-forest' },
+      { name: 'Saguaro', slug: 'saguaro' },
     ],
+    budget: '$2,000-$4,000 per person',
+    budgetBreakdown: 'Gas ~$200, camping $20-35/night or lodges $120-300/night, food $40-60/day, park passes $80 annual. Budget more for guided tours at Monument Valley and Antelope Canyon.',
     route: [
-      { day: '1', location: 'Anchorage', notes: 'Fly into Anchorage. Explore downtown, Alaska Wildlife Conservation Center.' },
-      { day: '2-4', location: 'Denali', notes: '4 hour drive north. Bus tour deep into park, look for wildlife. Book months ahead!' },
-      { day: '5-6', location: 'Kenai Fjords', notes: '4 hour drive south to Seward. Exit Glacier hike, boat tour to see glaciers calving.' },
-      { day: '7-8', location: 'Glacier Bay', notes: 'Fly to Juneau, then ferry to Gustavus. Day boat tour or kayaking.' },
-      { day: '9-10', location: 'Wrangell-St. Elias', notes: 'Fly back to Anchorage, drive 5 hours to McCarthy. Root Glacier, ghost town of Kennecott.' },
+      {
+        day: 'Day 1',
+        location: 'Las Vegas to Grand Canyon South Rim',
+        driveTime: '4.5 hours (280 miles) via US-93 and I-40',
+        activities: 'Early departure from Las Vegas. Arrive at the Grand Canyon South Rim by lunch. Check into Mather Campground or a lodge. Walk the Rim Trail to Mather Point, Yavapai Point, and the Geology Museum. Stay for sunset at Hopi Point - one of the best sunset spots on the rim.',
+        tip: 'South Rim lodges (especially Bright Angel and El Tovar) book 13 months in advance. Tusayan (7 miles south) has more available lodging.',
+      },
+      {
+        day: 'Days 2-3',
+        location: 'Grand Canyon National Park',
+        driveTime: 'Shuttle within the park',
+        activities: 'Day 2: Hike Bright Angel Trail. Go to Indian Garden (9.2 miles roundtrip, strenuous) or at least to the 3-mile resthouse for canyon views. Do NOT attempt rim-to-river in one day. Drive Desert View Road (25 miles) to Watchtower for panoramic eastern views. Day 3: Sunrise at Yaki Point (shuttle access only). Hike South Kaibab to Cedar Ridge (3 miles roundtrip, moderate) for the best above-rim canyon views. Afternoon: ranger programs at the visitor center.',
+        tip: 'In summer, start hiking by 6am and turn around by 10am. The canyon is 20-30 degrees hotter at the bottom. Carry 1 liter of water per hour.',
+      },
+      {
+        day: 'Day 4',
+        location: 'Grand Canyon to Page, Arizona',
+        driveTime: '2.5 hours (135 miles) via US-89',
+        activities: 'Drive to Page. Visit Horseshoe Bend (1.5 mile roundtrip walk to the overlook - arrive for sunset). Book a guided tour of Upper or Lower Antelope Canyon (Navajo-guided, required). Upper is more famous for light beams (11am-1pm); Lower is less crowded and more adventurous.',
+        tip: 'Antelope Canyon tours book up months ahead in peak season. Lower Antelope is cheaper and smaller groups. Upper Antelope light beams are best March-October around noon.',
+      },
+      {
+        day: 'Days 5-6',
+        location: 'Monument Valley to Mesa Verde',
+        driveTime: '2 hours from Page to Monument Valley (130 miles), then 2.5 hours to Mesa Verde (160 miles)',
+        activities: 'Day 5: Monument Valley Navajo Tribal Park. Drive the 17-mile Valley Drive (unpaved, any car can do it slowly). Book a Navajo-guided tour to see restricted areas like Upper and Lower Monument Valley, ear-of-the-wind arch. Sunrise and sunset here are magical. Day 6: Drive to Mesa Verde National Park. Cliff Palace tour (ranger-guided, ticketed) is the largest cliff dwelling in North America. Balcony House tour if you\'re not afraid of ladders and tunnels. Drive Wetherill Mesa road for fewer crowds.',
+        tip: 'Monument Valley is NOT a national park. It\'s a Navajo Tribal Park with its own entrance fee ($8/person). Navajo-guided tours ($75-150) reach areas you can\'t see independently.',
+      },
+      {
+        day: 'Days 7-8',
+        location: 'Mesa Verde to Petrified Forest National Park',
+        driveTime: '5 hours (310 miles) via US-160 and I-40',
+        activities: 'Day 7: Finish Mesa Verde in the morning. Optional detour to Four Corners Monument (1 hour from Mesa Verde). Drive south to Petrified Forest. Day 8: Drive the 28-mile park road connecting the Painted Desert (north end) and petrified wood concentrations (south end). Hike Blue Mesa Trail (1 mile, easy) through colorful badlands. Crystal Forest Trail (0.75 miles, easy) for the densest concentration of petrified logs. Visit the Painted Desert Inn, a National Historic Landmark.',
+        tip: 'Petrified Forest has no campgrounds, but you can get a free backcountry permit for wilderness camping. Otherwise, stay in Holbrook (25 miles east) - check out the Wigwam Motel for a retro Route 66 experience.',
+      },
+      {
+        day: 'Days 9-10',
+        location: 'Petrified Forest to Saguaro National Park',
+        driveTime: '3.5 hours (220 miles) via I-40 and I-10 to Tucson',
+        activities: 'Day 9: Drive to Tucson. Visit the Arizona-Sonora Desert Museum (not a national park, but world-class desert zoo/botanical garden). Afternoon: Saguaro East (Rincon Mountain District) - drive the 8-mile Cactus Forest Scenic Loop. Day 10: Saguaro West (Tucson Mountain District) for denser saguaro forests. Hike Valley View Overlook Trail (0.8 miles, easy) or Signal Hill Trail (0.5 miles, easy) for ancient petroglyphs. Gates Pass sunset between the two districts is stunning.',
+        tip: 'Saguaro has two disconnected districts on opposite sides of Tucson. West (Tucson Mountain) has denser saguaro forests. East (Rincon) has more backcountry hiking. Both are worth visiting.',
+      },
+      {
+        day: 'Days 11-12',
+        location: 'Tucson to Zion via Sedona',
+        driveTime: '5.5 hours to Sedona (320 miles), then 3 hours to Zion (200 miles)',
+        activities: 'Day 11: Drive north to Sedona. Hike Cathedral Rock (1.2 miles, moderate/strenuous) or Devils Bridge (4.2 miles, moderate). Drive through Oak Creek Canyon. Day 12: Continue to Zion National Park. Afternoon: hike Canyon Overlook Trail (1 mile, moderate) for sunset views from above the Zion-Mount Carmel tunnel.',
+        tip: 'Sedona is not a national park but is the perfect Grand Circle rest stop. Red rock scenery rivals anything in Utah. Skip the vortex tours and just hike.',
+      },
+      {
+        day: 'Days 13-14',
+        location: 'Zion and Bryce Canyon, Return to Las Vegas',
+        driveTime: '1.5 hours between parks, 2.5 hours from Zion to Las Vegas',
+        activities: 'Day 13: Full day in Zion. Hike The Narrows (bottom-up, at least 5 miles) or Angels Landing (5.4 miles, permit required). Ride the shuttle to Big Bend for stunning canyon views. Day 14: Morning at Bryce Canyon. Sunrise at Bryce Point, Queens Garden/Navajo Loop hike (2.9 miles, moderate). Drive back to Las Vegas (4 hours from Bryce).',
+        tip: 'If you started with the Utah Mighty 5 itinerary above, you\'ve now covered Zion and Bryce twice. Consider swapping these days for Capitol Reef or spending extra time at the Grand Canyon.',
+      },
     ],
     tips: [
-      'Alaska\'s parks have VERY short seasons - July is peak',
-      'Denali bus permits sell out 6+ months ahead',
-      'Denali is only visible ~30% of days - be flexible',
-      'Bring serious bug spray - Alaska mosquitoes are legendary',
-      'Consider internal flights - distances are huge',
-      'Book everything early - Alaska tourism is competitive',
+      'This loop covers 4 states (AZ, UT, CO, NM) - check daylight savings differences. Arizona doesn\'t observe DST except Navajo Nation',
+      'Summer is brutally hot in the low desert (Grand Canyon inner canyon, Saguaro, Petrified Forest). Spring and fall are ideal',
+      'Monument Valley and Antelope Canyon require advance booking for tours. Don\'t show up expecting walk-ins',
+      'Mesa Verde cliff dwelling tours require timed tickets purchased at recreation.gov',
+      'Gas stations are sparse on the Navajo Nation. Never let your tank drop below half',
+      'Pack binoculars for Grand Canyon rim views and condor spotting. California condors nest on the canyon walls',
+      'The $80 America the Beautiful pass covers all six national parks on this route plus any national monuments',
+    ],
+  },
+  {
+    slug: 'blue-ridge-to-smokies',
+    title: 'Blue Ridge to Smokies',
+    tagline: 'America\'s most scenic drive connects two beloved eastern parks',
+    duration: '7 days',
+    distance: '650 miles',
+    bestSeason: 'Mid-October (peak fall color) or May-June (rhododendron blooms)',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/great-smoky-mountains.png',
+    description: 'Shenandoah National Park and Great Smoky Mountains are connected by the Blue Ridge Parkway - 469 miles of America\'s most beloved scenic drive winding along the crest of the Appalachian Mountains. This trip combines two national parks with the Parkway itself to create the ultimate East Coast nature road trip. Fall foliage peaks mid-October and turns this drive into a tunnel of gold, orange, and crimson.',
+    parks: [
+      { name: 'Shenandoah', slug: 'shenandoah' },
+      { name: 'Great Smoky Mountains', slug: 'great-smoky-mountains' },
+    ],
+    budget: '$800-$1,800 per person',
+    budgetBreakdown: 'Gas ~$80, camping $20-30/night or lodges $100-250/night, food $35-55/day. Great Smokies entrance is FREE (parking tag $5-15/day). Shenandoah $30/vehicle. Blue Ridge Parkway is free.',
+    route: [
+      {
+        day: 'Day 1',
+        location: 'Washington, D.C. to Shenandoah National Park',
+        driveTime: '1.5 hours (75 miles) to Front Royal (north entrance)',
+        activities: 'Drive from D.C. to Shenandoah\'s north entrance at Front Royal. Enter Skyline Drive and head south. Stop at Dickey Ridge Visitor Center for park orientation and trail maps. Hike Fox Hollow Trail (1.2 miles, easy) through a former homestead. Continue to Skyland Resort area and hike Stony Man Trail (1.6 miles, easy) for the park\'s best accessible summit view. Sunset from Thorofare Mountain Overlook.',
+        tip: 'Skyline Drive has a 35 mph speed limit and 75 overlooks. Don\'t rush it. Budget the full day for 105 miles of road.',
+      },
+      {
+        day: 'Day 2',
+        location: 'Shenandoah National Park',
+        driveTime: 'Skyline Drive between trailheads',
+        activities: 'Hike Old Rag Mountain (9.1 miles, strenuous) - the most popular and thrilling hike in the park with a rock scramble to a 360-degree summit. Requires a day-use ticket ($1) from recreation.gov. Afternoon: continue Skyline Drive south. Big Meadows area for deer and wildlife. Dark Hollow Falls (1.4 miles, moderate) is the closest waterfall to Skyline Drive. Evening: stargazing at Big Meadows (one of the park\'s darkest spots).',
+        tip: 'Old Rag requires a day-use ticket and is strenuous. If you want an easier alternative, Bearfence Mountain (1.2 miles, moderate) has a rock scramble summit with 360-degree views in a fraction of the effort.',
+      },
+      {
+        day: 'Day 3',
+        location: 'Shenandoah to Blue Ridge Parkway (northern section)',
+        driveTime: 'Skyline Drive transitions to Blue Ridge Parkway at Waynesboro',
+        activities: 'Complete the southern half of Skyline Drive. At Rockfish Gap (milepost 0), the road seamlessly becomes the Blue Ridge Parkway. Drive south through Virginia\'s rolling farmland. Stop at Humpback Rocks (milepost 5.8) for a quick hike to a rocky overlook. Otter Creek area (milepost 60) for a picnic. Peaks of Otter Lodge (milepost 86) for a lakeside dinner and overnight.',
+        tip: 'The Blue Ridge Parkway has no gas stations, restaurants, or services for long stretches. Fill your tank and pack food before getting on.',
+      },
+      {
+        day: 'Day 4',
+        location: 'Blue Ridge Parkway - Central Section',
+        driveTime: '4-6 hours of driving (150+ miles of Parkway)',
+        activities: 'Continue south. Stop at Mabry Mill (milepost 176) - the most photographed spot on the Parkway, a rustic gristmill reflected in a still pond. Moses H. Cone Memorial Park (milepost 294) for the manor house and easy carriage trails. Grandfather Mountain (milepost 305, separate admission) for the Mile High Swinging Bridge. Linn Cove Viaduct (milepost 304) - an engineering marvel built around the mountain.',
+        tip: 'The Parkway\'s 45 mph speed limit and winding roads mean you cover about 30 miles per hour including stops. Don\'t underestimate drive times.',
+      },
+      {
+        day: 'Day 5',
+        location: 'Asheville and Blue Ridge Parkway Southern Section',
+        driveTime: '2-3 hours of Parkway driving plus Asheville',
+        activities: 'Arrive in Asheville, NC - the unofficial capital of the Blue Ridge. Visit the Biltmore Estate if interested ($65+). Browse the River Arts District. Drive to Craggy Gardens (milepost 364) for rhododendron-covered balds and mountain views. Mount Pisgah (milepost 408.6) for a sunset hike to the summit (2.6 miles, moderate). Overnight in Asheville for the restaurant and brewery scene.',
+        tip: 'Asheville is the perfect mid-trip base. World-class food scene, craft breweries (Sierra Nevada, New Belgium), and walking-distance galleries. Budget a full evening here.',
+      },
+      {
+        day: 'Day 6',
+        location: 'Blue Ridge Parkway to Great Smoky Mountains',
+        driveTime: '2 hours from Asheville (70 miles) to Cherokee entrance',
+        activities: 'Drive the Parkway\'s southern terminus into Cherokee, NC. Enter Great Smoky Mountains National Park. Drive Newfound Gap Road to Clingmans Dome - the highest point in the park (6,643 feet). The half-mile paved path to the observation tower offers views across endless ridges. Continue to Gatlinburg entrance. Hike Alum Cave Trail (4.4 miles one-way, strenuous) as far as you\'d like - the arch bridge at mile 2.5 is a good turnaround for moderate hikers.',
+        tip: 'Great Smokies is the most visited national park in the country (12.9 million/year). Parking tags are required. Buy online at recreation.gov to avoid entrance delays.',
+      },
+      {
+        day: 'Day 7',
+        location: 'Great Smoky Mountains National Park',
+        driveTime: '1-hour loop drives',
+        activities: 'Early morning: Cades Cove 11-mile loop drive. Arrive before 8am for wildlife (black bears, deer, turkey, coyotes). The historic churches and cabins are worth stopping for. Afternoon: Roaring Fork Motor Nature Trail (one-way loop near Gatlinburg) for cascading waterfalls. Hike to Grotto Falls (2.6 miles, moderate) - you can walk behind the waterfall. Optional: Cataloochee Valley (remote eastern side) for elk viewing at dawn or dusk.',
+        tip: 'Cades Cove Loop is closed to vehicles on Wednesday and Saturday mornings until 10am for cyclists and pedestrians. This is actually the best way to experience it if you can rent bikes.',
+      },
+    ],
+    tips: [
+      'This trip is best during fall foliage (mid-October). The Smokies and Blue Ridge Parkway become tunnels of gold, orange, and red',
+      'Spring rhododendron bloom (late May-June) is the second-best time, with Craggy Gardens and Roan Mountain as highlights',
+      'The Blue Ridge Parkway has a 45 mph limit and frequent closures. Check nps.gov/blri for current road status',
+      'Great Smokies is FREE but requires $5-15 parking tags purchased online',
+      'Black bears live throughout both parks. Store food properly and never approach wildlife',
+      'Cell service is limited on Skyline Drive and the Blue Ridge Parkway. Download offline maps',
+      'Fog is common in the Smokies (they\'re named for it). Morning haze usually burns off by midday',
+    ],
+  },
+  {
+    slug: 'rocky-mountain-circuit',
+    title: 'Rocky Mountain Circuit',
+    tagline: 'Three crown jewels of the Northern Rockies in one epic loop',
+    duration: '10-14 days',
+    distance: '1,000 miles',
+    bestSeason: 'Late June through September',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/rocky-mountain.png',
+    description: 'Rocky Mountain, Grand Teton, and Yellowstone are the triple crown of the Northern Rockies. This loop starts in Denver, crosses the Continental Divide through Trail Ridge Road, heads north through Grand Teton\'s dramatic Teton Range, and culminates at Yellowstone - the world\'s first national park. Expect elk, bison, bears, geysers, alpine lakes, and some of the most photographed landscapes in America.',
+    parks: [
+      { name: 'Rocky Mountain', slug: 'rocky-mountain' },
+      { name: 'Grand Teton', slug: 'grand-teton' },
+      { name: 'Yellowstone', slug: 'yellowstone' },
+    ],
+    budget: '$1,500-$3,200 per person',
+    budgetBreakdown: 'Gas ~$130, camping $25-35/night or lodges $150-400/night (Yellowstone lodges are pricey), food $40-65/day, park passes $80 annual covers all three.',
+    route: [
+      {
+        day: 'Day 1',
+        location: 'Denver to Rocky Mountain National Park',
+        driveTime: '1.5 hours (70 miles) to Estes Park',
+        activities: 'Fly into Denver and drive to Estes Park, the gateway town. Check into lodging. Afternoon: enter the park and drive to Bear Lake. Hike the Bear Lake Nature Trail (0.8 miles, easy), then continue to Nymph Lake, Dream Lake, and Emerald Lake (3.6 miles total, moderate). Elk often graze in the meadows near the park entrance at dusk.',
+        tip: 'Rocky Mountain requires timed entry reservations May-October. Two reservation windows: one for Bear Lake corridor (6am-6pm) and one for the rest of the park (9am-2pm). Book both.',
+      },
+      {
+        day: 'Days 2-3',
+        location: 'Rocky Mountain National Park',
+        driveTime: 'Trail Ridge Road is 48 miles across the park',
+        activities: 'Day 2: Drive Trail Ridge Road - the highest continuous paved road in the US, topping out at 12,183 feet. Above treeline for 11 miles with tundra wildflowers and marmots. Stop at Alpine Visitor Center and Forest Canyon Overlook. Hike the Ute Trail (2 miles from trailhead at 11,466 feet) for a surreal walk across alpine tundra. Day 3: Hike Sky Pond (9 miles, strenuous) via Glacier Gorge - past Alberta Falls, The Loch, Lake of Glass, and finally Sky Pond beneath the jagged Sharkstooth. One of the best hikes in Colorado.',
+        tip: 'Trail Ridge Road typically opens late May and closes mid-October. At 12,000 feet, afternoon thunderstorms are common and dangerous. Start driving by 8am and be below treeline by noon.',
+      },
+      {
+        day: 'Day 4',
+        location: 'Rocky Mountain to Grand Teton via Wyoming',
+        driveTime: '6 hours (390 miles) via I-25 and US-287/191',
+        activities: 'Depart Estes Park heading north. This is the longest drive of the trip. Break it up with a stop in Laramie or Rawlins for lunch. Arrive in Jackson, Wyoming by evening. Jackson Town Square with its elk antler arches is worth a stroll. Grab dinner at one of Jackson\'s excellent restaurants.',
+        tip: 'The drive between Rocky Mountain and Grand Teton is long but scenic Wyoming ranch country. An alternative route via Steamboat Springs and US-40 adds an hour but passes through beautiful mountain valleys.',
+      },
+      {
+        day: 'Days 5-6',
+        location: 'Grand Teton National Park',
+        driveTime: '15 minutes from Jackson to Moose Junction',
+        activities: 'Day 5: Drive Teton Park Road along the base of the mountains. Stop at every turnout - the Tetons rising 7,000 feet above the valley floor are jaw-dropping. Hike Taggart Lake (3 miles, easy) or Cascade Canyon (9.1 miles, strenuous) for close-up Teton views. Afternoon: Jenny Lake boat shuttle across the lake shortens the Cascade Canyon hike. Day 6: Sunrise at Schwabacher Landing - the most famous reflection photo in the Rockies. Mormon Row Historic District for iconic barn-and-Teton photos. Afternoon: Snake River float trip (guided, 2-3 hours) for bald eagles, moose, and river otters.',
+        tip: 'Schwabacher Landing is a dirt road that fills up fast. Arrive 30 minutes before sunrise. For the reflection shot, you need calm water - morning is your best bet.',
+      },
+      {
+        day: 'Days 7-10',
+        location: 'Yellowstone National Park',
+        driveTime: '1 hour from Grand Teton to Yellowstone South Entrance (60 miles)',
+        activities: 'Day 7: Enter from the south. Lewis Lake, West Thumb Geyser Basin along Yellowstone Lake. Continue to Old Faithful area. Watch the eruption (~92-minute intervals) and walk the Upper Geyser Basin boardwalk (5 miles total) past dozens of active geysers. Day 8: Grand Canyon of the Yellowstone. Upper and Lower Falls viewpoints from both rims. Hike Uncle Tom\'s Trail (500+ steps) for a close-up of the 308-foot Lower Falls. Hayden Valley in the evening for bison herds and possible wolf sightings. Day 9: Mammoth Hot Springs terraces (north end). Lamar Valley drive at dawn for wolves, bears, bison, and pronghorn - bring binoculars. This is America\'s Serengeti. Day 10: Norris Geyser Basin (the hottest and most dynamic area). Mud Volcano area. Any areas you missed. Last chance for wildlife in Lamar Valley.',
+        tip: 'Yellowstone\'s Grand Loop Road is a figure-8 totaling 142 miles. Don\'t try to see everything in one day. Base yourself centrally (Canyon Village or Lake) and make loop drives.',
+      },
+      {
+        day: 'Days 11-12',
+        location: 'Return to Denver or Fly Out',
+        driveTime: '8 hours from Yellowstone to Denver (560 miles), or fly from Jackson Hole or Bozeman',
+        activities: 'Option A: Drive south through Grand Teton back to Jackson and fly out of Jackson Hole Airport (inside the park - most scenic airport approach in America). Option B: Exit Yellowstone via the north entrance, fly from Bozeman, MT (90 miles north). Option C: Drive back to Denver via Thermopolis and Casper for a different route through Wyoming.',
+        tip: 'Jackson Hole Airport is inside Grand Teton National Park. Flights are more expensive but the approach over the Tetons is unforgettable. Bozeman has cheaper flights.',
+      },
+    ],
+    tips: [
+      'Buy the $80 America the Beautiful pass - it covers all three parks. You\'ll save $65+ on entrance fees alone',
+      'Yellowstone is massive. Budget at least 3-4 full days. Many visitors wish they\'d stayed longer',
+      'Bear spray is required gear in the Yellowstone and Grand Teton backcountry. Buy or rent it in Jackson. $50 investment, priceless safety',
+      'Bison are everywhere in Yellowstone and cause traffic jams ("bison jams"). They weigh 2,000 lbs and can sprint 35 mph. Stay in your car, stay 25+ yards away',
+      'Lamar Valley at dawn is the best wildlife viewing in the lower 48. Go early, bring binoculars and a spotting scope',
+      'Timed entry at Rocky Mountain and campground reservations at all three parks require advance planning on recreation.gov',
+      'Altitude is a factor throughout. Rocky Mountain reaches 12,000+ feet. Hydrate aggressively and take it easy the first day',
+      'Grand Teton and Yellowstone are connected - you drive through Teton to reach Yellowstone from the south. One admission covers both within 7 days',
     ],
   },
 ];
 ---
 
 <BaseLayout
-  title="National Park Road Trip Itineraries"
-  description="Epic road trip itineraries covering multiple national parks. Detailed routes, daily plans, and insider tips for the ultimate park adventures."
+  title="National Park Road Trip Itineraries - Multi-Park Routes with Day-by-Day Plans"
+  description="Six epic national park road trip itineraries with detailed day-by-day routes, drive times, hiking recommendations, budget estimates, and insider tips from experienced park visitors."
 >
   <!-- Hero -->
   <section class="bg-primary text-white py-16">
@@ -213,7 +465,7 @@ const itineraries = [
         Road Trip Itineraries
       </h1>
       <p class="text-xl text-white/90 max-w-2xl mx-auto">
-        Multi-park adventures with detailed routes, timing tips, and everything you need to plan an epic trip.
+        Six detailed, road-tested itineraries connecting America's best national parks. Real drive times, specific hikes, and honest advice from thousands of miles on the road.
       </p>
     </div>
   </section>
@@ -234,36 +486,54 @@ const itineraries = [
     </div>
   </section>
 
+  <!-- Intro -->
+  <section class="section-padding bg-white">
+    <div class="container-site max-w-3xl mx-auto text-center">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">
+        How to Use These Itineraries
+      </h2>
+      <p class="text-gray-600 leading-relaxed">
+        Every itinerary includes the exact route, daily activities, realistic drive times, and budget estimates.
+        We've flagged where you need reservations, where cell service dies, and where you'll want to linger longer
+        than planned. Adjust days up or down based on your pace — these routes reward slowing down.
+      </p>
+    </div>
+  </section>
+
   <!-- Itineraries -->
-  <section class="section-padding">
+  <section class="section-padding bg-gray-50">
     <div class="container-site">
-      <div class="space-y-20">
-        {itineraries.map((itin) => (
+      <div class="space-y-24">
+        {itineraries.map((itin, idx) => (
           <article id={itin.slug} class="scroll-mt-32">
             <!-- Header -->
             <div class="grid lg:grid-cols-2 gap-8 mb-8">
               <div>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+                <p class="text-sm font-semibold text-secondary uppercase tracking-wide mb-2">
+                  Itinerary {idx + 1} of {itineraries.length}
+                </p>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-2">
                   {itin.title}
                 </h2>
-                <p class="text-lg text-gray-600 mb-6">{itin.description}</p>
+                <p class="text-lg text-primary font-medium italic mb-4">{itin.tagline}</p>
+                <p class="text-gray-600 leading-relaxed mb-6">{itin.description}</p>
 
                 <div class="grid grid-cols-2 gap-4">
-                  <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="bg-white rounded-lg p-4 shadow-sm">
                     <div class="text-sm text-gray-500">Duration</div>
                     <div class="font-semibold text-gray-900">{itin.duration}</div>
                   </div>
-                  <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="text-sm text-gray-500">Distance</div>
+                  <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <div class="text-sm text-gray-500">Total Distance</div>
                     <div class="font-semibold text-gray-900">{itin.distance}</div>
                   </div>
-                  <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="text-sm text-gray-500">Difficulty</div>
-                    <div class="font-semibold text-gray-900">{itin.difficulty}</div>
+                  <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <div class="text-sm text-gray-500">Best Season</div>
+                    <div class="font-semibold text-gray-900">{itin.bestSeason}</div>
                   </div>
-                  <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="text-sm text-gray-500">Best Time</div>
-                    <div class="font-semibold text-gray-900">{itin.bestTime}</div>
+                  <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <div class="text-sm text-gray-500">Budget Estimate</div>
+                    <div class="font-semibold text-gray-900">{itin.budget}</div>
                   </div>
                 </div>
               </div>
@@ -273,44 +543,55 @@ const itineraries = [
                   src={itin.image}
                   alt={itin.title}
                   class="w-full h-64 lg:h-full object-cover rounded-xl shadow-lg"
+                  loading="lazy"
                 />
                 <div class="absolute bottom-4 left-4 right-4">
                   <div class="flex flex-wrap gap-2">
                     {itin.parks.map((park) => (
-                      <span class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900 shadow">
-                        {park}
-                      </span>
+                      <a
+                        href={`/parks/${park.slug}`}
+                        class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-900 shadow hover:bg-white transition-colors"
+                      >
+                        {park.name}
+                      </a>
                     ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Highlights -->
-            <div class="mb-8">
-              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Trip Highlights</h3>
-              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {itin.highlights.map((highlight) => (
-                  <div class="flex items-start gap-2 bg-primary/5 rounded-lg p-3">
-                    <span class="text-primary mt-0.5">✓</span>
-                    <span class="text-gray-700">{highlight}</span>
-                  </div>
-                ))}
+            <!-- Budget Breakdown -->
+            <div class="bg-secondary/10 rounded-xl p-5 mb-8">
+              <div class="flex items-start gap-3">
+                <span class="text-secondary font-bold text-lg">$</span>
+                <div>
+                  <h3 class="font-semibold text-gray-900 mb-1">Budget Breakdown</h3>
+                  <p class="text-sm text-gray-700">{itin.budgetBreakdown}</p>
+                </div>
               </div>
             </div>
 
-            <!-- Day by Day -->
+            <!-- Day by Day Route -->
             <div class="mb-8">
-              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Day-by-Day Route</h3>
-              <div class="space-y-3">
-                {itin.route.map((stop, i) => (
-                  <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4">
-                    <div class="flex-shrink-0 w-20">
-                      <span class="text-sm font-semibold text-primary">Day {stop.day}</span>
+              <h3 class="text-2xl font-display font-bold text-gray-900 mb-6">Day-by-Day Route</h3>
+              <div class="space-y-4">
+                {itin.route.map((stop) => (
+                  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-primary/5 px-5 py-3 border-b border-gray-100">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-3">
+                          <span class="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">{stop.day}</span>
+                          <span class="font-semibold text-gray-900">{stop.location}</span>
+                        </div>
+                        <span class="text-sm text-gray-500">{stop.driveTime}</span>
+                      </div>
                     </div>
-                    <div>
-                      <div class="font-semibold text-gray-900">{stop.location}</div>
-                      <div class="text-sm text-gray-600">{stop.notes}</div>
+                    <div class="p-5">
+                      <p class="text-gray-700 leading-relaxed mb-3">{stop.activities}</p>
+                      <div class="flex items-start gap-2 bg-gray-50 rounded-lg p-3">
+                        <span class="text-secondary font-bold text-sm mt-0.5">TIP</span>
+                        <p class="text-sm text-gray-600">{stop.tip}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -318,12 +599,12 @@ const itineraries = [
             </div>
 
             <!-- Pro Tips -->
-            <div class="bg-secondary/10 rounded-xl p-6">
-              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Pro Tips</h3>
-              <ul class="space-y-2">
+            <div class="bg-primary/5 rounded-xl p-6">
+              <h3 class="text-xl font-display font-bold text-gray-900 mb-4">Pro Tips for This Route</h3>
+              <ul class="space-y-3">
                 {itin.tips.map((tip) => (
-                  <li class="flex items-start gap-2">
-                    <span class="text-secondary font-bold">•</span>
+                  <li class="flex items-start gap-3">
+                    <span class="text-primary font-bold mt-0.5">&#10003;</span>
                     <span class="text-gray-700">{tip}</span>
                   </li>
                 ))}
@@ -335,6 +616,11 @@ const itineraries = [
     </div>
   </section>
 
+  <!-- Ad -->
+  <div class="container-site">
+    <AdSlot slot="inline" />
+  </div>
+
   <!-- Planning Resources -->
   <section class="bg-primary/5 section-padding">
     <div class="container-site">
@@ -344,11 +630,11 @@ const itineraries = [
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
         <a href="/guides" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
           <div class="font-semibold text-gray-900">Planning Guides</div>
-          <div class="text-sm text-gray-500">First-timer tips & more</div>
+          <div class="text-sm text-gray-500">First-timer tips and more</div>
         </a>
         <a href="/gear" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
           <div class="font-semibold text-gray-900">Gear Guide</div>
-          <div class="text-sm text-gray-500">What to pack</div>
+          <div class="text-sm text-gray-500">What to pack for the trail</div>
         </a>
         <a
           href="https://www.recreation.gov"
@@ -361,7 +647,7 @@ const itineraries = [
         </a>
         <a href="/map" class="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow">
           <div class="font-semibold text-gray-900">Park Map</div>
-          <div class="text-sm text-gray-500">Plan your route</div>
+          <div class="text-sm text-gray-500">Visualize your route</div>
         </a>
       </div>
     </div>
