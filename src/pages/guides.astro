@@ -47,7 +47,7 @@ const guides = [
       },
       {
         heading: 'Desert Parks: Winter Is Prime Time',
-        text: 'Death Valley, Joshua Tree, Saguaro, and Big Bend are best November through March when temperatures are pleasant. Summer visits can be dangerous with temps exceeding 120°F.',
+        text: 'Death Valley, Joshua Tree, Saguaro, and Big Bend are best November through March when temperatures are pleasant. Summer visits can be dangerous with temps exceeding 120\u00B0F.',
       },
       {
         heading: 'Mountain Parks: Late Summer Sweet Spot',
@@ -196,20 +196,130 @@ const guides = [
     ],
   },
 ];
+
+const itineraries = [
+  {
+    slug: 'utah-mighty-five',
+    title: 'Utah Mighty 5',
+    tagline: 'Five parks, one unforgettable week through red rock country',
+    duration: '7-10 days',
+    distance: '900 miles',
+    bestSeason: 'April-May or September-October',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/zion.png',
+    parks: [
+      { name: 'Zion', slug: 'zion' },
+      { name: 'Bryce Canyon', slug: 'bryce-canyon' },
+      { name: 'Capitol Reef', slug: 'capitol-reef' },
+      { name: 'Arches', slug: 'arches' },
+      { name: 'Canyonlands', slug: 'canyonlands' },
+    ],
+    budget: '$1,200-$2,500 per person',
+    highlights: 'Angel\'s Landing, The Narrows, Bryce hoodoos at sunrise, Scenic Byway 12, Delicate Arch at sunset, Mesa Arch at dawn',
+  },
+  {
+    slug: 'california-big-three',
+    title: 'California\'s Big 3',
+    tagline: 'Giant sequoias, granite cathedrals, and desert extremes',
+    duration: '7-10 days',
+    distance: '1,100 miles',
+    bestSeason: 'May-June or September-October',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/yosemite.png',
+    parks: [
+      { name: 'Yosemite', slug: 'yosemite' },
+      { name: 'Sequoia', slug: 'sequoia' },
+      { name: 'Kings Canyon', slug: 'kings-canyon' },
+      { name: 'Death Valley', slug: 'death-valley' },
+    ],
+    budget: '$1,500-$3,000 per person',
+    highlights: 'Mist Trail, Glacier Point, General Sherman Tree, Badwater Basin, Zabriskie Point, Mesquite Flat Sand Dunes',
+  },
+  {
+    slug: 'pacific-northwest-loop',
+    title: 'Pacific Northwest Loop',
+    tagline: 'Rainforests, volcanoes, and the deepest lake in America',
+    duration: '10-14 days',
+    distance: '1,100 miles',
+    bestSeason: 'July-September',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/olympic.png',
+    parks: [
+      { name: 'Olympic', slug: 'olympic' },
+      { name: 'Mount Rainier', slug: 'mount-rainier' },
+      { name: 'North Cascades', slug: 'north-cascades' },
+      { name: 'Crater Lake', slug: 'crater-lake' },
+    ],
+    budget: '$1,400-$2,800 per person',
+    highlights: 'Hoh Rain Forest, Paradise wildflower meadows, Diablo Lake, Crater Lake Rim Drive, Ruby Beach sea stacks',
+  },
+  {
+    slug: 'grand-circle-southwest',
+    title: 'Grand Circle Southwest',
+    tagline: 'The ultimate American road trip across four states and six parks',
+    duration: '14 days',
+    distance: '1,500 miles',
+    bestSeason: 'March-May or September-November',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/grand-canyon.png',
+    parks: [
+      { name: 'Grand Canyon', slug: 'grand-canyon' },
+      { name: 'Zion', slug: 'zion' },
+      { name: 'Bryce Canyon', slug: 'bryce-canyon' },
+      { name: 'Mesa Verde', slug: 'mesa-verde' },
+      { name: 'Petrified Forest', slug: 'petrified-forest' },
+      { name: 'Saguaro', slug: 'saguaro' },
+    ],
+    budget: '$2,000-$4,000 per person',
+    highlights: 'Bright Angel Trail, Horseshoe Bend, Monument Valley, Cliff Palace, Painted Desert, Saguaro sunsets',
+  },
+  {
+    slug: 'blue-ridge-to-smokies',
+    title: 'Blue Ridge to Smokies',
+    tagline: 'America\'s most scenic drive connects two beloved eastern parks',
+    duration: '7 days',
+    distance: '650 miles',
+    bestSeason: 'Mid-October or May-June',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/great-smoky-mountains.png',
+    parks: [
+      { name: 'Shenandoah', slug: 'shenandoah' },
+      { name: 'Great Smoky Mountains', slug: 'great-smoky-mountains' },
+    ],
+    budget: '$800-$1,800 per person',
+    highlights: 'Skyline Drive, Old Rag Mountain, Blue Ridge Parkway, Mabry Mill, Clingmans Dome, Cades Cove wildlife',
+  },
+  {
+    slug: 'rocky-mountain-circuit',
+    title: 'Rocky Mountain Circuit',
+    tagline: 'Three crown jewels of the Northern Rockies in one epic loop',
+    duration: '10-14 days',
+    distance: '1,000 miles',
+    bestSeason: 'Late June through September',
+    image: 'https://pub-cfaf7e3298404fd39f70c949617f3932.r2.dev/parks/rocky-mountain.png',
+    parks: [
+      { name: 'Rocky Mountain', slug: 'rocky-mountain' },
+      { name: 'Grand Teton', slug: 'grand-teton' },
+      { name: 'Yellowstone', slug: 'yellowstone' },
+    ],
+    budget: '$1,500-$3,200 per person',
+    highlights: 'Trail Ridge Road, Emerald Lake, Schwabacher Landing, Jenny Lake, Old Faithful, Lamar Valley wolves',
+  },
+];
+
+const filterItems = [
+  ...guides.map((g) => ({ slug: g.slug, label: g.icon + ' ' + g.title.split(' ').slice(0, 2).join(' ') })),
+  { slug: 'road-trips', label: '🚗 Road Trips' },
+];
 ---
 
 <BaseLayout
-  title="National Park Planning Guides"
-  description="Essential guides for planning your national park adventure. Expert tips on camping, hiking, photography, visiting with kids, and more."
+  title="National Park Guides & Road Trip Itineraries"
+  description="Essential guides for planning your national park adventure. Expert tips on camping, hiking, photography, visiting with kids, plus six detailed road trip itineraries."
 >
   <!-- Hero -->
   <section class="bg-primary text-white py-16">
     <div class="container-site text-center">
       <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
-        Park Planning Guides
+        Park Guides & Road Trips
       </h1>
       <p class="text-xl text-white/90 max-w-2xl mx-auto">
-        Expert tips and comprehensive guides to help you plan the perfect national park adventure.
+        Expert planning guides and detailed road trip itineraries to help you make the most of America's national parks.
       </p>
     </div>
   </section>
@@ -218,19 +328,19 @@ const guides = [
   <section class="bg-gray-50 py-6 border-b sticky top-16 md:top-20 z-40">
     <div class="container-site">
       <div class="flex gap-3 overflow-x-auto pb-2 -mb-2">
-        {guides.map((guide) => (
+        {filterItems.map((item) => (
           <a
-            href={`#${guide.slug}`}
+            href={`#${item.slug}`}
             class="bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-primary hover:text-white transition-colors whitespace-nowrap shadow-sm"
           >
-            {guide.icon} {guide.title.split(' ').slice(0, 2).join(' ')}
+            {item.label}
           </a>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Guides -->
+  <!-- Planning Guides -->
   <section class="section-padding">
     <div class="container-site">
       <div class="max-w-4xl mx-auto space-y-16">
@@ -268,6 +378,80 @@ const guides = [
   <div class="container-site">
     <AdSlot slot="inline" />
   </div>
+
+  <!-- Road Trip Itineraries -->
+  <section id="road-trips" class="section-padding bg-gray-50 scroll-mt-32">
+    <div class="container-site">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Road Trip Itineraries
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Six road-tested routes connecting America's best national parks. Real drive times, specific hikes, and honest budget estimates.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {itineraries.map((itin) => (
+          <a
+            href={`/itineraries#${itin.slug}`}
+            class="group bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
+          >
+            <div class="relative h-48">
+              <img
+                src={itin.image}
+                alt={itin.title}
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="flex flex-wrap gap-1.5">
+                  {itin.parks.slice(0, 4).map((park) => (
+                    <span class="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-medium text-gray-900">
+                      {park.name}
+                    </span>
+                  ))}
+                  {itin.parks.length > 4 && (
+                    <span class="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-medium text-gray-900">
+                      +{itin.parks.length - 4} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div class="p-5">
+              <h3 class="text-xl font-display font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors">
+                {itin.title}
+              </h3>
+              <p class="text-sm text-primary font-medium italic mb-3">{itin.tagline}</p>
+              <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                <div>
+                  <span class="text-gray-500">Duration:</span>
+                  <span class="font-medium text-gray-900 ml-1">{itin.duration}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Distance:</span>
+                  <span class="font-medium text-gray-900 ml-1">{itin.distance}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Season:</span>
+                  <span class="font-medium text-gray-900 ml-1">{itin.bestSeason}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Budget:</span>
+                  <span class="font-medium text-gray-900 ml-1">{itin.budget}</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500">
+                <span class="font-medium">Highlights:</span> {itin.highlights}
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 
   <!-- Official Resources -->
   <section class="bg-primary/5 section-padding">

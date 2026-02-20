@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import siteConfig from '../data/site-config.json';
+
+const productTypes = [
+  { id: 'all', label: 'All Products' },
+  { id: 'sticker', label: 'Stickers' },
+  { id: 'poster', label: 'Posters' },
+  { id: 'mug', label: 'Mugs' },
+  { id: 'tee', label: 'T-Shirts' },
+];
+
+const products = [
+  // Stickers
+  { name: 'Yellowstone', badge: '/badges/badge-yellowstone-v1.png', type: 'sticker', price: 4.99 },
+  { name: 'Yosemite', badge: '/badges/badge-yosemite.png', type: 'sticker', price: 4.99 },
+  { name: 'Grand Canyon', badge: '/badges/badge-grand-canyon.png', type: 'sticker', price: 4.99 },
+  { name: 'Zion', badge: '/badges/badge-zion.png', type: 'sticker', price: 4.99 },
+  { name: 'Rocky Mountain', badge: '/badges/badge-rocky-mountain.png', type: 'sticker', price: 4.99 },
+  { name: 'Glacier', badge: '/badges/badge-glacier.png', type: 'sticker', price: 4.99 },
+  { name: 'Arches', badge: '/badges/badge-arches.png', type: 'sticker', price: 4.99 },
+  { name: 'Grand Teton', badge: '/badges/badge-grand-teton.png', type: 'sticker', price: 4.99 },
+  { name: 'Joshua Tree', badge: '/badges/badge-joshua-tree.png', type: 'sticker', price: 4.99 },
+  { name: 'Acadia', badge: '/badges/badge-acadia.png', type: 'sticker', price: 4.99 },
+  { name: 'Great Smoky Mountains', badge: '/badges/badge-great-smoky-mountains.png', type: 'sticker', price: 4.99 },
+  { name: 'Olympic', badge: '/badges/badge-olympic.png', type: 'sticker', price: 4.99 },
+  { name: 'Mount Rainier', badge: '/badges/badge-mount-rainier.png', type: 'sticker', price: 4.99 },
+  { name: 'Denali', badge: '/badges/badge-denali.png', type: 'sticker', price: 4.99 },
+  { name: 'Shenandoah', badge: '/badges/badge-shenandoah.png', type: 'sticker', price: 4.99 },
+  { name: 'Bryce Canyon', badge: '/badges/badge-bryce-canyon.png', type: 'sticker', price: 4.99 },
+
+  // Posters
+  { name: 'Yellowstone', badge: '/badges/badge-yellowstone-v1.png', type: 'poster', price: 24.99 },
+  { name: 'Yosemite', badge: '/badges/badge-yosemite.png', type: 'poster', price: 24.99 },
+  { name: 'Grand Canyon', badge: '/badges/badge-grand-canyon.png', type: 'poster', price: 24.99 },
+  { name: 'Zion', badge: '/badges/badge-zion.png', type: 'poster', price: 24.99 },
+  { name: 'Rocky Mountain', badge: '/badges/badge-rocky-mountain.png', type: 'poster', price: 24.99 },
+  { name: 'Glacier', badge: '/badges/badge-glacier.png', type: 'poster', price: 24.99 },
+  { name: 'Arches', badge: '/badges/badge-arches.png', type: 'poster', price: 24.99 },
+  { name: 'Grand Teton', badge: '/badges/badge-grand-teton.png', type: 'poster', price: 24.99 },
+  { name: 'Joshua Tree', badge: '/badges/badge-joshua-tree.png', type: 'poster', price: 24.99 },
+  { name: 'Acadia', badge: '/badges/badge-acadia.png', type: 'poster', price: 24.99 },
+  { name: 'Great Smoky Mountains', badge: '/badges/badge-great-smoky-mountains.png', type: 'poster', price: 24.99 },
+  { name: 'Olympic', badge: '/badges/badge-olympic.png', type: 'poster', price: 24.99 },
+
+  // Mugs
+  { name: 'Yellowstone', badge: '/badges/badge-yellowstone-v1.png', type: 'mug', price: 16.99 },
+  { name: 'Yosemite', badge: '/badges/badge-yosemite.png', type: 'mug', price: 16.99 },
+  { name: 'Grand Canyon', badge: '/badges/badge-grand-canyon.png', type: 'mug', price: 16.99 },
+  { name: 'Zion', badge: '/badges/badge-zion.png', type: 'mug', price: 16.99 },
+  { name: 'Rocky Mountain', badge: '/badges/badge-rocky-mountain.png', type: 'mug', price: 16.99 },
+  { name: 'Glacier', badge: '/badges/badge-glacier.png', type: 'mug', price: 16.99 },
+  { name: 'Arches', badge: '/badges/badge-arches.png', type: 'mug', price: 16.99 },
+  { name: 'Grand Teton', badge: '/badges/badge-grand-teton.png', type: 'mug', price: 16.99 },
+  { name: 'Joshua Tree', badge: '/badges/badge-joshua-tree.png', type: 'mug', price: 16.99 },
+  { name: 'Acadia', badge: '/badges/badge-acadia.png', type: 'mug', price: 16.99 },
+  { name: 'Great Smoky Mountains', badge: '/badges/badge-great-smoky-mountains.png', type: 'mug', price: 16.99 },
+  { name: 'Olympic', badge: '/badges/badge-olympic.png', type: 'mug', price: 16.99 },
+
+  // T-Shirts
+  { name: 'Yellowstone', badge: '/badges/badge-yellowstone-v1.png', type: 'tee', price: 29.99 },
+  { name: 'Yosemite', badge: '/badges/badge-yosemite.png', type: 'tee', price: 29.99 },
+  { name: 'Grand Canyon', badge: '/badges/badge-grand-canyon.png', type: 'tee', price: 29.99 },
+  { name: 'Zion', badge: '/badges/badge-zion.png', type: 'tee', price: 29.99 },
+  { name: 'Rocky Mountain', badge: '/badges/badge-rocky-mountain.png', type: 'tee', price: 29.99 },
+  { name: 'Glacier', badge: '/badges/badge-glacier.png', type: 'tee', price: 29.99 },
+  { name: 'Arches', badge: '/badges/badge-arches.png', type: 'tee', price: 29.99 },
+  { name: 'Grand Teton', badge: '/badges/badge-grand-teton.png', type: 'tee', price: 29.99 },
+];
+
+const typeLabels: Record<string, string> = {
+  sticker: 'Vinyl Sticker',
+  poster: '18×24 Poster Print',
+  mug: 'Ceramic Mug',
+  tee: 'Unisex T-Shirt',
+};
+
+const typeColors: Record<string, string> = {
+  sticker: 'bg-green-100 text-green-800',
+  poster: 'bg-blue-100 text-blue-800',
+  mug: 'bg-amber-100 text-amber-800',
+  tee: 'bg-purple-100 text-purple-800',
+};
+---
+
+<BaseLayout
+  title="Shop National Park Merchandise - Stickers, Posters, Mugs & Tees"
+  description="Show your love for America's national parks with our original badge designs. Vinyl stickers, poster prints, ceramic mugs, and t-shirts featuring all 63 parks."
+>
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16">
+    <div class="container-site text-center">
+      <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+        Park Merch
+      </h1>
+      <p class="text-xl text-white/90 max-w-2xl mx-auto">
+        Original national park badge designs on stickers, posters, mugs, and tees. Show your love for America's public lands.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter -->
+  <section class="bg-gray-50 py-6 border-b sticky top-16 md:top-20 z-40">
+    <div class="container-site">
+      <div class="flex gap-3 overflow-x-auto pb-2 -mb-2">
+        {productTypes.map((pt) => (
+          <button
+            data-filter={pt.id}
+            class:list={[
+              'filter-btn px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap shadow-sm',
+              pt.id === 'all' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-primary hover:text-white',
+            ]}
+          >
+            {pt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="section-padding">
+    <div class="container-site">
+      <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map((product) => (
+          <div
+            class="product-card bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+            data-type={product.type}
+          >
+            <div class="aspect-square bg-gray-50 p-6 flex items-center justify-center">
+              <img
+                src={product.badge}
+                alt={`${product.name} National Park badge`}
+                class="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div class="p-4">
+              <span class:list={['text-xs font-medium px-2 py-0.5 rounded-full inline-block mb-2', typeColors[product.type]]}>
+                {typeLabels[product.type]}
+              </span>
+              <h3 class="font-semibold text-gray-900 text-sm leading-tight mb-1">
+                {product.name} National Park
+              </h3>
+              <div class="flex items-center justify-between mt-2">
+                <span class="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
+                <button
+                  class="coming-soon-btn text-xs font-medium bg-primary/10 text-primary px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors"
+                >
+                  Coming Soon
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty state -->
+      <div id="no-results" class="hidden text-center py-16">
+        <p class="text-gray-500 text-lg">No products found in this category.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bundle CTA -->
+  <section class="bg-secondary/10 section-padding">
+    <div class="container-site">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">
+          Collector's Bundles Coming Soon
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Complete your collection with park bundles. Get all 63 park stickers, regional poster sets,
+          or road trip themed packs at a discount.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <div class="text-3xl mb-2">🏔️</div>
+            <h3 class="font-semibold text-gray-900 mb-1">All 63 Parks Sticker Set</h3>
+            <p class="text-sm text-gray-500">Every park badge as a vinyl sticker</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <div class="text-3xl mb-2">🗺️</div>
+            <h3 class="font-semibold text-gray-900 mb-1">Regional Poster Sets</h3>
+            <p class="text-sm text-gray-500">Western, Eastern, or Alaska collections</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <div class="text-3xl mb-2">🚗</div>
+            <h3 class="font-semibold text-gray-900 mb-1">Road Trip Packs</h3>
+            <p class="text-sm text-gray-500">Stickers for each road trip itinerary</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter / Notify -->
+  <section class="section-padding bg-white">
+    <div class="container-site text-center max-w-xl mx-auto">
+      <h2 class="text-2xl font-display font-bold text-gray-900 mb-4">
+        Get Notified When We Launch
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Our shop is opening soon with all 63 park badge designs. Sign up to be the first to know.
+      </p>
+      <a href="/contact" class="btn-primary inline-block">
+        Join the Waitlist
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const productCards = document.querySelectorAll('.product-card');
+  const noResults = document.getElementById('no-results');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+
+      // Update active button
+      filterBtns.forEach((b) => {
+        b.classList.remove('bg-primary', 'text-white');
+        b.classList.add('bg-white', 'text-gray-700');
+      });
+      btn.classList.remove('bg-white', 'text-gray-700');
+      btn.classList.add('bg-primary', 'text-white');
+
+      // Filter products
+      let visible = 0;
+      productCards.forEach((card) => {
+        const type = card.getAttribute('data-type');
+        if (filter === 'all' || type === filter) {
+          (card as HTMLElement).style.display = '';
+          visible++;
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+
+      if (noResults) {
+        noResults.classList.toggle('hidden', visible > 0);
+      }
+    });
+  });
+</script>
