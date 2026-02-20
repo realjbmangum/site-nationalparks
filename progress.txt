@@ -6,6 +6,75 @@
 
 ---
 
+## Session - February 20, 2026 - Shop Page, Guides + Itineraries Merge, Affiliate Links
+
+### Completed
+
+**Shop Page (`/shop`) — New:**
+- Created merchandise page with 48 placeholder products using existing badge images
+- 4 product types: Vinyl Stickers ($4.99), Poster Prints ($24.99), Ceramic Mugs ($16.99), T-Shirts ($29.99)
+- 16 most popular park badges (Yellowstone, Yosemite, Grand Canyon, Zion, etc.)
+- JavaScript product type filtering (All, Stickers, Posters, Mugs, T-Shirts)
+- "Coming Soon" buttons — ready to swap for Printful links when store launches
+- Collector's Bundle section (All 63 sticker set, Regional posters, Road Trip packs)
+- "Join the Waitlist" CTA linking to contact page
+- Removed old DB-driven `shop/index.astro` and `shop/[park].astro` (were showing empty)
+
+**Guides Page (`/guides`) — Updated:**
+- Merged road trip itineraries into guides page as new "Road Trips" section
+- 6 itinerary cards with images, park badges, duration, distance, season, budget, highlights
+- Cards link to `/itineraries#slug` for full day-by-day breakdowns
+- Sticky filter nav expanded to 7 categories: First-Time, Best Times, Camping, Hiking, Photography, Family, Road Trips
+- Updated page title/description for SEO
+
+**Itineraries Page (`/itineraries`) — Created (previous commit):**
+- 6 detailed road trip itineraries with day-by-day routes:
+  1. Utah Mighty 5 (7-10 days, 900 mi)
+  2. California's Big 3 (7-10 days, 1,100 mi)
+  3. Pacific Northwest Loop (10-14 days, 1,100 mi)
+  4. Grand Circle Southwest (14 days, 1,500 mi)
+  5. Blue Ridge to Smokies (7 days, 650 mi)
+  6. Rocky Mountain Circuit (10-14 days, 1,000 mi)
+
+**Gear Page (`/gear`) — Updated (previous commit):**
+- Added Amazon affiliate links (tag: jbmangum27-20) to all 36 items
+- Added budget alternative Amazon links
+- `amazonSearchQuery` and `altSearchQuery` fields for each item
+
+**Affiliate Disclosure (`/affiliate-disclosure`) — Updated (previous commit):**
+- FTC-compliant copy with Amazon Associates disclosure
+- Editorial independence statement
+
+**Footer:**
+- Updated "Road Trips" link from `/itineraries` to `/guides#road-trips`
+
+### Commits
+- `eee2b73` — feat: Add itineraries page, affiliate links, disclosure update
+- `eb2e7e4` — feat: Build shop page with badge products, merge itineraries into guides
+
+### Decisions
+- Shop uses static badge images (not DB/Printful) — user will add real products via Printful later
+- Itineraries stay as standalone page for full day-by-day detail; guides page shows summary cards linking there
+- Affiliates are secondary on this site — badge merchandise is the primary revenue model (NPS imagery is public domain)
+
+### Page Status Summary
+| Page | Status |
+|------|--------|
+| `/shop` | Live — 48 placeholder products with badges |
+| `/guides` | Live — 6 guides + 6 road trip cards |
+| `/itineraries` | Live — 6 full day-by-day itineraries |
+| `/gear` | Live — 36 items with affiliate links |
+| `/affiliate-disclosure` | Live — FTC compliant |
+
+### Pending Actions
+- [ ] Create Printful account and replace "Coming Soon" buttons with real product links
+- [ ] Add remaining 47 park badges to shop (currently 16 parks × 4 product types)
+- [ ] Set up Google Search Console
+- [ ] Execute marketing plan Week 1 quick wins
+- [ ] Set `PUBLIC_WEB3FORMS_KEY` in Cloudflare dashboard
+
+---
+
 ## Session - February 9, 2026 - AdSense Implementation
 
 ### Completed: AdSense Ad Placements

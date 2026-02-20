@@ -284,10 +284,6 @@ const homeSchema = {
           plus trip planning tips and seasonal guides.
         </p>
         <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-          <input type="hidden" name="access_key" value={import.meta.env.PUBLIC_WEB3FORMS_KEY || ''} />
-          <input type="hidden" name="subject" value="New Newsletter Signup - Best US National Parks" />
-          <input type="hidden" name="from_name" value="National Parks Newsletter" />
-          <input type="checkbox" name="botcheck" class="hidden" />
           <input
             type="email"
             name="email"
@@ -318,24 +314,31 @@ const homeSchema = {
     btn.disabled = true;
     btn.textContent = 'Signing up...';
 
-    const formData = new FormData(form);
+    const email = (form.querySelector('input[name="email"]') as HTMLInputElement)?.value;
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
-      if (response.ok) {
-        message.textContent = "You're in! Check your email for the parks checklist.";
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.alreadySubscribed) {
+          message.textContent = "You're already on the list! Check your email for your checklist.";
+        } else {
+          message.textContent = "You're in! Check your email for the parks checklist.";
+        }
         message.className = 'text-green-700 text-sm mt-4 font-medium';
         form.reset();
         btn.textContent = 'Subscribed!';
       } else {
-        throw new Error('Failed to subscribe');
+        throw new Error(data.error || 'Failed to subscribe');
       }
     } catch (error) {
-      message.textContent = 'Something went wrong. Please try again.';
+      message.textContent = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
       message.className = 'text-red-600 text-sm mt-4';
       btn.disabled = false;
       btn.textContent = 'Get Free Checklist';
