@@ -11,7 +11,6 @@
 
 interface Env {
   DB: D1Database;
-  DRIP_EMAILS: KVNamespace;
   SENDGRID_API_KEY: string;
 }
 
@@ -23,6 +22,7 @@ interface Subscriber {
 }
 
 interface DripEmail {
+  position: number;
   subject: string;
   html: string;
 }
@@ -90,12 +90,13 @@ async function processDrip(
 
     if (daysSinceSignup < daysRequired) continue;
 
-    // Time to send this email
-    const emailNum = String(nextEmail).padStart(2, '0');
-    const emailData = await env.DRIP_EMAILS.get<DripEmail>(`drip:${emailNum}`, 'json');
+    // Fetch email template from D1
+    const emailData = await env.DB.prepare(
+      'SELECT subject, html FROM drip_emails WHERE position = ?'
+    ).bind(nextEmail).first<DripEmail>();
 
     if (!emailData) {
-      errors.push(`Missing KV entry: drip:${emailNum}`);
+      errors.push(`Missing drip_emails row for position ${nextEmail}`);
       continue;
     }
 
@@ -112,7 +113,6 @@ async function processDrip(
       try {
         await sendEmail(env.SENDGRID_API_KEY, sub.email, emailData.subject, personalizedHtml);
 
-        // Update drip position
         await env.DB.prepare(
           'UPDATE newsletter_subscribers SET drip_position = ? WHERE id = ?'
         ).bind(nextEmail, sub.id).run();
