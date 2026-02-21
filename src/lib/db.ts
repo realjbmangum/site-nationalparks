@@ -69,6 +69,7 @@ export interface NewsletterSubscriber {
   source: string | null;
   subscribed_at: string;
   unsubscribed_at: string | null;
+  drip_position: number;
 }
 
 export interface PrintfulProduct {
@@ -311,6 +312,23 @@ export async function addNewsletterSubscriber(
     return { success: true };
   } catch (err) {
     return { success: false, error: 'Failed to subscribe' };
+  }
+}
+
+export async function unsubscribeEmail(
+  db: D1Database,
+  email: string
+): Promise<{ success: boolean }> {
+  try {
+    await db
+      .prepare(
+        'UPDATE newsletter_subscribers SET status = ?, unsubscribed_at = CURRENT_TIMESTAMP WHERE email = ? AND status = ?'
+      )
+      .bind('unsubscribed', email.toLowerCase(), 'active')
+      .run();
+    return { success: true };
+  } catch {
+    return { success: false };
   }
 }
 

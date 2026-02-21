@@ -1,0 +1,13 @@
+{
+  "name": "drip-sender",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "upload-emails": "node upload-emails.js"
+  },
+  "devDependencies": {
+    "wrangler": "^3"
+  }
+}
