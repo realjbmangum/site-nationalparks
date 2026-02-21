@@ -5,107 +5,206 @@ import { getAllParks, REGIONS } from '../lib/db';
 const db = Astro.locals.runtime.env.DB;
 const parks = await getAllParks(db);
 
-// Group parks by region
+// Group parks by region with icons
+const regionMeta: Record<string, { icon: string; color: string }> = {
+  west: { icon: '🏔️', color: '#1E4D2B' },
+  alaska: { icon: '🐻', color: '#2D6A3E' },
+  southeast: { icon: '🌿', color: '#059669' },
+  northeast: { icon: '🍂', color: '#D97706' },
+  midwest: { icon: '🦌', color: '#5B3A29' },
+  islands: { icon: '🌺', color: '#2563EB' },
+};
+
 const regionGroups = Object.values(REGIONS).map(region => ({
   name: region.name,
+  slug: region.slug,
+  icon: regionMeta[region.slug]?.icon || '🏞️',
   parks: parks.filter(p => p.region === region.slug).sort((a, b) => a.name.localeCompare(b.name)),
 })).filter(g => g.parks.length > 0);
+
+const totalParks = parks.length;
 ---
 
 <BaseLayout
-  title="63 National Parks Checklist | Printable"
-  description="Free printable checklist of all 63 US national parks. Track your visits and plan your next adventure."
+  title="63 National Parks Checklist | Free Printable Tracker"
+  description="Free printable checklist of all 63 US national parks. Track your visits, set goals, and plan your next adventure."
 >
   <!-- Print Styles -->
   <style is:inline>
     @media print {
-      nav, footer, .no-print, .site-header { display: none !important; }
-      body { background: #fff !important; font-size: 11pt; }
-      .checklist-page { padding: 0 !important; max-width: 100% !important; }
-      .checklist-card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
-      .region-section { break-inside: avoid; }
-      .print-header { display: block !important; }
-      h1 { font-size: 20pt !important; }
+      nav, footer, .no-print, .site-header, .hero-section { display: none !important; }
+      body { background: #fff !important; font-size: 10pt; }
+      .checklist-page { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+      .checklist-card { box-shadow: none !important; border: 1px solid #ccc !important; break-inside: avoid; padding: 6px 10px !important; }
+      .region-section { break-inside: avoid; margin-bottom: 16px !important; }
+      .print-header { display: flex !important; }
+      .region-grid { gap: 6px !important; }
+      h2 { font-size: 14pt !important; margin-bottom: 8px !important; }
+    }
+    .park-checkbox:checked + div span:first-child {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+    .checklist-card:has(.park-checkbox:checked) {
+      background-color: #f0fdf4 !important;
+      border-left: 3px solid #1E4D2B;
     }
   </style>
 
-  <section class="section-padding bg-gray-50">
-    <div class="container-site max-w-4xl checklist-page">
-      <!-- Screen Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
-          Your 63 National Parks Checklist
-        </h1>
-        <p class="text-gray-600 max-w-2xl mx-auto mb-6">
-          Track every national park you've visited. Print this page or check them off right here.
-        </p>
+  <!-- Hero Section -->
+  <section class="hero-section relative overflow-hidden bg-primary text-white">
+    <div class="absolute inset-0">
+      <img
+        src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80"
+        alt="National park landscape"
+        class="w-full h-full object-cover opacity-30"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary" />
+    </div>
+    <div class="relative z-10 container-site max-w-4xl py-16 md:py-24 text-center">
+      <div class="inline-flex items-center gap-2 bg-secondary/20 text-secondary font-semibold text-sm px-4 py-2 rounded-full mb-6">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+        FREE PRINTABLE CHECKLIST
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-6 drop-shadow-lg">
+        The 63 National Parks Checklist
+      </h1>
+      <p class="text-xl md:text-2xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Track every park you've visited. Set your goal. Check them off as you go.
+        Print it, hang it on the fridge, and start planning your next adventure.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 no-print">
         <button
           onclick="window.print()"
-          class="btn-primary no-print"
+          class="inline-flex items-center gap-2 bg-secondary text-gray-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-secondary-light transition-colors"
         >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
           Print Checklist
         </button>
+        <a
+          href="#checklist"
+          class="inline-flex items-center gap-2 bg-white/15 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/25 transition-colors border border-white/30"
+        >
+          Start Checking Off
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+        </a>
       </div>
+    </div>
+  </section>
 
-      <!-- Print-only Header -->
-      <div class="print-header hidden text-center mb-6">
-        <h1 class="font-bold text-2xl">63 National Parks Checklist</h1>
-        <p class="text-sm text-gray-500">bestusnationalparks.com</p>
-      </div>
-
-      <!-- Progress Bar (screen only) -->
-      <div class="no-print bg-white rounded-xl p-4 shadow-sm mb-8">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-gray-700">Your Progress</span>
-          <span id="progress-count" class="text-sm font-bold text-primary">0 / 63</span>
+  <!-- Progress + Stats Strip -->
+  <section class="bg-white border-b border-gray-200 sticky top-0 z-20 no-print">
+    <div class="container-site max-w-4xl py-4">
+      <div class="flex items-center gap-6">
+        <div class="flex-grow">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm font-semibold text-gray-700">Your Progress</span>
+            <span id="progress-count" class="text-sm font-bold text-primary">0 / {totalParks}</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+            <div id="progress-bar" class="bg-gradient-to-r from-primary to-primary-light h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+          </div>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-3">
-          <div id="progress-bar" class="bg-primary h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div id="progress-badge" class="hidden flex-shrink-0 bg-secondary/10 text-secondary font-bold text-xs px-3 py-1.5 rounded-full whitespace-nowrap">
+          Getting Started
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Checklist by Region -->
+  <!-- Print-only Header -->
+  <div class="print-header hidden items-center justify-between px-4 py-6 border-b-2 border-primary">
+    <div>
+      <h1 class="font-display font-bold text-2xl text-primary" style="margin:0">63 National Parks Checklist</h1>
+      <p class="text-sm text-gray-500" style="margin:4px 0 0 0">bestusnationalparks.com</p>
+    </div>
+    <div class="text-right">
+      <p class="text-sm text-gray-500" style="margin:0">Name: ________________________</p>
+      <p class="text-sm text-gray-500" style="margin:4px 0 0 0">Goal: _____ parks by __________</p>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <section id="checklist" class="section-padding bg-gray-50">
+    <div class="container-site max-w-4xl checklist-page">
+
       {regionGroups.map(region => (
-        <div class="region-section mb-8">
-          <h2 class="text-xl font-display font-bold text-primary mb-4 border-b-2 border-secondary pb-2">
-            {region.name}
-            <span class="text-sm font-normal text-gray-500 ml-2">{region.parks.length} parks</span>
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="region-section mb-10">
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-secondary/30">
+            <span class="text-2xl">{region.icon}</span>
+            <h2 class="text-xl md:text-2xl font-display font-bold text-primary" style="margin:0">
+              {region.name}
+            </h2>
+            <span class="ml-auto bg-primary/10 text-primary text-sm font-semibold px-3 py-1 rounded-full">
+              {region.parks.length} parks
+            </span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 region-grid">
             {region.parks.map(park => (
-              <label class="checklist-card flex items-start gap-3 bg-white rounded-lg p-3 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+              <label class="checklist-card group flex items-center gap-3 bg-white rounded-lg px-4 py-3 shadow-sm cursor-pointer hover:shadow-md hover:bg-gray-50/80 transition-all duration-200">
                 <input
                   type="checkbox"
-                  class="park-checkbox mt-1 w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary flex-shrink-0"
+                  class="park-checkbox w-5 h-5 rounded border-2 border-gray-300 text-primary focus:ring-primary focus:ring-offset-0 flex-shrink-0 cursor-pointer"
                   data-park={park.slug}
                 />
-                <div class="min-w-0">
-                  <span class="font-semibold text-gray-900 block leading-tight">{park.name}</span>
+                <div class="min-w-0 flex-grow">
+                  <span class="font-semibold text-gray-900 block leading-tight group-hover:text-primary transition-colors">{park.name}</span>
                   <span class="text-sm text-gray-500">{park.state}</span>
                 </div>
+                <a
+                  href={`/parks/${park.slug}`}
+                  class="no-print opacity-0 group-hover:opacity-100 text-primary hover:text-primary-light transition-all flex-shrink-0"
+                  title={`View ${park.name} details`}
+                  onclick="event.stopPropagation()"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </a>
               </label>
             ))}
           </div>
         </div>
       ))}
 
-      <!-- Bottom CTA -->
-      <div class="text-center mt-12 no-print">
-        <p class="text-gray-600 mb-4">Ready to start checking off parks?</p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <a href="/guides" class="btn-primary">Trip Planning Guides</a>
-          <a href="/map" class="btn-secondary">Explore the Map</a>
+      <!-- Completion Message (hidden by default) -->
+      <div id="completion-message" class="hidden no-print text-center py-12">
+        <div class="text-6xl mb-4">🏆</div>
+        <h2 class="text-3xl font-display font-bold text-primary mb-3">You've Visited Every National Park!</h2>
+        <p class="text-gray-600 text-lg max-w-lg mx-auto">All 63 parks checked off. That's an incredible achievement — you're officially part of an elite group of adventurers.</p>
+      </div>
+
+      <!-- Bottom CTAs -->
+      <div class="no-print mt-12 bg-white rounded-2xl shadow-md p-8 md:p-10">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl md:text-3xl font-display font-bold text-gray-900 mb-3">Plan Your Next Visit</h2>
+          <p class="text-gray-600 max-w-lg mx-auto">Use our guides, map, and itineraries to find your next park and plan a trip you'll never forget.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <a href="/guides" class="flex flex-col items-center gap-2 p-5 rounded-xl bg-gray-50 hover:bg-primary/5 transition-colors group">
+            <span class="text-3xl">📖</span>
+            <span class="font-semibold text-gray-900 group-hover:text-primary transition-colors">Trip Guides</span>
+            <span class="text-sm text-gray-500 text-center">Camping, hiking & road trip tips</span>
+          </a>
+          <a href="/map" class="flex flex-col items-center gap-2 p-5 rounded-xl bg-gray-50 hover:bg-primary/5 transition-colors group">
+            <span class="text-3xl">🗺️</span>
+            <span class="font-semibold text-gray-900 group-hover:text-primary transition-colors">Interactive Map</span>
+            <span class="text-sm text-gray-500 text-center">Find parks near you</span>
+          </a>
+          <a href="/shop" class="flex flex-col items-center gap-2 p-5 rounded-xl bg-gray-50 hover:bg-primary/5 transition-colors group">
+            <span class="text-3xl">🎒</span>
+            <span class="font-semibold text-gray-900 group-hover:text-primary transition-colors">Park Merch</span>
+            <span class="text-sm text-gray-500 text-center">Stickers, posters & gear</span>
+          </a>
         </div>
       </div>
     </div>
   </section>
 </BaseLayout>
 
-<script>
+<script define:vars={{ totalParks }}>
   // Persist checked state in localStorage
   const STORAGE_KEY = 'parks-checklist';
 
-  function loadChecked(): Set<string> {
+  function loadChecked() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -114,21 +213,53 @@ const regionGroups = Object.values(REGIONS).map(region => ({
     }
   }
 
-  function saveChecked(checked: Set<string>) {
+  function saveChecked(checked) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
   }
 
-  function updateProgress(checked: Set<string>) {
+  function getBadge(count) {
+    if (count === 0) return '';
+    if (count < 5) return 'Getting Started';
+    if (count < 10) return 'Explorer';
+    if (count < 20) return 'Adventurer';
+    if (count < 35) return 'Trailblazer';
+    if (count < 50) return 'Park Ranger';
+    if (count < 63) return 'Nearly There!';
+    return 'Legend — All 63!';
+  }
+
+  function updateProgress(checked) {
     const count = checked.size;
-    const pct = Math.round((count / 63) * 100);
+    const pct = Math.round((count / totalParks) * 100);
     const countEl = document.getElementById('progress-count');
     const barEl = document.getElementById('progress-bar');
-    if (countEl) countEl.textContent = `${count} / 63`;
+    const badgeEl = document.getElementById('progress-badge');
+    const completionEl = document.getElementById('completion-message');
+
+    if (countEl) countEl.textContent = `${count} / ${totalParks}`;
     if (barEl) barEl.style.width = `${pct}%`;
+
+    const badge = getBadge(count);
+    if (badgeEl) {
+      if (badge) {
+        badgeEl.textContent = badge;
+        badgeEl.classList.remove('hidden');
+      } else {
+        badgeEl.classList.add('hidden');
+      }
+    }
+
+    if (completionEl) {
+      if (count >= totalParks) {
+        completionEl.classList.remove('hidden');
+      } else {
+        completionEl.classList.add('hidden');
+      }
+    }
   }
 
   const checked = loadChecked();
-  const boxes = document.querySelectorAll<HTMLInputElement>('.park-checkbox');
+  const boxes = document.querySelectorAll('.park-checkbox');
 
   boxes.forEach(box => {
     const slug = box.dataset.park || '';
