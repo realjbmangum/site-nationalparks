@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllParks, REGIONS } from '../lib/db';
+
+const db = Astro.locals.runtime.env.DB;
+const parks = await getAllParks(db);
+
+// Group parks by region
+const regionGroups = Object.values(REGIONS).map(region => ({
+  name: region.name,
+  parks: parks.filter(p => p.region === region.slug).sort((a, b) => a.name.localeCompare(b.name)),
+})).filter(g => g.parks.length > 0);
+---
+
+<BaseLayout
+  title="63 National Parks Checklist | Printable"
+  description="Free printable checklist of all 63 US national parks. Track your visits and plan your next adventure."
+>
+  <!-- Print Styles -->
+  <style is:inline>
+    @media print {
+      nav, footer, .no-print, .site-header { display: none !important; }
+      body { background: #fff !important; font-size: 11pt; }
+      .checklist-page { padding: 0 !important; max-width: 100% !important; }
+      .checklist-card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+      .region-section { break-inside: avoid; }
+      .print-header { display: block !important; }
+      h1 { font-size: 20pt !important; }
+    }
+  </style>
+
+  <section class="section-padding bg-gray-50">
+    <div class="container-site max-w-4xl checklist-page">
+      <!-- Screen Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Your 63 National Parks Checklist
+        </h1>
+        <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+          Track every national park you've visited. Print this page or check them off right here.
+        </p>
+        <button
+          onclick="window.print()"
+          class="btn-primary no-print"
+        >
+          Print Checklist
+        </button>
+      </div>
+
+      <!-- Print-only Header -->
+      <div class="print-header hidden text-center mb-6">
+        <h1 class="font-bold text-2xl">63 National Parks Checklist</h1>
+        <p class="text-sm text-gray-500">bestusnationalparks.com</p>
+      </div>
+
+      <!-- Progress Bar (screen only) -->
+      <div class="no-print bg-white rounded-xl p-4 shadow-sm mb-8">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-gray-700">Your Progress</span>
+          <span id="progress-count" class="text-sm font-bold text-primary">0 / 63</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div id="progress-bar" class="bg-primary h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Checklist by Region -->
+      {regionGroups.map(region => (
+        <div class="region-section mb-8">
+          <h2 class="text-xl font-display font-bold text-primary mb-4 border-b-2 border-secondary pb-2">
+            {region.name}
+            <span class="text-sm font-normal text-gray-500 ml-2">{region.parks.length} parks</span>
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {region.parks.map(park => (
+              <label class="checklist-card flex items-start gap-3 bg-white rounded-lg p-3 shadow-sm cursor-pointer hover:bg-gray-50 transition-colors">
+                <input
+                  type="checkbox"
+                  class="park-checkbox mt-1 w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary flex-shrink-0"
+                  data-park={park.slug}
+                />
+                <div class="min-w-0">
+                  <span class="font-semibold text-gray-900 block leading-tight">{park.name}</span>
+                  <span class="text-sm text-gray-500">{park.state}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <!-- Bottom CTA -->
+      <div class="text-center mt-12 no-print">
+        <p class="text-gray-600 mb-4">Ready to start checking off parks?</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="/guides" class="btn-primary">Trip Planning Guides</a>
+          <a href="/map" class="btn-secondary">Explore the Map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Persist checked state in localStorage
+  const STORAGE_KEY = 'parks-checklist';
+
+  function loadChecked(): Set<string> {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveChecked(checked: Set<string>) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...checked]));
+  }
+
+  function updateProgress(checked: Set<string>) {
+    const count = checked.size;
+    const pct = Math.round((count / 63) * 100);
+    const countEl = document.getElementById('progress-count');
+    const barEl = document.getElementById('progress-bar');
+    if (countEl) countEl.textContent = `${count} / 63`;
+    if (barEl) barEl.style.width = `${pct}%`;
+  }
+
+  const checked = loadChecked();
+  const boxes = document.querySelectorAll<HTMLInputElement>('.park-checkbox');
+
+  boxes.forEach(box => {
+    const slug = box.dataset.park || '';
+    box.checked = checked.has(slug);
+
+    box.addEventListener('change', () => {
+      if (box.checked) {
+        checked.add(slug);
+      } else {
+        checked.delete(slug);
+      }
+      saveChecked(checked);
+      updateProgress(checked);
+    });
+  });
+
+  updateProgress(checked);
+</script>
