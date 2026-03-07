@@ -35,7 +35,7 @@ const { slug } = Astro.params;
 const park = await getParkBySlug(db, slug!);
 
 if (!park) {
-  return Astro.redirect('/404');
+  return new Response(null, { status: 404, statusText: 'Not Found' });
 }
 
 // Get NPS park code (from database or extract from URL)

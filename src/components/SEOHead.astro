@@ -23,7 +23,9 @@ const pageTitle = title
   ? siteConfig.seo.titleTemplate.replace('%s', title)
   : siteConfig.seo.defaultTitle;
 
-const url = canonicalUrl || Astro.url.href;
+// Normalize canonical: always use root domain, no trailing slash
+const rawUrl = canonicalUrl || Astro.url.href;
+const url = rawUrl.replace(/\/+$/, '').replace('://www.', '://');
 const imageUrl = new URL(image, siteConfig.url).href;
 
 // Default schema for the site
