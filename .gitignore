@@ -6,6 +6,9 @@ dist/
 # dependencies
 node_modules/
 
+# local Cloudflare state (wrangler d1 / kv)
+.wrangler/
+
 # logs
 npm-debug.log*
 yarn-debug.log*

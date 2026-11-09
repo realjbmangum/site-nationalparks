@@ -4,32 +4,41 @@ import ParkCard from '../../components/ParkCard.astro';
 import {
   getParksByStateName,
   getStatesWithCounts,
-  stateSlugToName,
   stateNameToSlug,
-  US_STATES,
+  canonicalStateSlug,
 } from '../../lib/db';
 import AdSlot from '../../components/AdSlot.astro';
+import { notFound } from '../../lib/not-found';
 
-// Get D1 database from Cloudflare runtime
-const db = Astro.locals.runtime.env.DB;
-
-// Get state slug from URL
 const { slug } = Astro.params;
 
-// Convert slug to state name
-const stateData = US_STATES[slug!];
-const stateName = stateData?.name || stateSlugToName(slug!);
-
-// Fetch parks for this state
-const parks = await getParksByStateName(db, stateName);
-
-// If no parks found, redirect to 404
-if (parks.length === 0) {
-  return Astro.redirect('/404');
+if (!slug) {
+  return notFound((path) => Astro.rewrite(path));
 }
 
-// Get all states with counts for sidebar
+// Old sitemap URL /states/us-virgin-islands permanently moves to /states/virgin-islands.
+const canonical = canonicalStateSlug(slug);
+if (canonical !== slug) {
+  return new Response(null, {
+    status: 301,
+    headers: { Location: `/states/${canonical}` },
+  });
+}
+
+const db = Astro.locals.runtime.env.DB;
 const allStates = await getStatesWithCounts(db);
+const match = allStates.find((state) => stateNameToSlug(state.state) === canonical);
+
+if (!match) {
+  return notFound((path) => Astro.rewrite(path));
+}
+
+const stateName = match.state;
+const parks = await getParksByStateName(db, stateName);
+
+if (parks.length === 0) {
+  return notFound((path) => Astro.rewrite(path));
+}
 
 // Default hero image based on state (generic landscape)
 const heroImage = parks[0]?.photo_url || 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&q=80';
