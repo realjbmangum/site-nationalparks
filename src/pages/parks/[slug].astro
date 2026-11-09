@@ -25,6 +25,7 @@ import {
 import { getCachedNPSData } from '../../lib/nps-cache';
 import siteConfig from '../../data/site-config.json';
 import AdSlot from '../../components/AdSlot.astro';
+import { notFound } from '../../lib/not-found';
 
 // Get runtime environment
 const runtime = Astro.locals.runtime.env;
@@ -35,7 +36,7 @@ const { slug } = Astro.params;
 const park = await getParkBySlug(db, slug!);
 
 if (!park) {
-  return new Response(null, { status: 404, statusText: 'Not Found' });
+  return notFound((path) => Astro.rewrite(path));
 }
 
 // Get NPS park code (from database or extract from URL)
@@ -411,7 +412,7 @@ const defaultImage = 'https://images.unsplash.com/photo-1469474968028-56623f02e4
 
           <!-- Shop Merch CTA -->
           <a
-            href={`/shop/${park.slug}`}
+            href="/shop"
             class="block bg-secondary/10 rounded-xl p-6 hover:bg-secondary/20 transition-colors"
           >
             <div class="flex items-center gap-3">

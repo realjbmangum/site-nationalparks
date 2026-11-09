@@ -11,7 +11,7 @@ export const GET: APIRoute = async ({ locals }) => {
     getStatesWithCounts(db),
   ]);
 
-  const pages = [
+  const pages = [...new Set([
     '/',
     '/parks',
     '/map',
@@ -28,7 +28,7 @@ export const GET: APIRoute = async ({ locals }) => {
     ...parks.map(p => `/parks/${p.slug}`),
     ...states.map(s => `/states/${stateNameToSlug(s.state)}`),
     ...Object.keys(REGIONS).map(r => `/regions/${r}`),
-  ];
+  ])];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

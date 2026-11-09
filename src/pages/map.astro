@@ -354,6 +354,8 @@ const parksGeoJSON = {
         ? `${(props.annual_visitors / 1000000).toFixed(1)}M`
         : `${Math.round(props.annual_visitors / 1000)}K`;
 
+      const detailsHref = '/parks/' + encodeURIComponent(props.slug);
+
       const html = `
         <div class="p-1 max-w-[250px]">
           ${props.photo_url ? `<img src="${props.photo_url}" alt="${props.name}" class="w-full h-32 object-cover rounded-lg mb-2" />` : ''}
@@ -365,7 +367,7 @@ const parksGeoJSON = {
             </span>
             <span class="text-xs text-gray-500">${visitors} visitors/yr</span>
           </div>
-          <a href="/parks/${props.slug}" class="text-sm text-primary hover:underline font-medium">View Park Details →</a>
+          <a href="${detailsHref}" class="text-sm text-primary hover:underline font-medium">View Park Details →</a>
         </div>
       `;
 

@@ -3,20 +3,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ParkCard from '../../components/ParkCard.astro';
 import { getParksByRegion, REGIONS, type RegionSlug } from '../../lib/db';
 import AdSlot from '../../components/AdSlot.astro';
+import { notFound } from '../../lib/not-found';
 
-// Get D1 database from Cloudflare runtime
-const db = Astro.locals.runtime.env.DB;
-
-// Get region slug from URL
 const { slug } = Astro.params;
 
-// Validate region exists
 const region = REGIONS[slug as RegionSlug];
 if (!region) {
-  return Astro.redirect('/404');
+  return notFound((path) => Astro.rewrite(path));
 }
 
-// Fetch parks for this region
+const db = Astro.locals.runtime.env.DB;
 const parks = await getParksByRegion(db, slug!);
 
 // Get adjacent regions for navigation

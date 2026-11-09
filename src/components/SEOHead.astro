@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../data/site-config.json';
+import { toCanonicalUrl } from '../lib/seo';
 
 interface Props {
   title?: string;
@@ -8,6 +9,7 @@ interface Props {
   canonicalUrl?: string;
   type?: 'website' | 'article';
   schema?: object;
+  robots?: string;
 }
 
 const {
@@ -17,15 +19,15 @@ const {
   canonicalUrl,
   type = 'website',
   schema,
+  robots,
 } = Astro.props;
 
 const pageTitle = title
   ? siteConfig.seo.titleTemplate.replace('%s', title)
   : siteConfig.seo.defaultTitle;
 
-// Normalize canonical: always use root domain, no trailing slash
-const rawUrl = canonicalUrl || Astro.url.href;
-const url = rawUrl.replace(/\/+$/, '').replace('://www.', '://');
+// One URL per page: apex host, no query, no trailing slash (homepage keeps "/").
+const url = toCanonicalUrl(canonicalUrl || Astro.url.href);
 const imageUrl = new URL(image, siteConfig.url).href;
 
 // Default schema for the site
@@ -48,6 +50,7 @@ const defaultSchema = {
 <meta name="title" content={pageTitle} />
 <meta name="description" content={description} />
 <link rel="canonical" href={url} />
+{robots && <meta name="robots" content={robots} />}
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />

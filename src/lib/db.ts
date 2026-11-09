@@ -401,9 +401,30 @@ export function stateSlugToName(slug: string): string {
     .join(' ');
 }
 
+// Slugs that the state column does not produce with a plain hyphenation.
+// The database stores "US Virgin Islands", which hyphenates to us-virgin-islands,
+// but that path does not match a state page. virgin-islands is the one URL.
+const STATE_SLUG_ALIASES: Record<string, string> = {
+  'us-virgin-islands': 'virgin-islands',
+  'u.s.-virgin-islands': 'virgin-islands',
+  'u-s-virgin-islands': 'virgin-islands',
+  'united-states-virgin-islands': 'virgin-islands',
+};
+
+export function canonicalStateSlug(slug: string): string {
+  const normalized = slug.trim().toLowerCase();
+  return STATE_SLUG_ALIASES[normalized] ?? normalized;
+}
+
 // Convert state name to slug (e.g., "North Carolina" -> "north-carolina")
 export function stateNameToSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '-');
+  const hyphenated = name
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  return canonicalStateSlug(hyphenated);
 }
 
 // Get all unique states from the database
@@ -528,5 +549,5 @@ export const US_STATES: Record<string, { name: string; abbreviation: string }> =
   'american-samoa': { name: 'American Samoa', abbreviation: 'AS' },
   'guam': { name: 'Guam', abbreviation: 'GU' },
   'puerto-rico': { name: 'Puerto Rico', abbreviation: 'PR' },
-  'virgin-islands': { name: 'Virgin Islands', abbreviation: 'VI' },
+  'virgin-islands': { name: 'US Virgin Islands', abbreviation: 'VI' },
 };
